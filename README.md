@@ -1,10 +1,26 @@
 # Darwin
 
+**Durable patch execution for Python agents. Bounded blast radius. Vendor-neutral. MIT.**
+
 ```bash
 git clone https://github.com/Miles0sage/darwin && cd darwin && python3 xrepo_proof.py
 ```
 
 That runs the "same bug, three different repos, one cached transformer, zero LLM calls" proof in ~3 seconds. If it prints `CROSS-REPO TRANSFER: DETERMINISTIC, REAL, AUDITABLE` you have seen the primitive. Everything below is context for what you just watched.
+
+## Numbers (reproducible from `benchmarks/`)
+
+| Corpus | Healed | Notes | `results.json` |
+|---|---|---|---|
+| **v3 strict real bugs** | **50 / 50 (100%)** | 34 Gemini Flash + 16 Opus rescues | [`benchmarks/v3/results.json`](benchmarks/v3/results.json) |
+| **v2 complex real bugs** | **131 / 171 (77%)** | Gemini rate-limited, Pro+Opus carried; $1.09 total LLM spend | [`benchmarks/v2/results.json`](benchmarks/v2/results.json) |
+| v1 runnable real bugs | 17 / 18 (94%)* | *17/30 in raw JSON — 12 entries had `no_reproducer` (traceback-only) and were skipped | [`benchmarks/v1/results.json`](benchmarks/v1/results.json) |
+| Controlled Opus vs Gemini Flash matrix | Opus 12/12 · Gemini 2/12 | same 12 synthetic bugs across both | — |
+
+Corpora are harvested from public GitHub issues + StackOverflow (Apache / MIT / BSD / CC BY-SA). Every bug JSON includes a source URL and license.
+
+**Public unit tests:** `pytest` → **15/15** in ~1.6s on fresh clone (Python 3.11+).
+**Status:** beta · 1 contributor · 0 paying users · MIT · Looking for EU design partners.
 
 ---
 
