@@ -2,6 +2,8 @@
 
 **Durable patch execution for Python agents. Bounded blast radius. Vendor-neutral. MIT.**
 
+[![demo](https://asciinema.org/a/vsXu6gddko4rZPgM.svg)](https://asciinema.org/a/vsXu6gddko4rZPgM)
+
 ```bash
 git clone https://github.com/Miles0sage/darwin && cd darwin && python3 xrepo_proof.py
 ```
