@@ -1,0 +1,11 @@
+{
+  "id": "bug_006",
+  "source_url": "https://stackoverflow.com/questions/72428688/python-try-except-does-not-seem-to-work-with-keyerror",
+  "source_type": "stackoverflow",
+  "error_class": "TypeError",
+  "stderr": "Traceback (most recent call last):\n  File \"main.py\", line 14, in <module>\n    errors.append(os.path.join(dirs, name))\n  File \"/usr/lib/python3.10/posixpath.py\", line 76, in join\n    a = os.fspath(a)\nTypeError: expected str, bytes or os.PathLike object, not list",
+  "source_code": "import os\nimport pandas as pd\n\nseason_ep = {\"pilot\": \"s01e01\"}\nerrors = []\n# os.walk yields (root, dirs, files). `dirs` is a list, not a path.\nfor dirs, files in [([\"dir1\"], [\"show-pilot.mp4\"])]:\n    for name in files:\n        try:\n            to_print = season_ep[name.split('-')[-1][:-4]]\n            print(to_print)\n        except KeyError:\n            errors.append(os.path.join(dirs, name))  # TypeError: dirs is a list",
+  "expected_fix_hint": "The variable `dirs` is a list (from os.walk), not a path str. Either iterate over it or use `root` from os.walk.",
+  "has_reproducer": true,
+  "license": "CC BY-SA 4.0"
+}

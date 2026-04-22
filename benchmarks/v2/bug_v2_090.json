@@ -1,0 +1,21 @@
+{
+  "id": "bug_v2_090",
+  "source_url": "https://github.com/jupyterlab/jupyterlab/issues/7095",
+  "source_type": "github",
+  "error_class": "KeyError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n      File \"/anaconda3/lib/python3.7/site-packages/tornado/web.py\", line 1699, in _execute\r\n        result = await result\r\n      File \"/anaconda3/lib/python3.7/site-packages/tornado/gen.py\", line 742, in run\r\n        yielded = self.gen.throw(*exc_info)  # type: ignore\r\n      File \"/anaconda3/lib/python3.7/site-packages/jupyterlab/handlers/extension_manager_handler.py\", line 216, in get\r\n        extensions = yield self.manager.list_extensions()\r\n      File \"/anaconda3/lib/python3.7/site-packages/tornado/gen.py\", line 735, in run\r\n        value = future.result()\r\n      File \"/anaconda3/lib/python3.7/site-packages/tornado/gen.py\", line 748, in run\r\n        yielded = self.gen.send(value)\r\n      File \"/anaconda3/lib/python3.7/site-packages/jupyterlab/handlers/extension_manager_handler.py\", line 95, in list_extensions\r\n        description=pkg_info['description'],\r\n    KeyError: 'description'",
+  "source_code": "# source: https://github.com/jupyterlab/jupyterlab/issues/7095\n# repo: jupyterlab/jupyterlab\n# title: Jupyterlab manager extension returns 500 -local server\n# \n# <!--\n# Welcome! Before creating a new issue:\n# * Search for relevant issues\n# * Follow the issue reporting guidelines:\n# https://jupyterlab.readthedocs.io/en/latest/getting_started/issue.html\n# -->\n# ## Description\n# <!--Describe the bug clearly and concisely. Include screenshots if possible-->\n# Note: this is a local server on my personal computer as opposed to within a Docker container or an AKS deployed JupyterHub\n# I updated Jupyterlab to 1.0.9 recently and since then whenever I open the extension manager in the UI this returns a 500 error. For reference the full message on the UI:\n# While the message on my terminal results on:\n# ## Reproduce\n# <!--Describe step-by-step instructions to reproduce the behavior-->\n# 1. Launch JupyterLab\n# 2. Click on the Extension manager tab\n# <!-\n\n[E 09:04:52.229 LabApp] 500 GET /lab/api/extensions?1566828290456 (::1) 1395.35ms referer=http://localhost:8888/lab?\r\n[I 09:04:52.231 LabApp] Build is up to date\r\n[E 09:04:53.165 LabApp] Uncaught exception GET /lab/api/extensions?1566828290490 (::1)\r\n    HTTPServerRequest(protocol='http', host='localhost:8888', method='GET', uri='/lab/api/extensions?1566828290490', version='HTTP/1.1', remote_ip='::1')\r\n    Traceback (most recent call last):\r\n      File \"/anaconda3/lib/python3.7/site-packages/tornado/web.py\", line 1699, in _execute\r\n        result = await result\r\n      File \"/anaconda3/lib/python3.7/site-packages/tornado/gen.py\", line 742, in run\r\n        yielded = self.gen.throw(*exc_info)  # type: ignore\r\n      File \"/anaconda3/lib/python3.7/site-packages/jupyterlab/handlers/extension_manager_handler.py\", line 216, in get\r\n        extensions = yield self.manager.list_extensions()\r\n      File \"/anaconda3/lib/python3.7/site-packages/tornado/gen.py\", line 735, in run\r\n        value = future.result()\r\n      File \"/anaconda3/lib/python3.7/site-packages/tornado/gen.py\", line 748, in run\r\n        yielded = self.gen.send(value)\r\n      File \"/anaconda3/lib/python3.7/site-packages/jupyterlab/handlers/extension_manager_handler.py\", line 95, in list_extensions\r\n        description=pkg_info['description'],\r\n    KeyError: 'description'\r\n[W 09:04:53.166 LabApp] Unhandled error",
+  "expected_fix_hint": "Use dict.get() or check membership; handle optional keys.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:jupyterlab",
+    "multi-file",
+    "protocol",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

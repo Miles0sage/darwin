@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_153",
+  "source_url": "https://stackoverflow.com/questions/38077866/detachedinstanceerror-sqlalchemy",
+  "source_type": "stackoverflow",
+  "error_class": "AttributeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/srv/api/routes.py\", line 44, in get_user\n    return {\"id\": user.id, \"email\": user.email, \"orders\": [o.total for o in user.orders]}\n  File \"/usr/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py\", line 527, in __get__\n    return self.impl.get(state, dict_)\n  File \"/usr/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py\", line 978, in get\n    value = self._fire_loader_callables(state, key, passive)\n  File \"/usr/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py\", line 1013, in _fire_loader_callables\n    return self.callable_(state, passive)\n  File \"/usr/lib/python3.11/site-packages/sqlalchemy/orm/strategies.py\", line 1027, in _load_for_state\n    raise orm_exc.DetachedInstanceError(\nAttributeError: Parent instance <User at 0x7f2d> is not bound to a Session; lazy load operation of attribute 'orders' cannot proceed (Background on this error at: https://sqlalche.me/e/20/bhk3)",
+  "source_code": "from sqlalchemy import Column, Integer, String, ForeignKey, create_engine\nfrom sqlalchemy.orm import declarative_base, relationship, sessionmaker\n\nBase = declarative_base()\n\nclass User(Base):\n    __tablename__ = 'users'\n    id = Column(Integer, primary_key=True)\n    email = Column(String)\n    orders = relationship('Order', back_populates='user', lazy='select')\n\nclass Order(Base):\n    __tablename__ = 'orders'\n    id = Column(Integer, primary_key=True)\n    user_id = Column(Integer, ForeignKey('users.id'))\n    total = Column(Integer)\n    user = relationship('User', back_populates='orders')\n\nengine = create_engine('sqlite:///:memory:')\nBase.metadata.create_all(engine)\nSession = sessionmaker(engine)\n\ndef fetch_user(uid: int):\n    with Session() as s:\n        u = s.query(User).filter_by(id=uid).first()\n        return u  # BUG: session closes; user is detached, lazy-load fails on access\n\ndef get_user(uid: int):\n    user = fetch_user(uid)\n    # Downstream code tries to iterate relationship -> DetachedInstanceError\n    return {\"id\": user.id, \"email\": user.email, \"orders\": [o.total for o in user.orders]}\n\nif __name__ == '__main__':\n    with Session() as s:\n        s.add(User(id=1, email='a@b.com', orders=[Order(total=10)])); s.commit()\n    print(get_user(1))",
+  "expected_fix_hint": "Eager-load with selectinload/joinedload, detach explicitly to a plain dict, or keep the session open via dependency injection.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:sqlalchemy",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

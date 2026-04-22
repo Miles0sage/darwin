@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_033",
+  "source_url": "https://github.com/python/cpython/issues/110353",
+  "source_type": "github",
+  "error_class": "RuntimeError",
+  "complexity_score": 3,
+  "library": "threading",
+  "license": "Python-2.0",
+  "complexity_tags": [
+    "threading",
+    "async"
+  ],
+  "expected_fix_hint": "Starting the same thread twice. Create a new Thread instance for each run.",
+  "stderr": "Traceback (most recent call last):\n  File \"worker.py\", line 28, in <module>\n    main()\n  File \"worker.py\", line 24, in main\n    runner.run_twice()\n  File \"worker.py\", line 19, in run_twice\n    self.t.start()\n  File \"/usr/lib/python3.11/threading.py\", line 930, in start\n    raise RuntimeError(\"threads can only be started once\")\nRuntimeError: threads can only be started once\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "import threading\nimport time\n\n\ndef worker(name):\n    time.sleep(0.01)\n    return name\n\n\nclass Runner:\n    def __init__(self):\n        # BUG: single Thread instance, started twice\n        self.t = threading.Thread(target=worker, args=('w',))\n\n    def run_twice(self):\n        self.t.start()\n        self.t.join()\n        self.t.start()\n        self.t.join()\n\n\ndef main():\n    runner = Runner()\n    runner.run_twice()\n    print('done')\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

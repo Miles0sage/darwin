@@ -1,0 +1,21 @@
+{
+  "id": "bug_v2_096",
+  "source_url": "https://github.com/django-q2/django-q2/issues/293",
+  "source_type": "github",
+  "error_class": "OperationalError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.12/site-packages/django/db/backends/base/base.py\", line 298, in _cursor\n    return self._prepare_cursor(self.create_cursor(name))\n                                ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/django/utils/asyncio.py\", line 26, in inner\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/django/db/backends/postgresql/base.py\", line 433, in create_cursor\n    cursor = self.connection.cursor()\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/psycopg/connection.py\", line 213, in cursor\n    self._check_connection_ok()\n  File \"/usr/local/lib/python3.12/site-packages/psycopg/_connection_base.py\", line 524, in _check_connection_ok\n    raise e.OperationalError(\"the connection is closed\")",
+  "source_code": "# source: https://github.com/django-q2/django-q2/issues/293\n# repo: django-q2/django-q2\n# title: Scheduler fails with `OperationalError` when using a separate ORM database\n# \n# When django-q2 is configured to use a separate database for the ORM broker (e.g., `\"orm\": \"tasks\"`), the scheduler fails with a `django.db.utils.OperationalError: the connection is closed`.\n# This appears to happen because the ORM broker's connection management unintentionally closes the scheduler's active database transaction on the `default` database. As a result, the schedule's `next_run` time is never updated, causing the schedule to run repeatedly every 30 seconds.\n# ## Environment\n# - django-q2 version: 1.8.0 \n# - Django version: 5.1 \n# - Python version: 3.12 \n# - Database: PostgreSQL with psycopg\n# - OS: Linux-based\n# ## Steps to reproduce\n# In one terminal, start PostgreSQL using `docker` or `podman`:\n# In another terminal, start a Python container:\n# Inside the Python container, copy and pas\n\n</details>\n\n## Analysis\n\nThis seems to stem from a race condition between the two database connections within the scheduler function:\n\n1. The scheduler in [`django_q/scheduler.py`](https://github.com/django-q2/django-q2/blob/master/django_q/scheduler.py) starts an atomic transaction on the `default` database to read and lock `Schedule` objects.\n2. Inside this transaction, it calls `async_task`, which uses the ORM broker configured for the `tasks` database.\n3. The broker's `get_connection` method in [`django_q/brokers/orm.py`]() checks if the `tasks` database has an active transaction. It does not, so it executes `db.close_old_connections()`.\n4. This `db.close_old_connections()` call iterates over all connections and closes the connection to the `default` database, even though that connection is in the middle of the scheduler's transaction.\n5. When control returns to the scheduler, its transaction on the `default` database is now using a closed connection, causing `s.save()` to fail.\n\n## Proposed fix\n\nA potential fix could be to modify the [`get_connection`](https://github.com/django-q2/django-q2/blob/master/django_q/brokers/orm.py#L22) method in `django_q/brokers/orm.py`:\n\nFrom this:",
+  "expected_fix_hint": "fix could be to modify the [`get_connection`](https://github.com/django-q2/django-q2/blob/master/django_q/brokers/orm.py#L22) method in `django_q/brokers/orm.py`:",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:django-q2",
+    "multi-file",
+    "race",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

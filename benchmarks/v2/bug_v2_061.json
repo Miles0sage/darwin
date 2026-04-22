@@ -1,0 +1,21 @@
+{
+  "id": "bug_v2_061",
+  "source_url": "https://github.com/AlexxIT/SonoffLAN/issues/1288",
+  "source_type": "github",
+  "error_class": "RecursionError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity_platform.py\", line 507, in async_add_entities\r\n    await asyncio.gather(*tasks)\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity_platform.py\", line 662, in _async_add_entity\r\n    capabilities=entity.capability_attributes,\r\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/components/number/__init__.py\", line 238, in capability_attributes\r\n    self.native_min_value, floor_decimal, device_class\r\n    ^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/backports/functools.py\", line 70, in __get__\r\n    val = self.func(instance)\r\n          ^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/components/number/__init__.py\", line 269, in native_min_value\r\n    if hasattr(self, \"_attr_native_min_value\"):\r\n       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 338, in _getter\r\n    return getattr(o, private_attr_name)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 338, in _getter\r\n    return getattr(o, private_attr_name)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 338, in _getter\r\n    return getattr(o, private_attr_name)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  [Previous line repeated 981 more times]\r\nRecursionError: maximum recursion depth exceeded",
+  "source_code": "Logger: homeassistant.components.number\r\nSource: helpers/entity_platform.py:507\r\nIntegration: Number (documentation, issues)\r\nFirst occurred: 17:40:11 (1 occurrences)\r\nLast logged: 17:40:11\r\n\r\nError adding entities for domain number with platform sonoff\r\nTraceback (most recent call last):\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity_platform.py\", line 507, in async_add_entities\r\n    await asyncio.gather(*tasks)\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity_platform.py\", line 662, in _async_add_entity\r\n    capabilities=entity.capability_attributes,\r\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/components/number/__init__.py\", line 238, in capability_attributes\r\n    self.native_min_value, floor_decimal, device_class\r\n    ^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/backports/functools.py\", line 70, in __get__\r\n    val = self.func(instance)\r\n          ^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/components/number/__init__.py\", line 269, in native_min_value\r\n    if hasattr(self, \"_attr_native_min_value\"):\r\n       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 338, in _getter\r\n    return getattr(o, private_attr_name)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 338, in _getter\r\n    return getattr(o, private_attr_name)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 338, in _getter\r\n    return getattr(o, private_attr_name)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  [Previous line repeated 981 more times]\r\nRecursionError: maximum recursion depth exceeded",
+  "expected_fix_hint": "Convert to iterative; increase sys.setrecursionlimit guardedly.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "descriptor",
+    "library:SonoffLAN",
+    "multi-file",
+    "recursion"
+  ],
+  "license": "Apache-2.0"
+}

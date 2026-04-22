@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_007",
+  "source_url": "https://github.com/pytorch/pytorch/issues/89149",
+  "source_type": "github",
+  "error_class": "AttributeError",
+  "complexity_score": 4,
+  "library": "torch",
+  "license": "BSD-3-Clause",
+  "complexity_tags": [
+    "torch",
+    "ml"
+  ],
+  "expected_fix_hint": "Module subclass missing super().__init__(). self._parameters is initialized there.",
+  "stderr": "Traceback (most recent call last):\n  File \"model.py\", line 32, in <module>\n    main()\n  File \"model.py\", line 28, in main\n    model = TinyNet(16, 8)\n  File \"model.py\", line 10, in __init__\n    self.linear = nn.Linear(in_dim, out_dim)\n  File \"/usr/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1614, in __setattr__\n    params = self.__dict__.get('_parameters')\nAttributeError: cannot assign module before Module.__init__() call",
+  "source_code": "import torch\nimport torch.nn as nn\n\n\nclass TinyNet(nn.Module):\n    def __init__(self, in_dim, out_dim):\n        # BUG: forgot super().__init__()\n        self.linear = nn.Linear(in_dim, out_dim)\n        self.activation = nn.ReLU()\n\n    def forward(self, x):\n        return self.activation(self.linear(x))\n\n\ndef run_forward(model, x):\n    return model(x)\n\n\ndef main():\n    torch.manual_seed(0)\n    model = TinyNet(16, 8)\n    x = torch.randn(4, 16)\n    y = run_forward(model, x)\n    print(y.shape)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

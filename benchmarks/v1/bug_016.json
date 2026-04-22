@@ -1,0 +1,11 @@
+{
+  "id": "bug_016",
+  "source_url": "https://github.com/huggingface/transformers/issues/36281",
+  "source_type": "github",
+  "error_class": "AttributeError",
+  "stderr": "AttributeError                            Traceback (most recent call last)\nCell In[1], line 35\n     32 client = DocumentAnalysisClient(endpoint=endpoint, credential=AzureKeyCredential(api_key))\n     34 config = AutoConfig.from_pretrained(BASE_MODEL_PATH)\n---> 35 model = AutoModelForVision2Seq.from_pretrained(\n     36     BASE_MODEL_PATH, \n     37     config=config,\n     38     torch_dtype=torch.float16, \n     39     device_map=\"auto\"\n     40 )\n     41 # print(f\"Base Model Embeddings {model.get_input_embeddings().num_embeddings}\")\n     42 \n     43 \n   (...)\n     47 \n     48 # Load processor\n     49 processor = AutoProcessor.from_pretrained(BASE_MODEL_PATH,use_fast=True)\n\nFile ~/vision_poc/venv/lib/python3.12/site-packages/transformers/models/auto/auto_factory.py:564, in _BaseAutoModelClass.from_pretrained(cls, pretrained_model_name_or_path, *model_args, **kwargs)\n    562 elif type(config) in cls._model_mapping.keys():\n    563     model_class = _get_model_class(config, cls._model_mapping)\n--> 564     return model_class.from_pretrained(\n    565         pretrained_model_name_or_path, *model_args, config=config, **hub_kwargs, **kwargs\n    566     )\n    567 raise ValueError(",
+  "source_code": "BASE_MODEL_PATH = \"axolotl/outputs/out_qwen_25_3b_lora_3000_512_4/merged\" \nconfig = AutoConfig.from_pretrained(BASE_MODEL_PATH)\nmodel = AutoModelForVision2Seq.from_pretrained(\n    BASE_MODEL_PATH, \n    config=config,\n    torch_dtype=torch.float16, \n    device_map=\"auto\"\n)",
+  "expected_fix_hint": "",
+  "has_reproducer": true,
+  "license": "Apache-2.0"
+}

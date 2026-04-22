@@ -1,0 +1,17 @@
+{
+  "id": "bug_v2_129",
+  "source_url": "https://github.com/psf/black/issues/2964",
+  "source_type": "github",
+  "error_class": "ImportError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/home/runner/work/_actions/psf/black/stable/.black-env/bin/black\", line 8, in <module>\r\n    sys.exit(patched_main())\r\n  File \"src/black/__init__.py\", line 1423, in patched_main\r\n  File \"src/black/__init__.py\", line 1[40](https://github.com/stumpylog/paperless-ngx/runs/5724998040?check_suite_focus=true#step:7:40)9, in patch_click\r\nImportError: cannot import name '_unicodefun' from 'click' (/home/runner/work/_actions/psf/black/stable/.black-env/lib/python3.8/site-packages/click/__init__.py)",
+  "source_code": "# source: https://github.com/psf/black/issues/2964\n# repo: psf/black\n# title: Incompatible with click 8.1.0 (ImportError: cannot import name '_unicodefun' from 'click')\n# \n# Please use Black 22.3.0 (or newer) which was just released to fix this issue or pin Click to 8.0.0, 8.0.1, 8.0.2, 8.0.3, or 8.0.4.\n# ~ @ichard26 at March 28 3:15 PM EST\n# ---\n# So hey y'all, CI is broken eh?\n# Anyway, we are aware the most recent release of Click, 8.1.0, is breaking Black. This is because Black imports an internal module so Python 3.6 users with misconfigured LANG continues to work mostly properly. The code that patches click was supposed to be resilient to the module disappearing but the code was catching the wrong exception. \n# **To unbreak your CI, please pin Click to 8.0.0, 8.0.1, 8.0.2, 8.0.3, or 8.0.4. We are working on a more longterm fix (probably fixing the patching code or getting rid of it entirely) and will try to get a release out soon.**\n# ~ @ichard26 a\n\nTraceback (most recent call last):\r\n  File \"/home/runner/work/_actions/psf/black/stable/.black-env/bin/black\", line 8, in <module>\r\n    sys.exit(patched_main())\r\n  File \"src/black/__init__.py\", line 1423, in patched_main\r\n  File \"src/black/__init__.py\", line 1[40](https://github.com/stumpylog/paperless-ngx/runs/5724998040?check_suite_focus=true#step:7:40)9, in patch_click\r\nImportError: cannot import name '_unicodefun' from 'click' (/home/runner/work/_actions/psf/black/stable/.black-env/lib/python3.8/site-packages/click/__init__.py)",
+  "expected_fix_hint": "fix this issue or pin Click to 8.0.0, 8.0.1, 8.0.2, 8.0.3, or 8.0.4.\r",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "library:black",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

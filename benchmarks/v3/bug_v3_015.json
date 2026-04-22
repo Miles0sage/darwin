@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_015",
+  "source_url": "https://github.com/psf/requests/issues/6280",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "complexity_score": 2,
+  "library": "requests",
+  "license": "Apache-2.0",
+  "complexity_tags": [
+    "requests",
+    "http"
+  ],
+  "expected_fix_hint": "json param expects dict, not str. Remove json.dumps() wrap or use data= parameter.",
+  "stderr": "Traceback (most recent call last):\n  File \"client.py\", line 26, in <module>\n    main()\n  File \"client.py\", line 22, in main\n    send_event({'user': 1, 'action': 'click'})\n  File \"client.py\", line 16, in send_event\n    resp = requests.post(url, json=json.dumps(payload))\n  File \"/usr/lib/python3.11/site-packages/requests/api.py\", line 115, in post\n    return request('post', url, json=json, **kwargs)\nTypeError: Object of type str is not JSON serializable",
+  "source_code": "import json\nimport requests\n\n\nclass Client:\n    def __init__(self, base_url):\n        self.base_url = base_url\n\n    def send_event(self, payload):\n        url = f'{self.base_url}/events'\n        # BUG: requests.post(json=...) already serializes; double-encoding\n        resp = requests.post(url, json=json.dumps(payload))\n        return resp\n\n\ndef send_event(payload):\n    c = Client('https://example.invalid')\n    return c.send_event(payload)\n\n\ndef main():\n    send_event({'user': 1, 'action': 'click'})\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

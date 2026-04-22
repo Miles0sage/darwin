@@ -1,0 +1,12 @@
+{
+  "fingerprint": "99acded06b041794",
+  "error_class": "TypeError",
+  "error_signature": "TypeError: Cannot instantiate typing.Union",
+  "root_cause": "real-TypeError",
+  "fix_applied": true,
+  "fix_code": "from openai.types.chat import ChatCompletionMessageToolCallParam\n",
+  "timestamp": "20260422T040630771015Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

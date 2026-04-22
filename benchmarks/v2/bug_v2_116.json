@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_116",
+  "source_url": "https://github.com/home-assistant/core/issues/61687",
+  "source_type": "github",
+  "error_class": "CancelledError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/local/lib/python3.9/site-packages/anyio/_core/_sockets.py\", line 180, in connect_tcp\r\n    await event.wait()\r\n  File \"/usr/local/lib/python3.9/site-packages/anyio/_backends/_asyncio.py\", line 1654, in wait\r\n    if await self._event.wait():\r\n  File \"/usr/local/lib/python3.9/asyncio/locks.py\", line 226, in wait\r\n    await fut\r\nasyncio.exceptions.CancelledError",
+  "source_code": "# source: https://github.com/home-assistant/core/issues/61687\n# repo: home-assistant/core\n# title: Luftdaten: map_httpcore_exceptions     raise mapped_exc(message) from exc httpx.ConnectTimeout\n# \n# ### The problem\n# None of the Luftdaten sensors are initialized\n# ### What version of Home Assistant Core has the issue?\n# Home Assistant 2022.1.0.dev20211213\n# ### What was the last working version of Home Assistant Core?\n# ? \n# ### What type of installation are you running?\n# Home Assistant OS\n# ### Integration causing the issue\n# Luftdaten\n# ### Link to integration documentation on our website\n# https://www.home-assistant.io/integrations/luftdaten/\n# ### Example YAML snippet\n# ### Anything in the logs that might be useful for us?\n# ### Additional information\n# _No response_\n\n### Anything in the logs that might be useful for us?",
+  "expected_fix_hint": "Catch and re-raise or suppress per policy; avoid swallowing inside shield.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "library:home-assistant",
+    "multi-file",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

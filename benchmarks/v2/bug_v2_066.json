@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_066",
+  "source_url": "https://github.com/langchain-ai/langchain/issues/15524",
+  "source_type": "github",
+  "error_class": "AttributeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"C:\\Users\\roger\\OneDrive\\Desktop\\testlinkedinllm.py\", line 5, in <module>\r\n    from langchain_community.document_loaders import AsyncChromiumLoader\r\n  File \"C:\\Users\\roger\\anaconda3new\\lib\\site-packages\\langchain_community\\document_loaders\\__init__.py\", line 51, in <module>\r\n    from langchain_community.document_loaders.blackboard import BlackboardLoader\r\n  File \"C:\\Users\\roger\\anaconda3new\\lib\\site-packages\\langchain_community\\document_loaders\\blackboard.py\", line 10, in <module>\r\n    from langchain_community.document_loaders.pdf import PyPDFLoader\r\n  File \"C:\\Users\\roger\\anaconda3new\\lib\\site-packages\\langchain_community\\document_loaders\\pdf.py\", line 18, in <module>\r\n    from langchain_community.document_loaders.parsers.pdf import (\r\n  File \"C:\\Users\\roger\\anaconda3new\\lib\\site-packages\\langchain_community\\document_loaders\\parsers\\__init__.py\", line 5, in <module>\r\n    from langchain_community.document_loaders.parsers.language import LanguageParser\r\n  File \"C:\\Users\\roger\\anaconda3new\\lib\\site-packages\\langchain_community\\document_loaders\\parsers\\language\\__init__.py\", line 1, in <module>\r\n    from langchain_community.document_loaders.parsers.language.language_parser import (\r\n  File \"C:\\Users\\roger\\anaconda3new\\lib\\site-packages\\langchain_community\\document_loaders\\parsers\\language\\language_parser.py\", line 24, in <module>\r\n    \"cobol\": Language.COBOL,\r\n  File \"C:\\Users\\roger\\anaconda3new\\lib\\enum.py\", line 429, in __getattr__\r\n    raise AttributeError(name) from None",
+  "source_code": "# Reproducer derived from https://github.com/langchain-ai/langchain/issues/15524\n# repo: langchain-ai/langchain\n# title: AsyncChromiumloader gives attribute error : COBOL\n\n# Last frames in traceback:\n#   C:\\Users\\roger\\anaconda3new\\lib\\enum.py line 429 in __getattr__\n\n# Minimal repro (conceptual):\nimport pprint\r\nfrom langchain.text_splitter import RecursiveCharacterTextSplitter\r\nfrom langchain_community.document_loaders import AsyncChromiumLoader\r\nfrom langchain_community.document_transformers import BeautifulSoupTransformer\r\nfrom langchain.chains import create_extraction_chain\r\nfrom langchain_community.chat_models import ChatOpenAI\n\ndef repro():\n    # Conditions described in the issue:\n    # ### System Info\n    # python 3.9.13\n    # langchain==0.0.316\n    # langchain-community==0.0.1\n    # langchain-core==0.0.13\n    # ### Who can help?\n    raise AttributeError('reproduce: see https://github.com/langchain-ai/langchain/issues/15524')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Add a None-check or ensure the attribute exists before access; verify object type.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "async",
+    "deep-trace",
+    "library:langchain",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

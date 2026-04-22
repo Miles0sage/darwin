@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_010",
+  "source_url": "https://stackoverflow.com/questions/38413349/python-attributeerror-module-has-no-attribute",
+  "source_type": "stackoverflow",
+  "error_class": "AttributeError",
+  "complexity_score": 2,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Module attribute referenced before module is fully imported (circular import). Move import inside function.",
+  "stderr": "Traceback (most recent call last):\n  File \"helpers.py\", line 24, in <module>\n    main()\n  File \"helpers.py\", line 20, in main\n    result = helpers.compute(data)\n  File \"helpers.py\", line 14, in compute\n    return sys.max_size - sum(data)\nAttributeError: module 'sys' has no attribute 'max_size'. Did you mean: 'maxsize'?\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "import sys\n\n\nclass Helpers:\n    def __init__(self):\n        self.cache = {}\n\n    def compute(self, data):\n        # BUG: typo \u2014 sys.max_size doesn't exist, it's sys.maxsize\n        return sys.max_size - sum(data)\n\n    def cached(self, key, fn):\n        if key not in self.cache:\n            self.cache[key] = fn()\n        return self.cache[key]\n\n\ndef main():\n    helpers = Helpers()\n    data = [1, 2, 3, 4, 5]\n    result = helpers.compute(data)\n    print(result)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

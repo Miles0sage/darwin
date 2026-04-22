@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_108",
+  "source_url": "https://github.com/alpacahq/alpaca-backtrader-api/issues/231",
+  "source_type": "github",
+  "error_class": "KeyError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/Users/brianhumphreys/.pyenv/versions/3.7.3/lib/python3.7/threading.py\", line 917, in _bootstrap_inner\r\n    self.run()\r\n  File \"/Users/brianhumphreys/.pyenv/versions/3.7.3/lib/python3.7/threading.py\", line 865, in run\r\n    self._target(*self._args, **self._kwargs)\r\n  File \"/Users/brianhumphreys/.pyenv/versions/3.7.3/lib/python3.7/site-packages/alpaca_backtrader_api/alpacastore.py\", line 430, in _t_candles\r\n    ].dropna(subset=['high'])\r\n  File \"/Users/brianhumphreys/.pyenv/versions/3.7.3/lib/python3.7/site-packages/pandas/util/_decorators.py\", line 311, in wrapper\r\n    return func(*args, **kwargs)\r\n  File \"/Users/brianhumphreys/.pyenv/versions/3.7.3/lib/python3.7/site-packages/pandas/core/frame.py\", line 5953, in dropna\r\n    raise KeyError(list(np.compress(check, subset)))",
+  "source_code": "# source: https://github.com/alpacahq/alpaca-backtrader-api/issues/231\n# repo: alpacahq/alpaca-backtrader-api\n# title: Informing user about subscription\n# \n# Hey Alpaca Team,\n# Not a big issue here but would be nice as an addition to new users.  When running the example code, I got the following error message with no other context.  \n# I had to fork and investigate to figure out that I was getting an error message:\n# `{'code': 42210000, 'message': 'your subscription does not permit querying data from the past 15 minutes'}`\n# when attempting to hit the endpoint `https://data.alpaca.markets/stocks/AAPL/bars`.\n# It would be nice to bubble this error up to inform the user without requiring them to investigate.  Also, it would be helpful to just mention the required subscription tier in the README.md :) \n\nTraceback (most recent call last):\r\n  File \"/Users/brianhumphreys/.pyenv/versions/3.7.3/lib/python3.7/threading.py\", line 917, in _bootstrap_inner\r\n    self.run()\r\n  File \"/Users/brianhumphreys/.pyenv/versions/3.7.3/lib/python3.7/threading.py\", line 865, in run\r\n    self._target(*self._args, **self._kwargs)\r\n  File \"/Users/brianhumphreys/.pyenv/versions/3.7.3/lib/python3.7/site-packages/alpaca_backtrader_api/alpacastore.py\", line 430, in _t_candles\r\n    ].dropna(subset=['high'])\r\n  File \"/Users/brianhumphreys/.pyenv/versions/3.7.3/lib/python3.7/site-packages/pandas/util/_decorators.py\", line 311, in wrapper\r\n    return func(*args, **kwargs)\r\n  File \"/Users/brianhumphreys/.pyenv/versions/3.7.3/lib/python3.7/site-packages/pandas/core/frame.py\", line 5953, in dropna\r\n    raise KeyError(list(np.compress(check, subset)))\r\nKeyError: ['high']",
+  "expected_fix_hint": "Use dict.get() or check membership; handle optional keys.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "data-science",
+    "deep-trace",
+    "library:alpaca-backtrader-api",
+    "multi-file",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

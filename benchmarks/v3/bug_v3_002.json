@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_002",
+  "source_url": "https://stackoverflow.com/questions/8949252/why-do-i-get-attributeerror-nonetype-object-has-no-attribute-something",
+  "source_type": "stackoverflow",
+  "error_class": "AttributeError",
+  "complexity_score": 1,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Return the list from sort_in_place or use list.sort() which mutates in place. Don't reassign via return value.",
+  "stderr": "Traceback (most recent call last):\n  File \"sorter.py\", line 24, in <module>\n    main()\n  File \"sorter.py\", line 20, in main\n    result = process(data)\n  File \"sorter.py\", line 14, in process\n    sorted_list = sort_in_place(items)\n  File \"sorter.py\", line 9, in sort_in_place\n    return items.sort()\n  File \"sorter.py\", line 15, in process\n    return sorted_list.reverse()\nAttributeError: 'NoneType' object has no attribute 'reverse'",
+  "source_code": "import random\n\n\ndef sort_in_place(items):\n    # BUG: list.sort() returns None \u2014 caller treats return as list\n    return items.sort()\n\n\ndef process(data):\n    items = list(data)\n    sorted_list = sort_in_place(items)\n    # NoneType here, we intended reverse on sorted list\n    return sorted_list.reverse()\n\n\ndef main():\n    random.seed(0)\n    data = [random.randint(1, 100) for _ in range(10)]\n    result = process(data)\n    print('result:', result)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

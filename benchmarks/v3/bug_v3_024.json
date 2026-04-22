@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_024",
+  "source_url": "https://stackoverflow.com/questions/18137341/python-valueerror-math-domain-error",
+  "source_type": "stackoverflow",
+  "error_class": "ValueError",
+  "complexity_score": 1,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "math.sqrt needs x >= 0 or math.log needs x > 0. Validate input.",
+  "stderr": "Traceback (most recent call last):\n  File \"calc.py\", line 26, in <module>\n    main()\n  File \"calc.py\", line 22, in main\n    for n in nums:\n  File \"calc.py\", line 23, in <listcomp>\n    results = [compute(n) for n in nums]\n  File \"calc.py\", line 14, in compute\n    return math.sqrt(x) + math.log(x)\nValueError: math domain error\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "import math\n\n\nclass Calculator:\n    def __init__(self, epsilon=1e-9):\n        self.epsilon = epsilon\n\n    def compute(self, x):\n        # BUG: no check for x<=0 before sqrt/log\n        return math.sqrt(x) + math.log(x)\n\n    def batch(self, nums):\n        return [self.compute(n) for n in nums]\n\n\ndef compute(x):\n    return Calculator().compute(x)\n\n\ndef main():\n    nums = [4, 9, -1, 16]\n    results = [compute(n) for n in nums]\n    print(results)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

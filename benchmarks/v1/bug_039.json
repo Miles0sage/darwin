@@ -1,0 +1,11 @@
+{
+  "id": "bug_039",
+  "source_url": "https://github.com/huggingface/transformers/issues/9750",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "stderr": "ValueError                                Traceback (most recent call last)\r\n<ipython-input-4-ee10e1c1c77e> in <module>()\r\n      2 \r\n      3 model_name = \"allenai/unifiedqa-t5-small\" # you can specify the model size here\r\n----> 4 tokenizer = AutoTokenizer.from_pretrained(model_name)\r\n      5 model = T5ForConditionalGeneration.from_pretrained(model_name)\r\n      6 \r\n\r\n4 frames\r\n/usr/local/lib/python3.6/dist-packages/transformers/tokenization_utils_fast.py in __init__(self, *args, **kwargs)\r\n     94         else:\r\n     95             raise ValueError(",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "Apache-2.0"
+}

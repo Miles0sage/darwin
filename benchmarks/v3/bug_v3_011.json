@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_011",
+  "source_url": "https://github.com/langchain-ai/langchain/issues/28001",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "complexity_score": 4,
+  "library": "langchain",
+  "license": "MIT",
+  "complexity_tags": [
+    "langchain",
+    "async"
+  ],
+  "expected_fix_hint": "Using sync invoke on async chain. Use await chain.ainvoke(input) instead.",
+  "stderr": "Traceback (most recent call last):\n  File \"agent.py\", line 28, in <module>\n    asyncio.run(main())\n  File \"/usr/lib/python3.11/asyncio/runners.py\", line 44, in run\n    return loop.run_until_complete(main)\n  File \"agent.py\", line 24, in main\n    result = run_agent(query)\n  File \"agent.py\", line 18, in run_agent\n    return chain.invoke({'q': query})\nTypeError: object dict can't be used in 'await' expression",
+  "source_code": "import asyncio\nfrom langchain_core.runnables import RunnableLambda\n\n\nasync def async_llm_call(prompt):\n    await asyncio.sleep(0.01)\n    return {'text': f'response to {prompt}'}\n\n\ndef build_chain():\n    # BUG: wraps async fn in RunnableLambda but caller uses .invoke not .ainvoke\n    return RunnableLambda(async_llm_call)\n\n\ndef run_agent(query):\n    chain = build_chain()\n    return chain.invoke({'q': query})\n\n\nasync def main():\n    query = 'hello'\n    result = run_agent(query)\n    print(result)\n\n\nif __name__ == '__main__':\n    asyncio.run(main())\n",
+  "has_reproducer": true
+}

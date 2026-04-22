@@ -1,0 +1,11 @@
+{
+  "id": "bug_008",
+  "source_url": "https://stackoverflow.com/questions/10116518/im-getting-key-error-in-python",
+  "source_type": "stackoverflow",
+  "error_class": "KeyError",
+  "stderr": "Traceback (most recent call last):\n  File \"parse.py\", line 12, in <module>\n    path = meta_entry['path']\nKeyError: 'path'",
+  "source_code": "def parse_meta(meta_entry):\n    # meta_entry may be missing some keys\n    return {\n        \"path\": meta_entry[\"path\"],\n        \"size\": meta_entry.get(\"size\", 0),\n    }\n\nentries = [{\"path\": \"/a\", \"size\": 1}, {\"size\": 2}]  # 2nd entry missing path\nfor e in entries:\n    parse_meta(e)",
+  "expected_fix_hint": "Use `meta_entry.get('path')` with a default, or check `if 'path' in meta_entry` before indexing.",
+  "has_reproducer": true,
+  "license": "CC BY-SA 4.0"
+}

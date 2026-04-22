@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_169",
+  "source_url": "https://stackoverflow.com/questions/58111333/hypothesis-shrunken-counterexample",
+  "source_type": "stackoverflow",
+  "error_class": "AssertionError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\n  File \"/opt/proj/.venv/lib/python3.11/site-packages/hypothesis/core.py\", line 1337, in execute_once\n    result = self.test_runner(data, run)\n  File \"/opt/proj/.venv/lib/python3.11/site-packages/hypothesis/executors.py\", line 47, in default_new_style_executor\n    return function(data)\n  File \"/opt/proj/.venv/lib/python3.11/site-packages/hypothesis/core.py\", line 1331, in run\n    return test(*args, **kwargs)\n  File \"/opt/proj/tests/test_encoding.py\", line 22, in test_roundtrip_identity\n    assert decode(encode(s)) == s, f\"roundtrip failed on input={s!r} -> encoded={encoded!r} -> decoded={decoded!r}\"\nAssertionError: roundtrip failed on input='\\x00' -> encoded=b'' -> decoded=''\nFalsifying example: test_roundtrip_identity(\n    s='\\x00',\n)\nYou can reproduce this example by temporarily adding @reproduce_failure('6.98.15', b'AAEAAAAAAA==') as a decorator on your test case",
+  "source_code": "from hypothesis import given, strategies as st\n\ndef encode(s: str) -> bytes:\n    # BUG: naive implementation drops null bytes because writer uses C-string semantics\n    out = bytearray()\n    for ch in s:\n        if ord(ch) == 0:\n            break  # premature terminator\n        out.append(ord(ch) & 0xFF)\n    return bytes(out)\n\ndef decode(b: bytes) -> str:\n    return b.decode(\"latin-1\")\n\n@given(st.text())\ndef test_roundtrip_identity(s):\n    encoded = encode(s)\n    decoded = decode(encoded)\n    assert decode(encode(s)) == s, (\n        f\"roundtrip failed on input={s!r} -> encoded={encoded!r} -> decoded={decoded!r}\"\n    )\n\nif __name__ == \"__main__\":\n    test_roundtrip_identity()",
+  "expected_fix_hint": "Use length-prefixed encoding or escape null bytes; do not rely on C-string terminators for arbitrary Unicode input.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:hypothesis",
+    "multi-file",
+    "pytest"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

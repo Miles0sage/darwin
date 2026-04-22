@@ -1,0 +1,12 @@
+{
+  "fingerprint": "8f2c01cd89d1c8b8",
+  "error_class": "NameError",
+  "error_signature": "NameError: name 'json' is not defined. Did you forget to import 'json'?",
+  "root_cause": "auto-diagnosed NameError_missing_import",
+  "fix_applied": true,
+  "fix_code": "import json\n\ndef run():\n    data = json.loads('{\"key\": \"value\"}')\n    return data[\"key\"]\n\nif __name__ == \"__main__\":\n    try:\n        run()\n    except Exception as e:\n        raise\n",
+  "timestamp": "20260422T033230900930Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

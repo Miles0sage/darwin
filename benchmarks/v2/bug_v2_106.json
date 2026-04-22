@@ -1,0 +1,21 @@
+{
+  "id": "bug_v2_106",
+  "source_url": "https://github.com/modelcontextprotocol/python-sdk/issues/1363",
+  "source_type": "github",
+  "error_class": "ClosedResourceError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/data/test_project/.venv/lib/python3.10/site-packages/mcp/server/streamable_http.py\", line 831, in message_router\n    async for session_message in write_stream_reader:\n  File \"/data/test_project/.venv/lib/python3.10/site-packages/anyio/abc/_streams.py\", line 41, in __anext__\n    return await self.receive()\n  File \"/data/test_project/.venv/lib/python3.10/site-packages/anyio/streams/memory.py\", line 111, in receive\n    return self.receive_nowait()\n  File \"/data/test_project/.venv/lib/python3.10/site-packages/anyio/streams/memory.py\", line 93, in receive_nowait\n    raise ClosedResourceError",
+  "source_code": "async def _handle_post_request(self, scope: Scope, request: Request, receive: Receive, send: Send) -> None:\n       # ... existing code ...\n       \n       if not (has_json and has_sse):\n           response = self._create_error_response(\n               (\"Not Acceptable: Client must accept both application/json and text/event-stream\"),\n               HTTPStatus.NOT_ACCEPTABLE,\n           )\n           await response(scope, receive, send)\n           await asyncio.sleep(0.1)  # Allow message_router to complete checkpoint\n           return\n\n       # Validate Content-Type\n       if not self._check_content_type(request):\n           response = self._create_error_response(\n               \"Unsupported Media Type: Content-Type must be application/json\",\n               HTTPStatus.UNSUPPORTED_MEDIA_TYPE,\n           )\n           await response(scope, receive, send)\n           await asyncio.sleep(0.1)  # Allow message_router to complete checkpoint\n           return",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:python-sdk",
+    "multi-file",
+    "protocol",
+    "race"
+  ],
+  "license": "Apache-2.0"
+}

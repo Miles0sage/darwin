@@ -1,0 +1,21 @@
+{
+  "id": "bug_v2_051",
+  "source_url": "https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/5011",
+  "source_type": "github",
+  "error_class": "RuntimeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"C:\\stable-diffusion-webui-master\\venv\\lib\\site-packages\\gradio\\routes.py\", line 284, in run_predict\r\n    output = await app.blocks.process_api(\r\n  File \"C:\\stable-diffusion-webui-master\\venv\\lib\\site-packages\\gradio\\blocks.py\", line 982, in process_api\r\n    result = await self.call_function(fn_index, inputs, iterator)\r\n  File \"C:\\stable-diffusion-webui-master\\venv\\lib\\site-packages\\gradio\\blocks.py\", line 824, in call_function\r\n    prediction = await anyio.to_thread.run_sync(\r\n  File \"C:\\stable-diffusion-webui-master\\venv\\lib\\site-packages\\anyio\\to_thread.py\", line 31, in run_sync\r\n    return await get_asynclib().run_sync_in_worker_thread(\r\n  File \"C:\\stable-diffusion-webui-master\\venv\\lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 937, in run_sync_in_worker_thread\r\n    return await future\r\n  File \"C:\\stable-diffusion-webui-master\\venv\\lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 867, in run\r\n    result = context.run(func, *args)\r\n  File \"C:\\stable-diffusion-webui-master\\modules\\ui.py\", line 1662, in <lambda>\r\n    fn=lambda value, k=k: run_settings_single(value, key=k),\r\n  File \"C:\\stable-diffusion-webui-master\\modules\\ui.py\", line 1504, in run_settings_single\r\n    opts.data_labels[key].onchange()\r\n  File \"C:\\stable-diffusion-webui-master\\webui.py\", line 41, in f\r\n    res = func(*args, **kwargs)\r\n  File \"C:\\stable-diffusion-webui-master\\webui.py\", line 83, in <lambda>\r\n    shared.opts.onchange(\"sd_model_checkpoint\", wrap_queued_call(lambda: modules.sd_models.reload_model_weights()))\r\n  File \"C:\\stable-diffusion-webui-master\\modules\\sd_models.py\", line 291, in reload_model_weights\r\n    load_model_weights(sd_model, checkpoint_info)\r\n  File \"C:\\stable-diffusion-webui-master\\modules\\sd_models.py\", line 182, in load_model_weights\r\n    model.load_state_dict(sd, strict=False)\r\n  File \"C:\\stable-diffusion-webui-master\\venv\\lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1604, in load_state_dict\r\n    raise RuntimeError('Error(s) in loading state_dict for {}:\\n\\t{}'.format(",
+  "source_code": "# Reproducer derived from https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/5011\n# repo: AUTOMATIC1111/stable-diffusion-webui\n# title: [Feature Request]: Support for new 2.0 models | 768x768 resolution + new 512x512 + depth + inpainting\n\n# Last frames in traceback:\n#   C:\\stable-diffusion-webui-master\\venv\\lib\\site-packages\\anyio\\_backends\\_asyncio.py line 867 in run\n#   C:\\stable-diffusion-webui-master\\modules\\ui.py line 1504 in run_settings_single\n#   C:\\stable-diffusion-webui-master\\webui.py line 41 in f\n#   C:\\stable-diffusion-webui-master\\modules\\sd_models.py line 291 in reload_model_weights\n#   C:\\stable-diffusion-webui-master\\modules\\sd_models.py line 182 in load_model_weights\n#   C:\\stable-diffusion-webui-master\\venv\\lib\\site-packages\\torch\\nn\\modules\\module.py line 1604 in load_state_dict\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # ### Is there an existing issue for this?\n    # - [X] I have searched the existing issues and checked the recent builds/commits\n    # ### What would your feature do ?\n    # Support the new 768x768 model 2.0 from Stability-AI and all the other new models that just got released.\n    raise RuntimeError('reproduce: see https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/5011')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "solution to 768x768 automatically when loading this model\r",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "data-science",
+    "deep-trace",
+    "library:sd-webui",
+    "multi-file",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

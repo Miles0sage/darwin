@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_127",
+  "source_url": "https://github.com/brisvag/blik/issues/142",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/home/marten/miniconda3/envs/blik/lib/python3.10/site-packages/napari/layers/points/points.py\", line 806, in size\r\n    self._size = np.broadcast_to(size, len(self.data)).copy()\r\n  File \"/home/marten/miniconda3/envs/blik/lib/python3.10/site-packages/numpy/lib/stride_tricks.py\", line 413, in broadcast_to\r\n    return _broadcast_to(array, shape, subok=subok, readonly=True)\r\n  File \"/home/marten/miniconda3/envs/blik/lib/python3.10/site-packages/numpy/lib/stride_tricks.py\", line 349, in _broadcast_to\r\n    it = np.nditer(\r\nValueError: operands could not be broadcast together with remapped shapes [original->remapped]: (3,)  and requested shape (144,)",
+  "source_code": "My starfile looks like this:\r\n\r\n```\r\n# Created by the starfile Python package (version 0.4.12) at 20:17:22 on 25/07/2023\r\n\r\ndata_\r\n\r\nloop_\r\n_rlnCoordinateX #1\r\n_rlnCoordinateY #2\r\n_rlnCoordinateZ #3\r\n_rlnAngleRot #4\r\n_rlnAngleTilt #5\r\n_rlnAnglePsi #6\r\n_ptmLCCmax #7\r\n_rlnDetectorPixelSize #8\r\n_rlnMicrographName #9\r\n_rlnMagnification #10\r\n_rlnGroupNumber #11\r\n181\t163\t86\t-36.460765\t-161.427020\t160.142076\t0.455640\t13.790000\ttomo200528_110.mrc\t10000.000000\t0\r\n416\t343\t126\t97.352181\t-102.015107\t38.385390\t0.441689\t13.790000\ttomo200528_110.mrc\t10000.000000\t0\r\n152\t56\t114\t-159.478539\t-104.188364\t121.661090\t0.424355\t13.790000\ttomo200528_110.mrc\t10000.000000\t0\r\n449\t180\t104\t-141.136705\t-95.532863\t-153.204503\t0.422766\t13.790000\ttomo200528_110.mrc\t10000.000000\t0",
+  "expected_fix_hint": "Validate input range/shape; sanitize untrusted values at boundary.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "data-science",
+    "library:blik",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

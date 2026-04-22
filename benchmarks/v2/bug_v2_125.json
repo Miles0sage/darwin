@@ -1,0 +1,17 @@
+{
+  "id": "bug_v2_125",
+  "source_url": "https://github.com/home-assistant/core/issues/123309",
+  "source_type": "github",
+  "error_class": "IntegrityError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py\", line 1967, in _exec_single_context\r\n    self.dialect.do_execute(\r\n  File \"/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/default.py\", line 924, in do_execute\r\n    cursor.execute(statement, parameters)\r\n  File \"/usr/local/lib/python3.12/site-packages/MySQLdb/cursors.py\", line 179, in execute\r\n    res = self._query(mogrified_query)\r\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/site-packages/MySQLdb/cursors.py\", line 330, in _query\r\n    db.query(q)\r\n  File \"/usr/local/lib/python3.12/site-packages/MySQLdb/connections.py\", line 261, in query\r\n    _mysql.connection.query(self, query)\r\nMySQLdb.IntegrityError: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`homeassistant`.`#sql-alter-1-27`, CONSTRAINT `#sql-alter-1-27_ibfk_1` FOREIGN KEY (`metadata_id`) REFERENCES `statistics_me",
+  "source_code": "# Reproducer derived from https://github.com/home-assistant/core/issues/123309\n# repo: home-assistant/core\n# title: Database migration error, foreign key constraint\n\n# Last frames in traceback:\n#   /usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py line 1967 in _exec_single_context\n#   /usr/local/lib/python3.12/site-packages/sqlalchemy/engine/default.py line 924 in do_execute\n#   /usr/local/lib/python3.12/site-packages/MySQLdb/cursors.py line 179 in execute\n#   /usr/local/lib/python3.12/site-packages/MySQLdb/cursors.py line 330 in _query\n#   /usr/local/lib/python3.12/site-packages/MySQLdb/connections.py line 261 in query\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # ### The problem\n    # When updating to 2024.8.0 I received a database migration failure.\n    # ### What version of Home Assistant Core has the issue?\n    # core-2024.8.0\n    # ### What was the last working version of Home Assistant Core?\n    raise IntegrityError('reproduce: see https://github.com/home-assistant/core/issues/123309')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Add UPSERT / handle unique constraint collision; transaction rollback.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "deep-trace",
+    "library:home-assistant",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,49 @@
+{
+  "scenarios": [
+    "timeout"
+  ],
+  "fleet_size_per_scenario": 3,
+  "max_workers": 3,
+  "total_agents": 3,
+  "healed": 3,
+  "llm_calls": 1,
+  "blackboard_hits": 2,
+  "grand_wall_clock_ms": 25538,
+  "per_scenario_wall_ms": {
+    "timeout": 25538
+  },
+  "results": [
+    {
+      "id": 1,
+      "scenario": "timeout",
+      "crashed": true,
+      "healed": true,
+      "llm_called": true,
+      "blackboard_hit": false,
+      "ms": 24212,
+      "crash_ms": 42
+    },
+    {
+      "id": 3,
+      "scenario": "timeout",
+      "crashed": true,
+      "healed": true,
+      "llm_called": false,
+      "blackboard_hit": true,
+      "ms": 24193,
+      "crash_ms": 45
+    },
+    {
+      "id": 2,
+      "scenario": "timeout",
+      "crashed": true,
+      "healed": true,
+      "llm_called": false,
+      "blackboard_hit": true,
+      "ms": 24164,
+      "crash_ms": 44
+    }
+  ],
+  "mode": "gemini",
+  "provider": "Gemini (gemini-2.5-flash)"
+}

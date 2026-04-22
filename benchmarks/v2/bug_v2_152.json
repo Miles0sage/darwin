@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_152",
+  "source_url": "https://stackoverflow.com/questions/48572831/too-few-arguments-generic-typevar",
+  "source_type": "stackoverflow",
+  "error_class": "TypeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/app/repo.py\", line 90, in <module>\n    repo = UserRepo[dict]()\n  File \"/usr/lib/python3.11/typing.py\", line 378, in inner\n    return func(*args, **kwds)\n  File \"/usr/lib/python3.11/typing.py\", line 952, in __class_getitem__\n    _check_generic(cls, params, len(cls.__parameters__))\n  File \"/usr/lib/python3.11/typing.py\", line 279, in _check_generic\n    raise TypeError(f\"Too {'many' if alen > elen else 'few'} arguments for {cls};\"\nTypeError: Too few arguments for <class 'repo.Repo'>; actual 1, expected 2\nDuring handling of the above exception, another exception occurred:\n  File \"/app/repo.py\", line 107, in __init__\n    self._validate()\n  File \"/app/repo.py\", line 75, in _validate\n    raise TypeError(f\"{self.__class__.__name__} requires bound type satisfying BaseEntity, got {self._E}\")\nTypeError: UserRepo requires bound type satisfying BaseEntity, got <class 'dict'>",
+  "source_code": "from typing import Generic, TypeVar, Any\n\nclass BaseEntity:\n    id: str\n\nE = TypeVar(\"E\", bound=BaseEntity)\nK = TypeVar(\"K\")\n\nclass Repo(Generic[E, K]):\n    def __init__(self):\n        self._E = self._resolve_entity()\n        self._validate()\n\n    def _resolve_entity(self):\n        # Attempts to read the bound type from __orig_class__\n        # BUG: when instantiated as UserRepo[dict](), dict does NOT satisfy\n        # the TypeVar bound, but Python only raises at the later _validate\n        # step \u2014 and partial parameterization hides the earlier TypeError.\n        oc = getattr(self, '__orig_class__', None)\n        if oc is None:\n            return Any\n        args = getattr(oc, '__args__', ())\n        return args[0] if args else Any\n\n    def _validate(self):\n        if self._E is not Any and not (isinstance(self._E, type) and issubclass(self._E, BaseEntity)):\n            raise TypeError(\n                f\"{self.__class__.__name__} requires bound type satisfying \"\n                f\"BaseEntity, got {self._E}\"\n            )\n\nclass UserRepo(Repo[E, K]):\n    pass\n\nif __name__ == \"__main__\":\n    repo = UserRepo[dict]()  # Too few arguments + bound violation",
+  "expected_fix_hint": "Instantiate with both type args (UserRepo[User, str]) and ensure the entity satisfies the bound; or drop the runtime _validate in favor of mypy-only checks.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "generic",
+    "library:typing",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

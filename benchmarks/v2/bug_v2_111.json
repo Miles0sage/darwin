@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_111",
+  "source_url": "https://github.com/home-assistant/core/issues/128639",
+  "source_type": "github",
+  "error_class": "CalledProcessError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\r\n  File \"<frozen runpy>\", line 88, in _run_code\r\n  File \"/workspaces/home-assistant-core/script/scaffold/__main__.py\", line 117, in <module>\r\n    sys.exit(main())\r\n             ^^^^^^\r\n  File \"/workspaces/home-assistant-core/script/scaffold/__main__.py\", line 70, in main\r\n    subprocess.run([\"python\", \"-m\", \"script.hassfest\"], **pipe_null, check=True)\r\n  File \"/usr/local/lib/python3.12/subprocess.py\", line 571, in run\r\n    raise CalledProcessError(retcode, process.args,",
+  "source_code": "However, 2 of the scaffolded tests also fail:\r\n\r\n```bash\r\n$ python3 -b -m pytest -vvv tests/components/example_domain\r\n\r\n...\r\n        # Check the entity was updated, no new entity was created\r\n>       assert len(hass.states.async_all()) == 1\r\nE       assert 0 == 1\r\nE        +  where 0 = len([])\r\nE        +    where [] = async_all()\r\nE        +      where async_all = <homeassistant.core.StateMachine object at 0x7f85dd87bb50>.async_all\r\nE        +        where <homeassistant.core.StateMachine object at 0x7f85dd87bb50> = <HomeAssistant RUNNING>.states\r\n\r\ntests/components/example_domain/test_config_flow.py:113: AssertionError\r\n\r\n...\r\n        # TODO Check the state of the entity has changed as expected\r\n        assert state.state == \"unknown\"\r\n>       assert state.attributes == {}\r\nE       AssertionError: assert {'friendly_name': 'My example_domain'} == {}\r\nE         \r\nE         Left contains 1 more item:\r\nE         {'friendly_name': 'My example_domain'}\r\nE         \r\nE         Full diff:\r\nE         - {}\r\nE         + {\r\nE         +     'friendly_name': 'My example_domain',\r\nE         + }\r\n\r\ntests/components/example_domain/test_init.py:43: AssertionError",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:home-assistant",
+    "multi-file",
+    "pytest"
+  ],
+  "license": "Apache-2.0"
+}

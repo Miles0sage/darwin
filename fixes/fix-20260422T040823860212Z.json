@@ -1,0 +1,12 @@
+{
+  "fingerprint": "1d483c20f86b17f2",
+  "error_class": "ValueError",
+  "error_signature": "ValueError: Unrecognized model in OrdalieTech/Solon-embeddings-large-0.1. Should have a `model_type` key in its config.json, or contain one of the following strings in its name: aimv2, aimv2_vision_model, albert, align, altclip, apertus, arcee, aria, aria_text, audio-spectrogram-transformer, autoformer, aya_vision, bamba, bark, bart, beit, bert, bert-generation, big_bird, bigbird_pegasus, biogpt, bit, bitnet, blenderbot, blenderbot-small, blip, blip-2, blip_2_qformer, bloom, blt, bridgetower, bros, camembert, canine, chameleon, chinese_clip, chinese_clip_vision_model, clap, clip, clip_text_model, clip_vision_model, clipseg, clvp, code_llama, codegen, cohere, cohere2, cohere2_vision, colpali, colqwen2, conditional_detr, convbert, convnext, convnextv2, cpmant, csm, ctrl, cvt, d_fine, dab-detr, dac, data2vec-audio, data2vec-text, data2vec-vision, dbrx, deberta, deberta-v2, decision_transformer, deepseek_v2, deepseek_v3, deepseek_vl, deepseek_vl_hybrid, deformable_detr, deit, depth_anything, depth_pro, deta, detr, dia, diffllama, dinat, dinov2, dinov2_with_registers, dinov3_convnext, dinov3_vit, distil",
+  "root_cause": "real-ValueError",
+  "fix_applied": true,
+  "fix_code": "from sentence_transformers import SentenceTransformer\nmodel=SentenceTransformer(\"OrdalieTech/Solon-embeddings-large-0.1\", trust_remote_code=True)\n",
+  "timestamp": "20260422T040823860212Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

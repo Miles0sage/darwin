@@ -1,0 +1,17 @@
+{
+  "id": "bug_v2_084",
+  "source_url": "https://github.com/ray-project/ray/issues/43401",
+  "source_type": "github",
+  "error_class": "RayTaskError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/home/ray/default/vllm/../rep.py\", line 11, in <module>\r\n    ray.get(run.remote())\r\n  File \"/home/ray/anaconda3/lib/python3.9/site-packages/ray/_private/auto_init_hook.py\", line 22, in auto_init_wrapper\r\n    return fn(*args, **kwargs)\r\n  File \"/home/ray/anaconda3/lib/python3.9/site-packages/ray/_private/client_mode_hook.py\", line 103, in wrapper\r\n    return func(*args, **kwargs)\r\n  File \"/home/ray/anaconda3/lib/python3.9/site-packages/ray/_private/worker.py\", line 2624, in get\r\n    raise value.as_instanceof_cause()\r\n  File \"/home/ray/anaconda3/lib/python3.9/site-packages/ray/exceptions.py\", line 148, in as_instanceof_cause\r\n    class cls(RayTaskError, cause_cls):",
+  "source_code": "# source: https://github.com/ray-project/ray/issues/43401\n# repo: ray-project/ray\n# title: [Core] Pydantic ValidationErrors cannot be handled by Ray\n# \n# ### What happened + What you expected to happen\n# Pydantic v2.0 introduced a `ValidationError` class that cannot be inherited, which breaks Ray's error propagation mechanism which creates `RayTaskError`/`RayActorError` on the fly by dynamically subclassing the original exception.\n# ### Versions / Dependencies\n# Ray 2.9.1\n# pydantic 2.6\n# ### Reproduction script\n# Instead of the pydantic exception being propagated, the following will be raised:\n# ### Issue Severity\n# Medium: It causes significant difficulty but can work it around.\n\nTraceback (most recent call last):\r\n  File \"/home/ray/default/vllm/../rep.py\", line 11, in <module>\r\n    ray.get(run.remote())\r\n  File \"/home/ray/anaconda3/lib/python3.9/site-packages/ray/_private/auto_init_hook.py\", line 22, in auto_init_wrapper\r\n    return fn(*args, **kwargs)\r\n  File \"/home/ray/anaconda3/lib/python3.9/site-packages/ray/_private/client_mode_hook.py\", line 103, in wrapper\r\n    return func(*args, **kwargs)\r\n  File \"/home/ray/anaconda3/lib/python3.9/site-packages/ray/_private/worker.py\", line 2624, in get\r\n    raise value.as_instanceof_cause()\r\n  File \"/home/ray/anaconda3/lib/python3.9/site-packages/ray/exceptions.py\", line 148, in as_instanceof_cause\r\n    class cls(RayTaskError, cause_cls):\r\nTypeError: type 'pydantic_core._pydantic_core.ValidationError' is not an acceptable base type",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:ray",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

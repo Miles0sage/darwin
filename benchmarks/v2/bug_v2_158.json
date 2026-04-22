@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_158",
+  "source_url": "https://stackoverflow.com/questions/22417288/context-manager-exit-return-true",
+  "source_type": "stackoverflow",
+  "error_class": "RuntimeError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\n  File \"/app/workers/processor.py\", line 91, in run_batch\n    self._verify_all_written(batch_id)\n  File \"/app/workers/processor.py\", line 109, in _verify_all_written\n    raise RuntimeError(f\"batch {batch_id!r}: expected {self._expected} rows, found {found}\")\nRuntimeError: batch 'b-2026-04-21': expected 10000 rows, found 3\nDuring handling of the above exception, another exception occurred:\n  File \"/app/workers/processor.py\", line 45, in __exit__\n    return True  # BUG: swallows exception \u2014 silently hides OSError(EDQUOT)\n  File \"/app/workers/processor.py\", line 91, in run_batch\n    self._verify_all_written(batch_id)",
+  "source_code": "import os, sqlite3\nfrom contextlib import AbstractContextManager\n\nclass Writer(AbstractContextManager):\n    def __init__(self, path):\n        self._path = path\n        self._conn = None\n        self._expected = 0\n\n    def __enter__(self):\n        self._conn = sqlite3.connect(self._path)\n        self._conn.execute(\"CREATE TABLE IF NOT EXISTS t(id INTEGER PRIMARY KEY)\")\n        return self\n\n    def __exit__(self, exc_type, exc, tb):\n        # BUG: swallowing any exception \u2014 disk-quota / OSError flows silently\n        # through and later verification sees partial write => RuntimeError.\n        try:\n            if self._conn:\n                self._conn.close()\n        finally:\n            return True\n\n    def write(self, row):\n        self._conn.execute(\"INSERT INTO t VALUES (?)\", (row,))\n        self._conn.commit()\n        self._expected += 1\n\nclass Processor:\n    def __init__(self, w: Writer):\n        self._w = w\n        self._expected = 0\n\n    def run_batch(self, batch_id, rows):\n        self._expected = len(rows)\n        with self._w as w:\n            for r in rows:\n                w.write(r)\n        self._verify_all_written(batch_id)\n\n    def _verify_all_written(self, batch_id):\n        import sqlite3\n        c = sqlite3.connect(self._w._path)\n        found = c.execute(\"SELECT COUNT(*) FROM t\").fetchone()[0]\n        if found != self._expected:\n            raise RuntimeError(\n                f\"batch {batch_id!r}: expected {self._expected} rows, found {found}\"\n            )\n\nif __name__ == '__main__':\n    w = Writer('/tmp/x.db')\n    Processor(w).run_batch('b-2026-04-21', list(range(10000)))",
+  "expected_fix_hint": "Never return True from __exit__ unconditionally. Only suppress specific exception types you can actually handle, and log others.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:sqlite3",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

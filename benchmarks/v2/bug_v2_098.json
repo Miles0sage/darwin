@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_098",
+  "source_url": "https://github.com/lm-sys/FastChat/issues/2405",
+  "source_type": "github",
+  "error_class": "TimeoutError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/opt/homebrew/anaconda3/envs/camel/lib/python3.10/site-packages/pip/_vendor/urllib3/response.py\", line 438, in _error_catcher\r\n    yield\r\n  File \"/opt/homebrew/anaconda3/envs/camel/lib/python3.10/site-packages/pip/_vendor/urllib3/response.py\", line 561, in read\r\n    data = self._fp_read(amt) if not fp_closed else b\"\"\r\n  File \"/opt/homebrew/anaconda3/envs/camel/lib/python3.10/site-packages/pip/_vendor/urllib3/response.py\", line 527, in _fp_read\r\n    return self._fp.read(amt) if amt is not None else self._fp.read()\r\n  File \"/opt/homebrew/anaconda3/envs/camel/lib/python3.10/site-packages/pip/_vendor/cachecontrol/filewrapper.py\", line 90, in read\r\n    data = self.__fp.read(amt)\r\n  File \"/opt/homebrew/anaconda3/envs/camel/lib/python3.10/http/client.py\", line 466, in read\r\n    s = self.fp.read(amt)\r\n  File \"/opt/homebrew/anaconda3/envs/camel/lib/python3.10/socket.py\", line 705, in readinto\r\n    return self._sock.recv_into(b)\r\n  File \"/opt/homebrew/anaconda3/envs/camel/lib/python3.10/ssl.py\", line 1274, in recv_into\r\n    return self.read(nbytes, buffer)\r\n  File \"/opt/homebrew/anaconda3/envs/camel/lib/python3.10/ssl.py\", line 1130, in read\r\n    return self._sslobj.read(len, buffer)\r\nTimeoutError: The read operation timed out",
+  "source_code": "# Reproducer derived from https://github.com/lm-sys/FastChat/issues/2405\n# repo: lm-sys/FastChat\n# title: pip3 install \"fschat[model_worker,webui]\" failed  at  Collecting sentencepiece (from fschat[model_worker,webui])   Downloading sentencepiece-0.1.99-cp310-cp310-macosx_11_0_arm64.whl (1.2 MB)\n\n# Last frames in traceback:\n#   /opt/homebrew/anaconda3/envs/camel/lib/python3.10/site-packages/pip/_vendor/urllib3/response.py line 527 in _fp_read\n#   /opt/homebrew/anaconda3/envs/camel/lib/python3.10/site-packages/pip/_vendor/cachecontrol/filewrapper.py line 90 in read\n#   /opt/homebrew/anaconda3/envs/camel/lib/python3.10/http/client.py line 466 in read\n#   /opt/homebrew/anaconda3/envs/camel/lib/python3.10/socket.py line 705 in readinto\n#   /opt/homebrew/anaconda3/envs/camel/lib/python3.10/ssl.py line 1274 in recv_into\n#   /opt/homebrew/anaconda3/envs/camel/lib/python3.10/ssl.py line 1130 in read\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # camel) mt@hahaha camel % pip3 install \"fschat[model_worker,webui]\"\n    # Collecting fschat[model_worker,webui]\n    # Obtaining dependency information for fschat[model_worker,webui] from https://files.pythonhosted.org/packages/80/f4/4b64f\n    # Downloading fschat-0.2.28-py3-none-any.whl.metadata (18 kB)\n    # Requirement already satisfied: aiohttp in /opt/homebrew/anaconda3/envs/camel/lib/python3.10/site-packages (from\n    raise TimeoutError('reproduce: see https://github.com/lm-sys/FastChat/issues/2405')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Increase timeout; add retry with exponential backoff; check network.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "async",
+    "data-science",
+    "deep-trace",
+    "library:FastChat",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

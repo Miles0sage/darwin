@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_170",
+  "source_url": "https://stackoverflow.com/questions/62014020/testcontainers-wait-for-logs-race",
+  "source_type": "stackoverflow",
+  "error_class": "AssertionError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/srv/tests/conftest.py\", line 48, in postgres_fixture\n    wait_for_logs(pg, \"database system is ready to accept connections\", timeout=30)\n  File \"/opt/proj/.venv/lib/python3.11/site-packages/testcontainers/core/waiting_utils.py\", line 80, in wait_for_logs\n    raise TimeoutError(f\"Container did not emit logs satisfying predicate in {timeout:.3f} seconds\")\nTimeoutError: Container did not emit logs satisfying predicate in 30.000 seconds\nDuring handling of the above exception, another exception occurred:\nTraceback (most recent call last):\n  File \"/srv/tests/test_users.py\", line 31, in test_user_count_after_seed\n    assert n == EXPECTED, f\"expected {EXPECTED} rows after seed, got {n}\"\nAssertionError: expected 7 rows after seed, got 0\n\nassert 0 == 7\n +  where 0 = count_rows(conn, 'users')\n +  and   7 = EXPECTED",
+  "source_code": "import pytest\nfrom testcontainers.postgres import PostgresContainer\nfrom testcontainers.core.waiting_utils import wait_for_logs\nimport psycopg\n\nEXPECTED = 7\n\ndef count_rows(conn, table):\n    with conn.cursor() as cur:\n        cur.execute(f\"SELECT COUNT(*) FROM {table}\")\n        return cur.fetchone()[0]\n\n@pytest.fixture(scope=\"module\")\ndef postgres_fixture():\n    pg = PostgresContainer(\"postgres:15\")\n    pg.start()\n    # BUG: wait_for_logs sees the FIRST occurrence of \"ready to accept connections\"\n    # which actually happens during init before the superuser is set up.\n    # Tests race ahead and connect before the real bootstrap is done.\n    wait_for_logs(pg, \"database system is ready to accept connections\", timeout=30)\n    conn = psycopg.connect(pg.get_connection_url())\n    conn.autocommit = True\n    with conn.cursor() as cur:\n        for name in [\"a\",\"b\",\"c\",\"d\",\"e\",\"f\",\"g\"]:\n            cur.execute(\"INSERT INTO users(name) VALUES (%s) ON CONFLICT DO NOTHING\", (name,))\n    yield conn\n    conn.close(); pg.stop()\n\ndef test_user_count_after_seed(postgres_fixture):\n    conn = postgres_fixture\n    n = count_rows(conn, \"users\")\n    assert n == EXPECTED, f\"expected {EXPECTED} rows after seed, got {n}\"",
+  "expected_fix_hint": "Wait for the SECOND \"ready to accept connections\" log line, or poll SELECT 1 until it succeeds; tests should not run before pg_init completes.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "deep-trace",
+    "library:pytest",
+    "library:testcontainers",
+    "multi-file",
+    "race"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "bug_002",
+  "source_url": "https://stackoverflow.com/questions/41055265/attributeerror-nonetype-object-has-no-attribute",
+  "source_type": "stackoverflow",
+  "error_class": "AttributeError",
+  "stderr": "Traceback (most recent call last):\n  File \"script.py\", line 5, in <module>\n    a.b().name\nAttributeError: 'NoneType' object has no attribute 'name'",
+  "source_code": "class asas(object):\n    def b(self):\n        self.name = \"Berkhan\"\n\na = asas()\na.b().name  # asas.b returns None implicitly; attribute lookup on None fails",
+  "expected_fix_hint": "Method b() returns None because it has no return statement. Either `return self` (to allow chaining) or `return self.name`, and adjust the caller.",
+  "has_reproducer": true,
+  "license": "CC BY-SA 4.0"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_150",
+  "source_url": "https://stackoverflow.com/questions/71568767/protocol-isinstance-typeddict",
+  "source_type": "stackoverflow",
+  "error_class": "TypeError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\n  File \"/opt/svc/router.py\", line 112, in dispatch\n    return self._handle_as(payload, OrderPayload)\n  File \"/opt/svc/router.py\", line 95, in _handle_as\n    if not isinstance(payload, proto):\n  File \"/usr/lib/python3.11/typing.py\", line 1840, in __instancecheck__\n    val = inspect.getattr_static(instance, attr)\n  File \"/usr/lib/python3.11/inspect.py\", line 1777, in getattr_static\n    raise AttributeError(attr)\nTypeError: Protocols with non-method members don't support issubclass() / isinstance() \u2014 TypedDict fields are data attributes, not methods",
+  "source_code": "from typing import Protocol, TypedDict, runtime_checkable\n\nclass OrderTD(TypedDict):\n    id: str\n    total: float\n    currency: str\n\n@runtime_checkable  # BUG: runtime_checkable only works for Protocols with\nclass OrderPayload(Protocol):  # method members, not data attrs from TypedDict.\n    id: str\n    total: float\n    currency: str\n\nclass Router:\n    def dispatch(self, payload: dict):\n        return self._handle_as(payload, OrderPayload)\n\n    def _handle_as(self, payload, proto):\n        if not isinstance(payload, proto):\n            raise ValueError(\"payload does not satisfy protocol\")\n        return self._process(payload)\n\n    def _process(self, payload):\n        return payload[\"id\"]\n\nif __name__ == '__main__':\n    r = Router()\n    r.dispatch({\"id\": \"abc\", \"total\": 19.99, \"currency\": \"USD\"})",
+  "expected_fix_hint": "Use Pydantic TypeAdapter.validate_python or a bespoke dict-shape check; runtime_checkable Protocols work for callables/methods, not raw data.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:typing",
+    "multi-file",
+    "protocol",
+    "typeddict"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "bug_024",
+  "source_url": "https://github.com/langchain-ai/langchain/issues/21482",
+  "source_type": "github",
+  "error_class": "AttributeError",
+  "stderr": "Traceback (most recent call last):\r\n  File \"...\\...\\load_data_graph.py\", line 46, in <module>\r\n    prepare_graph('Paris')\r\n  File \"...\\...\\load_data_graph.py\", line 38, in prepare_graph\r\n    graph_documents = llm_transformer.convert_to_graph_documents(doc_chunks)\r\n  File \"...\\...\\venv\\lib\\site-packages\\langchain_experimental\\graph_transformers\\llm.py\", line 646, in convert_to_graph_documents   \r\n    return [self.process_response(document) for document in documents]\r\n  File \"...\\...\\venv\\lib\\site-packages\\langchain_experimental\\graph_transformers\\llm.py\", line 646, in <listcomp>\r\n    return [self.process_response(document) for document in documents]\r\n  File \"...\\...\\venv\\lib\\site-packages\\langchain_experimental\\graph_transformers\\llm.py\", line 595, in process_response\r\n    parsed_json = self.json_repair.loads(raw_schema.content)\r\nAttributeError: 'str' object has no attribute 'content'",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "MIT"
+}

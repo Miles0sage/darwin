@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_118",
+  "source_url": "https://github.com/MaartenGr/BERTopic/issues/2036",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\n  File \"<stdin>\", line 1, in <module>\r\n  File \"/Users/reneechou/git/BERTopic/bertopic/_bertopic.py\", line 400, in fit_transform\r\n    y, embeddings = self._guided_topic_modeling(embeddings)\r\n  File \"/Users/reneechou/git/BERTopic/bertopic/_bertopic.py\", line 3770, in _guided_topic_modeling\r\n    embeddings[indices] = np.average([embeddings[indices], seed_topic_embeddings[seed_topic]], weights=[3, 1])\r\n  File \"/Users/reneechou/miniconda3/envs/bertopic/lib/python3.10/site-packages/numpy/lib/function_base.py\", line 511, in average\r\n    a = np.asanyarray(a)\r\nValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.",
+  "source_code": "# source: https://github.com/MaartenGr/BERTopic/issues/2036\n# repo: MaartenGr/BERTopic\n# title: [Guided Topic Modeling] ValueError: setting an array element with a sequence.\n# \n# Hi, I am trying to run the example code given in https://maartengr.github.io/BERTopic/getting_started/guided/guided.html#example and got an error. \n# Example code: \n# Error:\n# The issue happened when calculating the (weighted) averages between a set of documents (`embeddings[indices]`) and their seed topic embeddings (`seed_topic_embeddings[seed_topic]`), where `np.average` cannot calculate the averages between a 2D array and a 1D array. \n# This issue can be solved by broadcasting the 1D array to match the shape of the 2D array, and calculating the averages along axis 0.\n# Original code (https://github.com/MaartenGr/BERTopic/blob/master/bertopic/_bertopic.py#L3766):\n# Modified code:\n\nTraceback (most recent call last):\r\n  File \"<stdin>\", line 1, in <module>\r\n  File \"/Users/reneechou/git/BERTopic/bertopic/_bertopic.py\", line 400, in fit_transform\r\n    y, embeddings = self._guided_topic_modeling(embeddings)\r\n  File \"/Users/reneechou/git/BERTopic/bertopic/_bertopic.py\", line 3770, in _guided_topic_modeling\r\n    embeddings[indices] = np.average([embeddings[indices], seed_topic_embeddings[seed_topic]], weights=[3, 1])\r\n  File \"/Users/reneechou/miniconda3/envs/bertopic/lib/python3.10/site-packages/numpy/lib/function_base.py\", line 511, in average\r\n    a = np.asanyarray(a)\r\nValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.",
+  "expected_fix_hint": "Validate input range/shape; sanitize untrusted values at boundary.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "data-science",
+    "deep-trace",
+    "library:BERTopic",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

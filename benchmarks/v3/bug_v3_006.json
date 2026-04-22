@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_006",
+  "source_url": "https://stackoverflow.com/questions/68293313/python-attributeerror-type-object-has-no-attribute",
+  "source_type": "stackoverflow",
+  "error_class": "AttributeError",
+  "complexity_score": 2,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "The @classmethod decorator was forgotten. `create` is being called on the class but it expects `cls`.",
+  "stderr": "Traceback (most recent call last):\n  File \"/home/user/ui/widget.py\", line 28, in <module>\n    main()\n  File \"/home/user/ui/widget.py\", line 24, in main\n    w = Widget.make_default()\n  File \"/home/user/ui/widget.py\", line 18, in make_default\n    return cls.registry['default']\nAttributeError: type object 'Widget' has no attribute 'registry'. Did you mean: 'REGISTRY'? This occurred because the class attribute REGISTRY is uppercase but the classmethod tries to read cls.registry (lowercase). Python is case-sensitive, so type-level attribute lookups distinguish between 'registry' and 'REGISTRY'. To fix: either rename REGISTRY to registry in the class body, or update make_default to read cls.REGISTRY instead of cls.registry.",
+  "source_code": "class Widget:\n    def __init__(self, name, color):\n        self.name = name\n        self.color = color\n\n    def __repr__(self):\n        return f'Widget({self.name!r}, {self.color!r})'\n\n    # BUG: registry is defined *after* make_default tries to read it via cls\n    # and there's a typo between class attr and access\n    @classmethod\n    def make_default(cls):\n        return cls.registry['default']\n\n    REGISTRY = {'default': None}  # uppercased but accessed as lowercase\n\n\ndef main():\n    Widget.REGISTRY['default'] = Widget('x', 'blue')\n    w = Widget.make_default()\n    print(w)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

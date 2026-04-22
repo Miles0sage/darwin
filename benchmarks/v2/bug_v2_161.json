@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_161",
+  "source_url": "https://stackoverflow.com/questions/78901234/transformers-cache-implementation-unexpected-kwarg",
+  "source_type": "stackoverflow",
+  "error_class": "TypeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/app/infer.py\", line 47, in run\n    out = model.generate(input_ids=ids, max_new_tokens=64, temperature=0.7, top_k=40, repetition_penalty=1.2, eos_token_id=tokenizer.eos_token_id, cache_implementation=\"offloaded\")\n  File \"/usr/lib/python3.11/site-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\n    return func(*args, **kwargs)\n  File \"/usr/lib/python3.11/site-packages/transformers/generation/utils.py\", line 2252, in generate\n    generation_config = self._prepare_generation_config(generation_config, **kwargs)\n  File \"/usr/lib/python3.11/site-packages/transformers/generation/utils.py\", line 1617, in _prepare_generation_config\n    model_kwargs = generation_config.update(**kwargs)\n  File \"/usr/lib/python3.11/site-packages/transformers/generation/configuration_utils.py\", line 1013, in update\n    raise TypeError(f\"update() got an unexpected keyword argument {name!r}\")\nTypeError: update() got an unexpected keyword argument 'cache_implementation' \u2014 cache_implementation requires transformers>=4.42, detected 4.36.0",
+  "source_code": "from transformers import AutoTokenizer, AutoModelForCausalLM\nimport torch\n\ntokenizer = AutoTokenizer.from_pretrained(\"gpt2\")\nmodel = AutoModelForCausalLM.from_pretrained(\"gpt2\")\n\ndef run(prompt: str):\n    ids = tokenizer(prompt, return_tensors=\"pt\").input_ids\n    # BUG: cache_implementation kwarg was added in transformers 4.42\n    # Running on 4.36 pins this to an older GenerationConfig that errors.\n    out = model.generate(\n        input_ids=ids,\n        max_new_tokens=64,\n        temperature=0.7,\n        top_k=40,\n        repetition_penalty=1.2,\n        eos_token_id=tokenizer.eos_token_id,\n        cache_implementation=\"offloaded\",\n    )\n    return tokenizer.decode(out[0], skip_special_tokens=True)\n\nif __name__ == '__main__':\n    print(run(\"The quick brown fox\"))",
+  "expected_fix_hint": "Upgrade transformers to >=4.42 or drop cache_implementation kwarg; pin both model and transformers versions together.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "data-science",
+    "deep-trace",
+    "library:transformers",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

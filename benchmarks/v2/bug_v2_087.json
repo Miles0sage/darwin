@@ -1,0 +1,21 @@
+{
+  "id": "bug_v2_087",
+  "source_url": "https://github.com/home-assistant/core/issues/144023",
+  "source_type": "github",
+  "error_class": "InsecureRequestWarning",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 380, in _async_refresh\n    self.data = await self._async_update_data()\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/src/homeassistant/homeassistant/components/qnap/coordinator.py\", line 86, in _async_update_data\n    return await self.hass.async_add_executor_job(self._sync_update)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/concurrent/futures/thread.py\", line 59, in run\n    result = self.fn(*self.args, **self.kwargs)\n  File \"/usr/src/homeassistant/homeassistant/components/qnap/coordinator.py\", line 72, in _sync_update\n    suppress_insecure_request_warning()\n    if not self._verify_ssl\n    else nullcontext()\n  File \"/usr/local/lib/python3.13/contextlib.py\", line 141, in __enter__\n    return next(self.gen)\n  File \"/usr/src/homeassistant/homeassistant/components/qnap/coordinator.py\", line 40, in suppress_insecure_request_warning\n    with urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning):",
+  "source_code": "# source: https://github.com/home-assistant/core/issues/144023\n# repo: home-assistant/core\n# title: Qnap Integration failing to setup\n# \n# ### The problem\n# After upgrading to core-2025.5.0b0, the Qnap integration is failing to set up, showing the following error in the integration page: \n# `Failed setup, will retry: 'NoneType' object does not support the context manager protocol`\n# ### What version of Home Assistant Core has the issue?\n# core-2025.4.4\n# ### What was the last working version of Home Assistant Core?\n# core-2025.5.0b0\n# ### What type of installation are you running?\n# Home Assistant OS\n# ### Integration causing the issue\n# Qnap\n# ### Link to integration documentation on our website\n# https://rc.home-assistant.io/integrations/qnap\n# ### Diagnostics information\n# _No response_\n# ### Example YAML snippet\n# ### Anything in the logs that might be useful for us?\n# ### Additional information\n# _No response_\n\n### Anything in the logs that might be useful for us?",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:home-assistant",
+    "multi-file",
+    "protocol",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

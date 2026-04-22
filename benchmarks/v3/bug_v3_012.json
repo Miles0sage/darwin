@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_012",
+  "source_url": "https://stackoverflow.com/questions/13636089/what-does-typeerror-object-does-not-support-item-assignment-mean",
+  "source_type": "stackoverflow",
+  "error_class": "TypeError",
+  "complexity_score": 1,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Tuples are immutable. Convert to list or use a dict/dataclass.",
+  "stderr": "Traceback (most recent call last):\n  File \"config.py\", line 26, in <module>\n    main()\n  File \"config.py\", line 22, in main\n    update_config(cfg, 'port', 9000)\n  File \"config.py\", line 16, in update_config\n    cfg[key] = value\nTypeError: 'tuple' object does not support item assignment\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "from collections import namedtuple\n\n\nServer = namedtuple('Server', ['host', 'port', 'timeout'])\n\n\ndef default_config():\n    # BUG: tuple is immutable but caller tries to mutate\n    return ('localhost', 8080, 30)\n\n\ndef update_config(cfg, key, value):\n    # expects dict-like, but we return tuple\n    idx = {'host': 0, 'port': 1, 'timeout': 2}[key]\n    cfg[idx] = value\n    return cfg\n\n\ndef main():\n    cfg = default_config()\n    update_config(cfg, 'port', 9000)\n    print(cfg)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

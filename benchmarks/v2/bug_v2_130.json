@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_130",
+  "source_url": "https://github.com/data-apis/array-api/issues/285",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\n  File \"<stdin>\", line 1, in <module>\r\n  File \"<__array_function__ internals>\", line 5, in solve\r\n  File \"/Users/aaronmeurer/anaconda3/envs/array-apis/lib/python3.9/site-packages/numpy/linalg/linalg.py\", line 393, in solve\r\n    r = gufunc(a, b, signature=signature, extobj=extobj)\r\nValueError: solve: Input operand 1 has a mismatch in its core dimension 0, with gufunc signature (m,m),(m,n)->(m,n) (size 2 is different from 1)",
+  "source_code": "# source: https://github.com/data-apis/array-api/issues/285\n# repo: data-apis/array-api\n# title: linalg.solve broadcasting behavior is ambiguous\n# \n# The spec for the [`linalg.solve`](https://data-apis.org/array-api/latest/extensions/linear_algebra_functions.html#linalg-solve-x1-x2) function seems ambiguous. In `solve(x1, x2)`, `x1` has shape `(..., M, M)` and `x2` either has shape `(..., M)` or `(..., M, K)`. In either case, the `...` parts should be broadcast compatible.\n# This is ambiguous. For example, if `x1` is shape `(2, 2, 2)` and `x2` is shape `(2, 2)`, should this be interpreted as `x2` is `(2,)` stack of a `(2,)` vector, i.e., the result would be `(2, 2, 2, 1)` after broadcasting, or as a single stack of a 2x2 matrix, i.e., resulting in `(2, 2, 2, 2)`. \n# - Relevant pytorch issue about this: https://github.com/pytorch/pytorch/issues/52915\n# - Relevant NumPy issue: https://github.com/numpy/numpy/issues/15349\n# - `torch.linalg.\n\n>>> x1 = np.eye(1)\r\n>>> x2 = np.asarray([[0.], [0.]])\r\n>>> x1.shape\r\n(1, 1)\r\n>>> x2.shape\r\n(2, 1)\r\n>>> np.linalg.solve(x1, x2)\r\nTraceback (most recent call last):\r\n  File \"<stdin>\", line 1, in <module>\r\n  File \"<__array_function__ internals>\", line 5, in solve\r\n  File \"/Users/aaronmeurer/anaconda3/envs/array-apis/lib/python3.9/site-packages/numpy/linalg/linalg.py\", line 393, in solve\r\n    r = gufunc(a, b, signature=signature, extobj=extobj)\r\nValueError: solve: Input operand 1 has a mismatch in its core dimension 0, with gufunc signature (m,m),(m,n)->(m,n) (size 2 is different from 1)",
+  "expected_fix_hint": "Validate input range/shape; sanitize untrusted values at boundary.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "data-science",
+    "library:array-api",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

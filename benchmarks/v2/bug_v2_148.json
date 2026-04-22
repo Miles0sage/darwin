@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_148",
+  "source_url": "https://stackoverflow.com/questions/60232039/pandas-groupby-multiindex-keyerror",
+  "source_type": "stackoverflow",
+  "error_class": "KeyError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\n  File \"/home/miles/reports/etl.py\", line 54, in monthly_revenue\n    by_region = joined.groupby([('meta','region'), ('meta','tier')])['price'].sum()\n  File \"/usr/lib/python3.11/site-packages/pandas/core/frame.py\", line 9183, in groupby\n    return DataFrameGroupBy(\n  File \"/usr/lib/python3.11/site-packages/pandas/core/groupby/groupby.py\", line 988, in __init__\n    grouper, exclusions, obj = get_grouper(\n  File \"/usr/lib/python3.11/site-packages/pandas/core/groupby/grouper.py\", line 939, in get_grouper\n    raise KeyError(gpr)\nKeyError: ('meta', 'region')\nDuring exception chaining:\n  File \"/home/miles/reports/etl.py\", line 61, in monthly_revenue\n    raise RuntimeError(f\"failed to aggregate: {e}\") from e\nRuntimeError: failed to aggregate: ('meta', 'region')",
+  "source_code": "import pandas as pd\n\ndef load_orders():\n    df = pd.DataFrame({\n        'order_id': [1, 2, 3, 4],\n        'price':    [10.0, 25.5, 7.99, 100.0],\n        'region':   ['EU', 'US', 'EU', 'US'],\n        'tier':     ['gold', 'silver', 'silver', 'gold'],\n    })\n    # Pivot into a \"hierarchical\" schema with top-level groups\n    df.columns = pd.MultiIndex.from_tuples([\n        ('fact', 'order_id'),\n        ('fact', 'price'),\n        ('meta', 'region'),\n        ('meta', 'tier'),\n    ])\n    return df\n\ndef load_customers():\n    # Flat columns\n    return pd.DataFrame({'order_id': [1, 2, 3, 4], 'cust': ['a','b','a','c']})\n\ndef monthly_revenue():\n    orders = load_orders()\n    custs = load_customers()\n    # BUG: merging a MultiIndex-column frame with a flat one flattens the\n    # columns to a single level of tuples like \"('fact','order_id')\" string,\n    # so ('meta','region') is no longer a valid key.\n    joined = orders.merge(custs, left_on=('fact','order_id'), right_on='order_id')\n    try:\n        by_region = joined.groupby([('meta','region'), ('meta','tier')])['price'].sum()\n    except KeyError as e:\n        raise RuntimeError(f\"failed to aggregate: {e}\") from e\n    return by_region\n\nif __name__ == '__main__':\n    print(monthly_revenue())",
+  "expected_fix_hint": "Use consistent column schemas on both sides of merge; flatten MultiIndex before merge (df.columns = [\"_\".join(c) for c in df.columns]).",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "data-science",
+    "deep-trace",
+    "library:pandas",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

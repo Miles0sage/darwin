@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_097",
+  "source_url": "https://github.com/litestar-org/litestar/issues/2365",
+  "source_type": "github",
+  "error_class": "ValidationError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/home/vscode/.local/lib/python3.11/site-packages/litestar/contrib/pydantic/pydantic_dto_factory.py\", line 49, in decode_bytes\r\n    return super().decode_bytes(value)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/vscode/.local/lib/python3.11/site-packages/litestar/dto/base_dto.py\", line 96, in decode_bytes\r\n    return backend.populate_data_from_raw(value, self.asgi_connection)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/vscode/.local/lib/python3.11/site-packages/litestar/dto/_backend.py\", line 297, in populate_data_from_raw\r\n    return _transfer_data(\r\n           ^^^^^^^^^^^^^^^\r\n  File \"/home/vscode/.local/lib/python3.11/site-packages/litestar/dto/_backend.py\", line 557, in _transfer_data\r\n    return _transfer_instance_data(\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/vscode/.local/lib/python3.11/site-packages/litestar/dto/_backend.py\", line 621, in _transfer_instance_data\r\n    return destination_type(**unstructured_data)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/vscode/.local/lib/python3.11/site-packages/pydantic/main.py\", line 165, in __init__\r\n    __pydantic_self__.__pydantic_validator__.validate_python(data, self_instance=__pydantic_self__)\r\npydantic_core._pydantic_core.ValidationError: 1 validation error for User",
+  "source_code": "from litestar import Litestar, post\r\nfrom litestar.contrib.pydantic import PydanticDTO\r\nfrom litestar.testing import TestClient\r\nfrom pydantic import BaseModel, field_validator\r\n\r\nclass User(BaseModel):\r\n    user_id: int\r\n\r\n    @field_validator('user_id')\r\n    @classmethod\r\n    def user_id_must_be_greater_than_zero(cls, user_id):\r\n        if user_id < 1:\r\n            raise ValueError('user id must be greater than 0')\r\n        return user_id\r\n\r\nUserDTO = PydanticDTO[User]\r\n\r\n\r\n@post(\"/user\", dto=UserDTO, sync_to_thread=False)\r\ndef create_user(data: User) -> User:\r\n    return data\r\n\r\n\r\nwith TestClient(Litestar([create_user], debug=True)) as client:\r\n    response = client.post(\"/user\", json={\"user_id\": 0})\r\n    print(response.text)\r\n    print(f\"Status code: {response.status_code}\")\r\n    assert response.status_code == 400",
+  "expected_fix_hint": "Fix model/schema; adjust field types or add validators.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:litestar",
+    "multi-file",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

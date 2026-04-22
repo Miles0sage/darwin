@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_022",
+  "source_url": "https://stackoverflow.com/questions/28875607/valueerror-not-enough-values-to-unpack",
+  "source_type": "stackoverflow",
+  "error_class": "ValueError",
+  "complexity_score": 1,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Source of ValueError: unpacked 2 from 1. Check inputs or use *rest capture.",
+  "stderr": "Traceback (most recent call last):\n  File \"pairs.py\", line 26, in <module>\n    main()\n  File \"pairs.py\", line 22, in main\n    out = process(pairs)\n  File \"pairs.py\", line 15, in process\n    for k, v in item:\nValueError: not enough values to unpack (expected 2, got 1)\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "class PairProcessor:\n    def __init__(self):\n        self.counter = 0\n\n    def process_pair(self, k, v):\n        self.counter += 1\n        return (k, v * 2)\n\n    def process(self, pairs):\n        out = []\n        for item in pairs:\n            # BUG: item is tuple but some entries have only 1 value\n            for k, v in item:\n                out.append(self.process_pair(k, v))\n        return out\n\n\ndef process(pairs):\n    return PairProcessor().process(pairs)\n\n\ndef main():\n    pairs = [[('a', 1), ('b', 2)], [('c',)]]\n    out = process(pairs)\n    print(out)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

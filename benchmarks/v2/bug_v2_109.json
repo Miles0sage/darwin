@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_109",
+  "source_url": "https://github.com/psychopy/psychopy/issues/5091",
+  "source_type": "github",
+  "error_class": "OverflowError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\n  File \"<string>\", line 1, in <module>\r\n  File \"/home/md/workspace/python/venvs/testvenv/lib/python3.10/site-packages/psychopy/visual/__init__.py\", line 38, in <module>\r\n    from .textbox2.textbox2 import TextBox2\r\n  File \"/home/md/workspace/python/venvs/testvenv/lib/python3.10/site-packages/psychopy/visual/textbox2/__init__.py\", line 4, in <module>\r\n    from .textbox2 import TextBox2, allFonts\r\n  File \"/home/md/workspace/python/venvs/testvenv/lib/python3.10/site-packages/psychopy/visual/textbox2/textbox2.py\", line 32, in <module>\r\n    from psychopy.tools.linebreak import get_breakable_points, break_units\r\n  File \"/home/md/workspace/python/venvs/testvenv/lib/python3.10/site-packages/psychopy/tools/linebreak.py\", line 12, in <module>\r\n    from psychopy.tools.linebreak_class import linebreak_class\r\nOverflowError: line number table is too long",
+  "source_code": "# source: https://github.com/psychopy/psychopy/issues/5091\n# repo: psychopy/psychopy\n# title: OverflowError: line number table is too long - when importing visual from latests psychopy\n# \n# Hi all,\n# I am encountering the following `OverflowError` when installing `psychopy` from pip.\n# Steps to reconstruct\n# Then running a simple import fails like this\n# Searching for this Overflow error leads to reports during conversion of large float or storing a pandas data frame as `hdf5`.\n# The problem is that linebreak_class is actually a single dictionary with >300k lines and abou 4.5Mb in size:\n# A super crude workaround which I am currently using is this\n# Any clue on how to fix this correctly?\n\nThen running a simple import fails like this\r\n\r\n```bash\r\n python -c \"from psychopy import visual\"      \r\n                                                                                                                                                                                        \r\npygame 2.1.2 (SDL 2.0.16, Python 3.10.6)\r\nHello from the pygame community. https://www.pygame.org/contribute.html\r\nTraceback (most recent call last):\r\n  File \"<string>\", line 1, in <module>\r\n  File \"/home/md/workspace/python/venvs/testvenv/lib/python3.10/site-packages/psychopy/visual/__init__.py\", line 38, in <module>\r\n    from .textbox2.textbox2 import TextBox2\r\n  File \"/home/md/workspace/python/venvs/testvenv/lib/python3.10/site-packages/psychopy/visual/textbox2/__init__.py\", line 4, in <module>\r\n    from .textbox2 import TextBox2, allFonts\r\n  File \"/home/md/workspace/python/venvs/testvenv/lib/python3.10/site-packages/psychopy/visual/textbox2/textbox2.py\", line 32, in <module>\r\n    from psychopy.tools.linebreak import get_breakable_points, break_units\r\n  File \"/home/md/workspace/python/venvs/testvenv/lib/python3.10/site-packages/psychopy/tools/linebreak.py\", line 12, in <module>\r\n    from psychopy.tools.linebreak_class import linebreak_class\r\nOverflowError: line number table is too long",
+  "expected_fix_hint": "workaround which I am currently using is this\r",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "data-science",
+    "deep-trace",
+    "library:psychopy",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_151",
+  "source_url": "https://stackoverflow.com/questions/65587872/asyncio-shield-still-cancelled",
+  "source_type": "stackoverflow",
+  "error_class": "CancelledError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/app/gw/billing.py\", line 58, in charge_with_retry\n    receipt = await asyncio.wait_for(asyncio.shield(inner()), timeout=self.timeout)\n  File \"/usr/lib/python3.11/asyncio/tasks.py\", line 464, in wait_for\n    return fut.result()\nasyncio.exceptions.CancelledError\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/app/gw/billing.py\", line 71, in charge_with_retry\n    await self._rollback(hold_id)\n  File \"/app/gw/billing.py\", line 39, in _rollback\n    resp = await self._client.post(self.url, json={\"hold\": hold_id})\n  File \"/usr/lib/python3.11/site-packages/httpx/_client.py\", line 1887, in post\n    return await self.request(\n  File \"/usr/lib/python3.11/site-packages/httpx/_client.py\", line 1598, in request\n    return await self.send(request, auth=auth, follow_redirects=follow_redirects)\nasyncio.exceptions.CancelledError",
+  "source_code": "import asyncio, httpx\n\nclass Gateway:\n    def __init__(self):\n        self._client = httpx.AsyncClient(timeout=10.0)\n        self.url = 'https://billing.internal/charge'\n        self.timeout = 5.0\n\n    async def _rollback(self, hold_id: str):\n        resp = await self._client.post(self.url, json={\"hold\": hold_id})\n        resp.raise_for_status()\n\n    async def _charge(self, amount: float):\n        await asyncio.sleep(6)  # simulate slow downstream\n        return {\"ok\": True, \"amount\": amount}\n\n    async def charge_with_retry(self, amount: float, hold_id: str):\n        async def inner():\n            return await self._charge(amount)\n        try:\n            receipt = await asyncio.wait_for(\n                asyncio.shield(inner()), timeout=self.timeout\n            )\n            return receipt\n        except asyncio.TimeoutError:\n            # BUG: attempting async rollback while parent task is being cancelled\n            # causes _rollback itself to be cancelled -> CancelledError bubbles up\n            await self._rollback(hold_id)\n\nasync def main():\n    async with asyncio.timeout(4.0):  # outer cancel trigger\n        await Gateway().charge_with_retry(10.0, \"hold-123\")\n\nasyncio.run(main())",
+  "expected_fix_hint": "Run cleanup in a shielded coroutine with its own timeout, or use asyncio.TaskGroup + finally with asyncio.shield around the rollback itself.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "asyncio",
+    "context-manager",
+    "deep-trace",
+    "library:httpx",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

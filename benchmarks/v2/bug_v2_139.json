@@ -1,0 +1,17 @@
+{
+  "id": "bug_v2_139",
+  "source_url": "https://github.com/mealie-recipes/mealie/issues/5242",
+  "source_type": "github",
+  "error_class": "LookupError",
+  "complexity_score": 3,
+  "stderr": "Traceback (most recent call last):\nmealie  |   File \"/opt/mealie/lib/python3.12/site-packages/ingredient_parser/_common.py\", line 109, in download_nltk_resources\nmealie  |     nltk.data.find(\nmealie  |   File \"/opt/mealie/lib/python3.12/site-packages/nltk/data.py\", line 579, in find\nmealie  |     raise LookupError(resource_not_found)",
+  "source_code": "# source: https://github.com/mealie-recipes/mealie/issues/5242\n# repo: mealie-recipes/mealie\n# title: [BUG] - Failure to start due to nltk_data folder missing\n# \n# ### First Check\n# - [x] This is not a feature request.\n# - [x] I added a very descriptive title to this issue (title field is above this).\n# - [x] I used the GitHub search to find a similar issue and didn't find it.\n# - [x] I searched the Mealie documentation, with the integrated search.\n# - [x] I already read the docs and didn't find an answer.\n# - [ ] This issue can be replicated on the demo site (https://demo.mealie.io/).\n# ### What is the issue you are experiencing?\n# Since v2.8.0 my instance of Mealie stopped working with the following output:\n# ### Steps to Reproduce\n# This error happens at startup since v2.8.0\n# Note: Here's an excerpt of my configuration:\n# So far, I haven't had issues with this configuration.\n# ### Please provide relevant logs\n# ### Mealie Version\n# > ghcr.io/mealie-recipes/m\n\n### Mealie Version\n\n> ghcr.io/mealie-recipes/mealie                latest                   1e204f7043a0   11 hours ago    462MB\n\n\nBuild: `2deb9c276cfff6b1aff473776dd327110f2eb55b`\n\n### Deployment\n\nDocker (Synology)\n\n### Additional Deployment Details\n\nFixed via the manual creation of the nltk_data folder:",
+  "expected_fix_hint": "Fixed via the manual creation of the nltk_data folder:",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "library:mealie",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

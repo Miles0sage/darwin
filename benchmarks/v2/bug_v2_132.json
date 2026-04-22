@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_132",
+  "source_url": "https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI/issues/2665",
+  "source_type": "github",
+  "error_class": "FileNotFoundError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\n\n\uff08\u4e2d\u7565\uff09\n\nFile \"/private/var/folders/06/h34_0c317v5g8jdknfvr19580000gn/T/pip-build-env-jumnxxwa/overlay/lib/python3.10/site-packages/setuptools/build_meta.py\", line 317, in run_setup \nexec(code, locals()) \nFile \"<string>\", line 27, in <module> \nFile \"<string>\", line 18, in write_version_py \nFileNotFoundError: [Errno 2] No such file or directory: 'fairseq/version.txt'",
+  "source_code": "### STEP 2. \u6539 infer/modules/vc/utils.py\uff0c\u5b8c\u6574\u4ee3\u7801\u5982\u4e0b\n```\nimport torch\nfrom fairseq import checkpoint_utils\nfrom fairseq.data.dictionary import Dictionary\n\ndef get_index_path_from_model(sid):\n    return next(\n        (\n            f\n            for f in [\n                os.path.join(root, name)\n                for root, _, files in os.walk(os.getenv(\"index_root\"), topdown=False)\n                for name in files\n                if name.endswith(\".index\") and \"trained\" not in name\n            ]\n            if sid.split(\".\")[0] in f\n        ),\n        \"\",\n    )\n\ndef load_hubert(config):\n    with torch.serialization.safe_globals([Dictionary]):\n        models, _, _ = checkpoint_utils.load_model_ensemble_and_task(\n            [\"assets/hubert/hubert_base.pt\"],\n            suffix=\"\",\n            strict=False\n        )\n    hubert_model = models[0]\n    hubert_model.to(config.device)\n    hubert_model = hubert_model.half() if config.is_half else hubert_model.float()\n    return hubert_model.eval()",
+  "expected_fix_hint": "fix this you could try to: ",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "data-science",
+    "library:Retrieval-based-Voice-Conversion-WebUI",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

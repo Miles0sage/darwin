@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_094",
+  "source_url": "https://github.com/pypa/setuptools/issues/4519",
+  "source_type": "github",
+  "error_class": "ModuleNotFoundError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n        File \"/home/user/repro-pip-fail/venv/lib/python3.9/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py\", line 353, in <module>\r\n          main()\r\n        File \"/home/user/repro-pip-fail/venv/lib/python3.9/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py\", line 335, in main\r\n          json_out['return_val'] = hook(**hook_input['kwargs'])\r\n        File \"/home/user/repro-pip-fail/venv/lib/python3.9/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py\", line 118, in get_requires_for_build_wheel\r\n          return hook(config_settings)\r\n        File \"/tmp/pip-build-env-h9ppcze_/overlay/lib/python3.9/site-packages/setuptools/build_meta.py\", line 327, in get_requires_for_build_wheel\r\n          return self._get_build_requires(config_settings, requirements=[])\r\n        File \"/tmp/pip-build-env-h9ppcze_/overlay/lib/python3.9/site-packages/setuptools/build_meta.py\", line 297, in _get_build_requires\r\n          self.run_setup()\r\n        File \"/tmp/pip-build-env-h9ppcze_/overlay/lib/python3.9/site-packages/setuptools/build_meta.py\", line 497, in run_setup\r\n          super().run_setup(setup_script=setup_script)\r\n        File \"/tmp/pip-build-env-h9ppcze_/overlay/lib/python3.9/site-packages/setuptools/build_meta.py\", line 313, in run_setup\r\n          exec(code, locals())\r\n        File \"<string>\", line 2, in <module>\r\n      ModuleNotFoundError: No module named 'setuptools.command.test'",
+  "source_code": "# Reproducer derived from https://github.com/pypa/setuptools/issues/4519\n# repo: pypa/setuptools\n# title: [BUG] Many packages are no longer installable after test command is removed\n\n# Last frames in traceback:\n#   /home/user/repro-pip-fail/venv/lib/python3.9/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py line 335 in main\n#   /home/user/repro-pip-fail/venv/lib/python3.9/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py line 118 in get_requires_for_build_wheel\n#   /tmp/pip-build-env-h9ppcze_/overlay/lib/python3.9/site-packages/setuptools/build_meta.py line 327 in get_requires_for_build_wheel\n#   /tmp/pip-build-env-h9ppcze_/overlay/lib/python3.9/site-packages/setuptools/build_meta.py line 297 in _get_build_requires\n#   /tmp/pip-build-env-h9ppcze_/overlay/lib/python3.9/site-packages/setuptools/build_meta.py line 497 in run_setup\n#   /tmp/pip-build-env-h9ppcze_/overlay/lib/python3.9/site-packages/setuptools/build_meta.py line 313 in run_setup\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # For those landing on this issue, please see:\n    # (thank you @delfick for summarizing this)\n    # > * This functionality has been deprecated for 5 years, there is a separate issue for discussing if there would have bee\n    # > * For people using pip (or tools using pip, like poetry), `PIP_CONSTRAINT` set to a file with `setuptools<72.0` should\n    # > * Fo\n    raise ModuleNotFoundError('reproduce: see https://github.com/pypa/setuptools/issues/4519')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "solution is either `--no-build-isolation` (which should be considered a temporary solution) or getting packages to not use setuptools.command.test or using forks of those packages that comment out the use of s",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:setuptools",
+    "multi-file",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

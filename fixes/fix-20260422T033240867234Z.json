@@ -1,0 +1,12 @@
+{
+  "fingerprint": "ee1e3855159a4652",
+  "error_class": "ZeroDivisionError",
+  "error_signature": "ZeroDivisionError: division by zero",
+  "root_cause": "auto-diagnosed ZeroDivisionError",
+  "fix_applied": true,
+  "fix_code": "def compute_rate(events, duration):\n    if duration == 0:\n        return 0  # Prevent ZeroDivisionError by returning 0 when duration is zero\n    return events / duration\n\ndef run():\n    result = compute_rate(100, 0)\n    return result\n\nif __name__ == \"__main__\":\n    try:\n        run()\n    except Exception as e:\n        raise\n",
+  "timestamp": "20260422T033240867234Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

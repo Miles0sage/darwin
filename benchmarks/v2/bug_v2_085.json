@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_085",
+  "source_url": "https://github.com/gatagat/lap/issues/57",
+  "source_type": "github",
+  "error_class": "ImportError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n        File \"<string>\", line 127, in get_numpy_status\r\n      ModuleNotFoundError: No module named 'numpy'\r\n      Traceback (most recent call last):\r\n        File \"c:\\github\\yolov8_bytetrack_supervision\\.venv\\lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_in_process\\_in_process.py\", line 353, in <module>\r\n          main()\r\n        File \"c:\\github\\yolov8_bytetrack_supervision\\.venv\\lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_in_process\\_in_process.py\", line 335, in main\r\n          json_out['return_val'] = hook(**hook_input['kwargs'])\r\n        File \"c:\\github\\yolov8_bytetrack_supervision\\.venv\\lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_in_process\\_in_process.py\", line 149, in prepare_metadata_for_build_wheel\r\n          return hook(metadata_directory, config_settings)\r\n        File \"C:\\Users\\ammar\\AppData\\Local\\Temp\\pip-build-env-y0aacoc6\\overlay\\Lib\\site-packages\\setuptools\\build_meta.py\", line 366, in prepare_metadata_for_build_wheel\r\n          self.run_setup()\r\n        File \"C:\\Users\\ammar\\AppData\\Local\\Temp\\pip-build-env-y0aacoc6\\overlay\\Lib\\site-packages\\setuptools\\build_meta.py\", line 480, in run_setup\r\n          super(_BuildMetaLegacyBackend, self).run_setup(setup_script=setup_script)\r\n        File \"C:\\Users\\ammar\\AppData\\Local\\Temp\\pip-build-env-y0aacoc6\\overlay\\Lib\\site-packages\\setuptools\\build_meta.py\", line 311, in run_setup\r\n          exec(code, locals())\r\n        File \"<string>\", line 236, in <module>\r\n        File \"<string>\", line 220, in setup_package\r\n      ImportError: lap requires numpy, please \"pip install numpy\".",
+  "source_code": "# Reproducer derived from https://github.com/gatagat/lap/issues/57\n# repo: gatagat/lap\n# title: Error when installing (already have numpy and visual cpp build tools)\n\n# Last frames in traceback:\n#   c:\\github\\yolov8_bytetrack_supervision\\.venv\\lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_in_process\\_in_process.py line 335 in main\n#   c:\\github\\yolov8_bytetrack_supervision\\.venv\\lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_in_process\\_in_process.py line 149 in prepare_metadata_for_build_wheel\n#   C:\\Users\\ammar\\AppData\\Local\\Temp\\pip-build-env-y0aacoc6\\overlay\\Lib\\site-packages\\setuptools\\build_meta.py line 366 in prepare_metadata_for_build_wheel\n#   C:\\Users\\ammar\\AppData\\Local\\Temp\\pip-build-env-y0aacoc6\\overlay\\Lib\\site-packages\\setuptools\\build_meta.py line 480 in run_setup\n#   C:\\Users\\ammar\\AppData\\Local\\Temp\\pip-build-env-y0aacoc6\\overlay\\Lib\\site-packages\\setuptools\\build_meta.py line 311 in run_setup\n#   <string> line 220 in setup_package\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # Collecting lap==0.4.0\n    # Using cached lap-0.4.0.tar.gz (1.5 MB)\n    # Installing build dependencies ... done\n    # Getting requirements to build wheel ... done\n    # Preparing metadata (pyproject.toml) ... error\n    # error: subprocess-exited-with-error\n    # \u00d7 Preparing metadata (pyproject.toml) did not run successfully.\n    # \u2502 exit code: 1\n    # \u2570\u2500> [21 lines of output]\n    raise ImportError('reproduce: see https://github.com/gatagat/lap/issues/57')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Install missing package or pin compatible version; check import path.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "context-manager",
+    "data-science",
+    "deep-trace",
+    "library:lap",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

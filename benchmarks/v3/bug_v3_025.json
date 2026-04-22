@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_025",
+  "source_url": "https://stackoverflow.com/questions/9285886/how-to-find-key-values-in-environment-variable-with-python",
+  "source_type": "stackoverflow",
+  "error_class": "KeyError",
+  "complexity_score": 1,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "os.environ[key] raises KeyError if missing. Use os.environ.get(key, default) or os.getenv.",
+  "stderr": "Traceback (most recent call last):\n  File \"config.py\", line 24, in <module>\n    main()\n  File \"config.py\", line 20, in main\n    cfg = load_config()\n  File \"config.py\", line 15, in load_config\n    return {'db': os.environ['DATABASE_URL'], 'secret': os.environ['SECRET_KEY']}\n  File \"/usr/lib/python3.11/os.py\", line 679, in __getitem__\n    raise KeyError(key) from None\nKeyError: 'SECRET_KEY'\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "import os\n\n\nclass ConfigLoader:\n    def __init__(self, env=None):\n        self.env = env or os.environ\n\n    def load_config(self):\n        # BUG: direct indexing explodes on missing key\n        return {\n            'db': self.env['DATABASE_URL'],\n            'secret': self.env['SECRET_KEY'],\n        }\n\n\ndef load_config():\n    return ConfigLoader().load_config()\n\n\ndef main():\n    os.environ['DATABASE_URL'] = 'postgres://x'\n    # SECRET_KEY intentionally not set\n    cfg = load_config()\n    print(cfg)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

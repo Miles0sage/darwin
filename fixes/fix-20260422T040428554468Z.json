@@ -1,0 +1,12 @@
+{
+  "fingerprint": "e98e6ffba21d4fd1",
+  "error_class": "KeyError",
+  "error_signature": "KeyError: 'path'",
+  "root_cause": "real-KeyError",
+  "fix_applied": true,
+  "fix_code": "def parse_meta(meta_entry):\n    # meta_entry may be missing some keys\n    return {\n        \"path\": meta_entry.get(\"path\", \"\"), # Safely get 'path', defaulting to an empty string\n        \"size\": meta_entry.get(\"size\", 0),\n    }\n\nentries = [{\"path\": \"/a\", \"size\": 1}, {\"size\": 2}]  # 2nd entry missing path\nfor e in entries:\n    parse_meta(e)\n",
+  "timestamp": "20260422T040428554468Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

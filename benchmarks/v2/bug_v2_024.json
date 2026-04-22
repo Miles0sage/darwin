@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_024",
+  "source_url": "https://github.com/LeapBeyond/scrubadub/issues/40",
+  "source_type": "github",
+  "error_class": "RuntimeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/textblob/_text.py\", line 365, in _read\r\n    raise StopIteration\r\nStopIteration\r\n\r\nThe above exception was the direct cause of the following exception:\r\n\r\nTraceback (most recent call last):\r\n  File \"test.py\", line 20, in <module>\r\n    t = scrubadub.clean(s)\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/scrubadub/__init__.py\", line 16, in clean\r\n    return scrubber.clean(text, **kwargs)\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/scrubadub/scrubbers.py\", line 57, in clean\r\n    for next_filth in self.iter_filth(text):\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/scrubadub/scrubbers.py\", line 76, in iter_filth\r\n    for filth in detector.iter_filth(text):\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/scrubadub/detectors/name.py\", line 29, in iter_filth\r\n    for word, part_of_speech in blob.tags:\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/textblob/decorators.py\", line 24, in __get__\r\n    value = obj.__dict__[self.func.__name__] = self.func(obj)\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/textblob/blob.py\", line 447, in pos_tags\r\n    for word, t in self.pos_tagger.tag(self.raw)\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/textblob/en/taggers.py\", line 21, in tag\r\n    return pattern_tag(text, tokenize)\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/textblob/en/__init__.py\", line 115, in tag\r\n    for sentence in parse(s, tokenize, True, False, False, False, encoding).split():\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7\n  ...\n line 1188, in find_tags\r\n    map = kwargs.get(     \"map\", None))\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/textblob/_text.py\", line 978, in find_tags\r\n    tagged.append([token, lexicon.get(token, i == 0 and lexicon.get(token.lower()) or None)])\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/textblob/_text.py\", line 104, in get\r\n    return self._lazy(\"get\", *args)\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/textblob/_text.py\", line 85, in _lazy\r\n    self.load()\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/textblob/_text.py\", line 382, in load\r\n    dict.update(self, (x.split(\" \")[:2] for x in _read(self._path) if x.strip()))\r\n  File \"/Users/nihil/.pyenv/versions/emailbin/lib/python3.7/site-packages/textblob/_text.py\", line 382, in <genexpr>\r\n    dict.update(self, (x.split(\" \")[:2] for x in _read(self._path) if x.strip()))\r\nRuntimeError: generator raised StopIteration",
+  "source_code": "# source: https://github.com/LeapBeyond/scrubadub/issues/40\n# repo: LeapBeyond/scrubadub\n# title: does not work with python 3.7.1 raises StopIteration\n# \n# i am trying to run the example with python 3.7.1 but it raises a generator StopIteration\n# example:\n# output\n\ns = u\"John is a cat\"\r\nt = scrubadub.clean(s)\r\n```\r\noutput",
+  "expected_fix_hint": "Inspect invariant violation; may need to reorder init, or pass event loop.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "descriptor",
+    "library:scrubadub",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

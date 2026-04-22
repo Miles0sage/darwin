@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_107",
+  "source_url": "https://github.com/pandas-dev/pandas/issues/17275",
+  "source_type": "github",
+  "error_class": "KeyError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\n    File \"/file.py\", line 45, in <module>\r\n       'Telefone', 'email', 'Capital_Social', 'Cidade', 'Estado',\r\n       'Raz\u00e3o_social', 'name_bairro', 'Natureza_Jur\u00eddica', 'CNAE', '#CNAE',\r\n    'Telefone','email','Capital_Social', 'CNAE', '#CNAE', 'Natureza_Jur\u00eddica','Pessoas' ]]\r\n       'CNAEs_secund\u00e1rios', 'Pessoas', 'percent'],\r\n    File \"/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/pandas/core/frame.py\", line 1991, in __getitem__\r\n      dtype='object')\r\n    return self._getitem_array(key)\r\n    File \"/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/pandas/core/frame.py\", line 2035, in _getitem_array\r\n    indexer = self.ix._convert_to_indexer(key, axis=1)\r\n    File \"/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/pandas/core/indexing.py\", line 1214, in _convert_to_indexer\r\n    raise KeyError('%s not in index' % objarr[mask])",
+  "source_code": "# Reproducer derived from https://github.com/pandas-dev/pandas/issues/17275\n# repo: pandas-dev/pandas\n# title: 'column' not in index, but hell it is. Seems like a bug...\n\n# Last frames in traceback:\n#   /Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/pandas/core/frame.py line 1991 in __getitem__\n#   /Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/pandas/core/frame.py line 2035 in _getitem_array\n#   /Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/pandas/core/indexing.py line 1214 in _convert_to_indexer\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # I have a dataframe called delivery and when I print(delivery.columns) I get the following:\n    # Index(['Complemento_endere\u00e7o', 'cnpj', 'Data_funda\u00e7\u00e3o', 'N\u00famero',\n    # 'Raz\u00e3o_social', 'CEP', 'situacao_cadastral', 'situacao_especial', 'Rua',\n    # 'Nome_Fantasia', 'last_revenue_normalized', 'last_revenue_year',\n    # 'Telefone', 'email', 'Capital_Social', 'Cidade', 'Estado',\n    # 'Raz\u00e3o_social', 'name_bairro', 'Natureza_Jur\u00eddica', 'CNAE', '#CNAE',\n    # 'CNAEs_secund\u00e1rios', 'Pessoas'\n    raise KeyError('reproduce: see https://github.com/pandas-dev/pandas/issues/17275')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Use dict.get() or check membership; handle optional keys.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "context-manager",
+    "data-science",
+    "deep-trace",
+    "library:pandas",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

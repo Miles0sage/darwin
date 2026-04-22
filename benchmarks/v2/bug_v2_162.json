@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_162",
+  "source_url": "https://stackoverflow.com/questions/47325866/json-dumps-recursion-error-backref",
+  "source_type": "stackoverflow",
+  "error_class": "RecursionError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/app/utils/serde.py\", line 30, in dump_model\n    return json.dumps(asdict(obj), default=str)\n  File \"/usr/lib/python3.11/json/__init__.py\", line 238, in dumps\n    **kw).encode(obj)\n  File \"/usr/lib/python3.11/json/encoder.py\", line 202, in encode\n    chunks = list(chunks)\n  File \"/usr/lib/python3.11/json/encoder.py\", line 432, in _iterencode\n    yield from _iterencode_dict(o, _current_indent_level)\n  File \"/usr/lib/python3.11/json/encoder.py\", line 406, in _iterencode_dict\n    yield from chunks\n  File \"/usr/lib/python3.11/json/encoder.py\", line 438, in _iterencode\n    o = _default(o)\n  File \"/app/utils/serde.py\", line 18, in _coerce\n    return asdict(v)\n  File \"/app/utils/serde.py\", line 18, in _coerce\n    return asdict(v)\n  File \"/app/utils/serde.py\", line 18, in _coerce\n    return asdict(v)\n  [Previous line repeated 983 more times]\nRecursionError: maximum recursion depth exceeded while calling a Python object",
+  "source_code": "import json\nfrom dataclasses import dataclass, field\nfrom typing import List, Optional\n\n@dataclass\nclass Parent:\n    id: int\n    name: str\n    children: List['Child'] = field(default_factory=list)\n\n@dataclass\nclass Child:\n    id: int\n    parent: Optional['Parent'] = None  # BUG: back-pointer creates a cycle\n\ndef asdict(obj):\n    if hasattr(obj, '__dataclass_fields__'):\n        return {k: _coerce(getattr(obj, k)) for k in obj.__dataclass_fields__}\n    return obj\n\ndef _coerce(v):\n    if isinstance(v, list):\n        return [_coerce(x) for x in v]\n    if hasattr(v, '__dataclass_fields__'):\n        return asdict(v)\n    return v\n\ndef dump_model(obj):\n    return json.dumps(asdict(obj), default=str)\n\nif __name__ == '__main__':\n    p = Parent(1, 'root')\n    c = Child(2, parent=p)\n    p.children.append(c)\n    print(dump_model(p))",
+  "expected_fix_hint": "Break cycles by excluding back-references ('parent'), or use a 'seen' set to detect already-serialized objects.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:json",
+    "multi-file",
+    "recursion"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

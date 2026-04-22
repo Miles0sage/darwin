@@ -1,0 +1,11 @@
+{
+  "id": "bug_019",
+  "source_url": "https://github.com/openai/openai-python/issues/2541",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "stderr": "Traceback (most recent call last):\n  File \"<stdin>\", line 1, in <module>\n  File \"/Users/tylerpayne/.local/share/uv/python/cpython-3.12.10-macos-aarch64-none/lib/python3.12/typing.py\", line 1184, in __call__\n    result = self.__origin__(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/tylerpayne/.local/share/uv/python/cpython-3.12.10-macos-aarch64-none/lib/python3.12/typing.py\", line 501, in __call__\n    raise TypeError(f\"Cannot instantiate {self!r}\")\nTypeError: Cannot instantiate typing.Union",
+  "source_code": "```python\nfrom openai.types.chat import ChatCompletionMessageToolCallParam\nChatCompletionMessageToolCallParam()",
+  "expected_fix_hint": "",
+  "has_reproducer": true,
+  "license": "Apache-2.0"
+}

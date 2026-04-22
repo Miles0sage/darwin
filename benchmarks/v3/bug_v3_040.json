@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_040",
+  "source_url": "https://stackoverflow.com/questions/36478909/pop-from-empty-list-in-python",
+  "source_type": "stackoverflow",
+  "error_class": "IndexError",
+  "complexity_score": 2,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "pop from empty list. Check len() or use deque with maxlen.",
+  "stderr": "Traceback (most recent call last):\n  File \"stack.py\", line 28, in <module>\n    main()\n  File \"stack.py\", line 24, in main\n    run_ops(ops)\n  File \"stack.py\", line 18, in run_ops\n    s.pop_two()\n  File \"stack.py\", line 13, in pop_two\n    return self.items.pop(), self.items.pop()\nIndexError: pop from empty list\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "class Stack:\n    def __init__(self):\n        self.items = []\n\n    def push(self, x):\n        self.items.append(x)\n\n    def pop_two(self):\n        # BUG: no check if len >= 2\n        return self.items.pop(), self.items.pop()\n\n    def __len__(self):\n        return len(self.items)\n\n\ndef run_ops(ops):\n    s = Stack()\n    for op in ops:\n        if op[0] == 'push':\n            s.push(op[1])\n        elif op[0] == 'pop2':\n            print(s.pop_two())\n\n\ndef main():\n    ops = [('push', 1), ('pop2',), ('pop2',)]\n    run_ops(ops)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

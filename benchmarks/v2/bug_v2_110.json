@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_110",
+  "source_url": "https://github.com/boppreh/keyboard/issues/186",
+  "source_type": "github",
+  "error_class": "ArgumentError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"C:\\Python37\\lib\\threading.py\", line 917, in _bootstrap_inner\r\n    self.run()\r\n  File \"C:\\Python37\\lib\\threading.py\", line 865, in run\r\n    self._target(*self._args, **self._kwargs)\r\n  File \"C:\\Python37\\lib\\site-packages\\keyboard\\__init__.py\", line 292, in listen\r\n    _os_keyboard.listen(self.direct_callback)\r\n  File \"C:\\Python37\\lib\\site-packages\\keyboard\\_winkeyboard.py\", line 560, in listen\r\n    prepare_intercept(callback)\r\n  File \"C:\\Python37\\lib\\site-packages\\keyboard\\_winkeyboard.py\", line 553, in prepare_intercept\r\n    keyboard_hook = SetWindowsHookEx(WH_KEYBOARD_LL, keyboard_callback, GetModuleHandleW(NULL), NULL)\r\nctypes.ArgumentError: argument 3: <class 'OverflowError'>: int too long to convert",
+  "source_code": "# source: https://github.com/boppreh/keyboard/issues/186\n# repo: boppreh/keyboard\n# title: Overflowerror with Python 3.7 on Windows\n# \n# The `add_hotkey` function doesn't work on Windows with Python 3.7 (64-bit):\n# The traceback:\n\nException in thread Thread-1:\r\nTraceback (most recent call last):\r\n  File \"C:\\Python37\\lib\\threading.py\", line 917, in _bootstrap_inner\r\n    self.run()\r\n  File \"C:\\Python37\\lib\\threading.py\", line 865, in run\r\n    self._target(*self._args, **self._kwargs)\r\n  File \"C:\\Python37\\lib\\site-packages\\keyboard\\__init__.py\", line 292, in listen\r\n    _os_keyboard.listen(self.direct_callback)\r\n  File \"C:\\Python37\\lib\\site-packages\\keyboard\\_winkeyboard.py\", line 560, in listen\r\n    prepare_intercept(callback)\r\n  File \"C:\\Python37\\lib\\site-packages\\keyboard\\_winkeyboard.py\", line 553, in prepare_intercept\r\n    keyboard_hook = SetWindowsHookEx(WH_KEYBOARD_LL, keyboard_callback, GetModuleHandleW(NULL), NULL)\r\nctypes.ArgumentError: argument 3: <class 'OverflowError'>: int too long to convert",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:keyboard",
+    "multi-file",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

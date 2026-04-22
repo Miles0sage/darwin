@@ -1,0 +1,11 @@
+{
+  "id": "bug_027",
+  "source_url": "https://github.com/pytorch/pytorch/issues/4518",
+  "source_type": "github",
+  "error_class": "ImportError",
+  "stderr": "File \"<ipython-input-2-a4038b0d61ea>\", line 4, in <module>\r\n    import torch\r\n\r\n  File \"C:\\Users\\hp i3\\Anaconda3\\lib\\site-packages\\torch\\__init__.py\", line 76, in <module>\r\n    from torch._C import *\r\n\r\nImportError: DLL load failed: The specified module could not be found.",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "BSD-3-Clause"
+}

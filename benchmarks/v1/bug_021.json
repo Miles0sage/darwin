@@ -1,0 +1,11 @@
+{
+  "id": "bug_021",
+  "source_url": "https://github.com/langchain-ai/langchain/issues/33709",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "stderr": "Traceback (most recent call last):\n  File \"langchain/agents/react/graph.py\", line 284, in invoke\n    result = await fallback_model.ainvoke(messages, config)\n  File \"langchain_openai/chat_models/base.py\", line 412, in ainvoke\n    response = await self.async_client.chat.completions.create(**params)\nTypeError: AsyncCompletions.create() got an unexpected keyword argument 'cache_control'",
+  "source_code": "from langchain_anthropic import ChatAnthropic\nfrom langchain_openai import ChatOpenAI\nfrom langchain_anthropic.middleware.prompt_caching import AnthropicPromptCachingMiddleware\nfrom langchain.agents.middleware import ModelFallbackMiddleware\nfrom langchain.agents import create_agent\n\n# Setup: Main model (Anthropic) with fallback to OpenAI\nmain_model = ChatAnthropic(\n    model=\"claude-sonnet-4-latest\",\n    anthropic_api_key=\"YOUR_ANTHROPIC_KEY\"\n)\n\nfallback_model = ChatOpenAI(\n    model=\"gpt-4o-mini\",\n    openai_api_key=\"YOUR_OPENAI_KEY\"\n)\n\n# Create middleware list\nmiddleware = [\n    AnthropicPromptCachingMiddleware(\n        ttl=\"5m\",\n        unsupported_model_behavior=\"ignore\"  # \u2190 This doesn't prevent the bug\n    ),\n    ModelFallbackMiddleware(\n        fallback_models=[fallback_model]\n    )\n]\n\n# Create agent with middleware\nagent = create_agent(\n    model=main_model,\n    system_prompt=\"You are a helpful assistant.\",\n    tools=[],\n    middleware=middleware\n)\n\n# Trigger the bug:\n# 1. Force Anthropic API to fail (e.g., network issue, rate limit)\n# 2. ModelFallbackMiddleware kicks in \u2192 switches to OpenAI\n# 3. OpenAI receives messages with cache_control parameter\n# 4. Error: \"AsyncCompletions.create() got an unexpected keyword argument 'cache_control'\"\n\n# Reproduce by invoking when Anthropic API is unstable\nresult = agent.invoke({\"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}]})",
+  "expected_fix_hint": "",
+  "has_reproducer": true,
+  "license": "MIT"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "bug_004",
+  "source_url": "https://stackoverflow.com/questions/8949252/why-do-i-get-attributeerror-nonetype-object-has-no-attribute-something",
+  "source_type": "stackoverflow",
+  "error_class": "AttributeError",
+  "stderr": "Traceback (most recent call last):\n  File \"script.py\", line 7, in <module>\n    y.real()\nAttributeError: 'NoneType' object has no attribute 'real'",
+  "source_code": "def return_something(someint):\n    if someint > 5:\n        return someint\n    # Missing return branch -> returns None implicitly\n\ny = return_something(2)\ny.real()",
+  "expected_fix_hint": "Function has no return for the else branch so returns None. Always return a value, or check `if y is not None` before calling attributes.",
+  "has_reproducer": true,
+  "license": "CC BY-SA 4.0"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_154",
+  "source_url": "https://stackoverflow.com/questions/72292167/fastapi-generator-already-executing",
+  "source_type": "stackoverflow",
+  "error_class": "RuntimeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/usr/lib/python3.11/site-packages/fastapi/routing.py\", line 299, in app\n    raw_response = await run_endpoint_function(\n  File \"/usr/lib/python3.11/site-packages/fastapi/routing.py\", line 212, in run_endpoint_function\n    return await dependant.call(**values)\n  File \"/srv/api/users.py\", line 47, in list_users\n    return db.query(User).all()\n  File \"/usr/lib/python3.11/site-packages/fastapi/dependencies/utils.py\", line 549, in solve_dependencies\n    solved_result = await solve_dependencies(\n  File \"/usr/lib/python3.11/site-packages/fastapi/dependencies/utils.py\", line 595, in solve_dependencies\n    solved = await solve_generator(\n  File \"/usr/lib/python3.11/site-packages/fastapi/concurrency.py\", line 35, in contextmanager_in_threadpool\n    yield await run_in_threadpool(cm.__enter__)\n  File \"/usr/lib/python3.11/contextlib.py\", line 137, in __enter__\n    return next(self.gen)\nRuntimeError: generator already executing",
+  "source_code": "from fastapi import FastAPI, Depends\nfrom sqlalchemy.orm import Session\nfrom contextlib import contextmanager\nimport asyncio\n\napp = FastAPI()\n\n_session_factory = None\n\n@contextmanager\ndef get_db():\n    # BUG: single shared generator object reused across concurrent requests.\n    # FastAPI will call next() on the same generator -> \"generator already executing\".\n    db = _session_factory()\n    try:\n        yield db\n    finally:\n        db.close()\n\n_shared_db_gen = get_db()  # BUG: created ONCE at module level\n\ndef _session_dep():\n    # BUG: returns the same generator reference\n    return _shared_db_gen\n\n@app.get('/users')\nasync def list_users(db: Session = Depends(_session_dep)):\n    return db.query(User).all()",
+  "expected_fix_hint": "Do NOT reuse a generator across requests. Define get_db() as a fresh generator per call (Depends(get_db) with yield).",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:fastapi",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

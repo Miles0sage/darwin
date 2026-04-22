@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_115",
+  "source_url": "https://github.com/pytorch/pytorch/issues/574",
+  "source_type": "github",
+  "error_class": "ModuleNotFoundError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\n  File \"<stdin>\", line 1, in <module>\r\n  File \"/usr/lib/python3.6/site-packages/torch/__init__.py\", line 45, in <module>\r\n    from torch._C import *\r\nModuleNotFoundError: No module named 'torch._C'",
+  "source_code": "# source: https://github.com/pytorch/pytorch/issues/574\n# repo: pytorch/pytorch\n# title: ModuleNotFoundError: No module named 'torch._C'\n# \n# Hi there,\n# I have downloaded the PyTorch pip package CPU version for Python 3.5 from the official webpage. I downloaded it using *wget* and I renamed the package in order to install the package on ArchLinux with Python 3.6.  After that, I used the `pip install` command to install the package and no error messages are shown. The `torchvision` package is correctly installed.\n# If I try to import the `torch` module using `import torch` in an ipython session or in a Python session I receive the following error:\n# Any ideas?\n# Best regards,\n# Alessandro\n\nPython 3.6.0 (default, Jan 16 2017, 12:12:55) \r\n[GCC 6.3.1 20170109] on linux\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> import torch\r\nTraceback (most recent call last):\r\n  File \"<stdin>\", line 1, in <module>\r\n  File \"/usr/lib/python3.6/site-packages/torch/__init__.py\", line 45, in <module>\r\n    from torch._C import *\r\nModuleNotFoundError: No module named 'torch._C'",
+  "expected_fix_hint": "Install missing module or fix sys.path; check package layout.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "data-science",
+    "library:pytorch",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

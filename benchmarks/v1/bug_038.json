@@ -1,0 +1,11 @@
+{
+  "id": "bug_038",
+  "source_url": "https://github.com/huggingface/transformers/issues/36886",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "stderr": "Traceback (most recent call last):\n  File \"/florence2/detect.py\", line 15, in <module>\n    AutoModelForCausalLM.from_pretrained(\"microsoft/Florence-2-large\", torch_dtype=torch.float16, trust_remote_code=True)\n  File \"/usr/local/lib/python3.12/dist-packages/transformers/models/auto/auto_factory.py\", line 576, in from_pretrained\n    raise ValueError(\nValueError: Unrecognized configuration class <class 'transformers_modules.microsoft.Florence-2-large.00d2f1570b00c6dea5df998f5635db96840436bc.configuration_florence2.Florence2LanguageConfig'> for this kind of AutoModel: AutoModelForCausalLM.",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "Apache-2.0"
+}

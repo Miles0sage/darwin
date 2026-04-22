@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_026",
+  "source_url": "https://github.com/pandas-dev/pandas/issues/44819",
+  "source_type": "github",
+  "error_class": "KeyError",
+  "complexity_score": 2,
+  "library": "pandas",
+  "license": "BSD-3-Clause",
+  "complexity_tags": [
+    "pandas"
+  ],
+  "expected_fix_hint": "Column doesn't exist. Check df.columns or use df.get(col).",
+  "stderr": "Traceback (most recent call last):\n  File \"join.py\", line 28, in <module>\n    main()\n  File \"join.py\", line 24, in main\n    out = join_data(left, right)\n  File \"join.py\", line 17, in join_data\n    merged['profit'] = merged['revenue'] - merged['cost']\n  File \"/usr/lib/python3.11/site-packages/pandas/core/frame.py\", line 3807, in __getitem__\n    indexer = self.columns.get_loc(key)\nKeyError: 'cost'\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "import pandas as pd\n\n\nclass Joiner:\n    def __init__(self, left_key='id', right_key='id'):\n        self.left_key = left_key\n        self.right_key = right_key\n\n    def join(self, left, right):\n        merged = pd.merge(left, right, left_on=self.left_key, right_on=self.right_key)\n        # BUG: 'cost' column is actually named 'costs' in right df\n        merged['profit'] = merged['revenue'] - merged['cost']\n        return merged\n\n\ndef join_data(left, right):\n    return Joiner().join(left, right)\n\n\ndef main():\n    left = pd.DataFrame({'id': [1, 2], 'revenue': [100, 200]})\n    right = pd.DataFrame({'id': [1, 2], 'costs': [50, 80]})\n    out = join_data(left, right)\n    print(out)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

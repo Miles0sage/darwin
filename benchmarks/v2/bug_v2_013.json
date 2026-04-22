@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_013",
+  "source_url": "https://github.com/florimondmanca/asgi-lifespan/issues/63",
+  "source_type": "github",
+  "error_class": "AssertionError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n    |   File \"/usr/lib/python3/dist-packages/pytest_trio/plugin.py\", line 195, in _fixture_manager\r\n    |     yield nursery_fixture\r\n    |   File \"/usr/lib/python3/dist-packages/pytest_trio/plugin.py\", line 250, in run\r\n    |     await self._func(**resolved_kwargs)\r\n    |   File \"/home/edward/scratch/asgi-lifespan/asgi-lifespan-2.1.0/tests/test_manager.py\", line 225, in test_lifespan_not_supported\r\n    |     async with LifespanManager(app):\r\n    |   File \"/home/edward/scratch/asgi-lifespan/asgi-lifespan-2.1.0/src/asgi_lifespan/_manager.py\", line 102, in __aenter__\r\n    |     await self._exit_stack.aclose()\r\n    |   File \"/usr/lib/python3.12/contextlib.py\", line 696, in aclose\r\n    |     await self.__aexit__(None, None, None)\r\n    |   File \"/usr/lib/python3.12/contextlib.py\", line 754, in __aexit__\r\n    |     raise exc_details[1]\r\n    |   File \"/usr/lib/python3.12/contextlib.py\", line 737, in __aexit__\r\n    |     cb_suppress = await cb(*exc_details)\r\n    |                   ^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/home/edward/scratch/asgi-lifespan/asgi-lifespan-2.1.0/src/asgi_lifespan/_concurrency/trio.py\", line 72, in __aexit__\r\n    |     await self._exit_stack.__aexit__(exc_type, exc_value, traceback)\r\n    |   File \"/usr/lib/python3.12/contextlib.py\", line 754, in __aexit__\r\n    |     raise exc_details[1]\r\n    |   File \"/usr/lib/python3.12/contextlib.py\", line 737, in __aexit__\r\n    |     cb_suppress = await cb(*exc_details)\r\n    |                   ^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/lib/python3/dist-packages/trio/_core/_run.py\", line 954, in __aexit__\r\n    |     raise combined_error_from_nursery\r\n    | ExceptionGroup: Exceptions from Trio nursery (1 sub-exception)\r\n    +-+---------------- 1 ----------------\r\n      | Traceback (most recent call last):\r\n      |   File \"/home/edward/scratch/asgi-lifespan/asgi-lifespan-2.1.0/src/asgi_lifespan/_manager.py\", line 99, in __aenter__\r\n      |     await self.startup()\r\n      |   File \"/home/edward/scratch/asgi-lifespan/asgi-lifespan-2.1.0/src/asgi_lifespan/_manager.py\", line 45, in startup\r\n      |     raise self._app_exception\r\n      |   File \"/home/edward/scratch/asgi-lifespan/asgi-lifespan-2.1.0/src/asgi_lifespan/_manager.py\", line 73, in run_app\r\n      |     await self.app(scope, self.receive, self.send)\r\n      |   File \"/home/edward/scratch/asgi-lifespan/asgi-lifespan-2.1.0/src/asgi_lifespan/_manager.py\", line 13, in app_with_state\r\n      |     await app(scope, receive, send)\r\n      |   File \"/home/edward/scratch/asgi-lifespan/asgi-lifespan-2.1.0/tests/test_manager.py\", line 204, in http_no_assert_before_receive_request\r\n      |     assert message[\"type\"] == \"http.request\"\r\n      | AssertionError: assert 'lifespan.startup' == 'http.request'",
+  "source_code": "# source: https://github.com/florimondmanca/asgi-lifespan/issues/63\n# repo: florimondmanca/asgi-lifespan\n# title: Failing tests: 'lifespan.startup' != 'http.request'\n# \n# When I run the tests so it shows tracebacks there is a lot of output that ends like this:\n\nWhen I run the tests so it shows tracebacks there is a lot of output that ends like this:",
+  "expected_fix_hint": "Fix underlying invariant; adjust test expectation only if spec changed.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:asgi-lifespan",
+    "multi-file",
+    "pytest"
+  ],
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_047",
+  "source_url": "https://stackoverflow.com/questions/3323001/what-is-the-maximum-recursion-depth-in-python",
+  "source_type": "stackoverflow",
+  "error_class": "RecursionError",
+  "complexity_score": 2,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Convert to iteration or increase sys.setrecursionlimit. Usually a missing base case.",
+  "stderr": "Traceback (most recent call last):\n  File \"fib.py\", line 26, in <module>\n    main()\n  File \"fib.py\", line 22, in main\n    r = fib(1200)\n  File \"fib.py\", line 15, in fib\n    return fib(n - 1) + fib(n - 2)\n  File \"fib.py\", line 15, in fib\n    return fib(n - 1) + fib(n - 2)\n  File \"fib.py\", line 15, in fib\n    return fib(n - 1) + fib(n - 2)\nRecursionError: maximum recursion depth exceeded in comparison",
+  "source_code": "class Fib:\n    def __init__(self, use_cache=False):\n        self.use_cache = use_cache\n        self.cache = {}\n\n    def fib(self, n):\n        # BUG: no memoization and too-deep recursion\n        if n < 2:\n            return n\n        return self.fib(n - 1) + self.fib(n - 2)\n\n\ndef fib(n):\n    return Fib().fib(n)\n\n\ndef main():\n    # 1200 is well past default recursion limit\n    r = fib(1200)\n    print(r)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

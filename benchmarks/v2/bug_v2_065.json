@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_065",
+  "source_url": "https://github.com/martomo/SublimeTextXdebug/issues/81",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \".\\threading.py\", line 532, in __bootstrap_inner\n  File \"./xdebug/session.py\", line 148, in run\n  File \"./xdebug/session.py\", line 242, in execute\n  File \"./xdebug/session.py\", line 274, in get_context_values\n  File \"./xdebug/protocol.py\", line 188, in read\n  File \".\\xml\\etree\\ElementTree.py\", line 963, in XML\n  File \"./xdebug/elementtree/SimpleXMLTreeBuilder.py\", line 84, in feed\n  File \".\\xmllib.py\", line 172, in feed\n  File \".\\xmllib.py\", line 281, in goahead\n  File \".\\xmllib.py\", line 610, in parse_starttag\n  File \".\\xmllib.py\", line 586, in parse_attributes\nTypeError: character mapping must return integer, None or unicode",
+  "source_code": "# source: https://github.com/martomo/SublimeTextXdebug/issues/81\n# repo: martomo/SublimeTextXdebug\n# title: Issue TypeError: character mapping must return integer, None or unicode\n# \n# Hi, when i debug, the context show nothing. This is my console:\n# **And this my system info:**\n# **And my configuration:**\n# **xdebug.ini**\n# **xdebug.log**\n# ```\n# Log opened at 2014-05-23 02:51:33\n# I: Checking remote connect back address.\n# I: Remote address found, connecting to 127.0.0.1:9000.\n# E: Could not connect to client. :-(\n# Log closed at 2014-05-23 02:51:33\n# Log opened at 2014-05-23 02:51:39\n# I: Checking remote connect back address.\n# I: Remote address found, connecting to 127.0.0.1:9000.\n# I: Connected to client. :-)\n# -> <init xmlns=\"urn:debugger_protocol_v1\" xmlns:xdebug=\"http://xdebug.org/dbgp/xdebug\" fileuri=\"file:///home/quangminh/www/test.php\" language=\"PHP\" protocol_version=\"1.0\" appid=\"14172\" idekey=\"sublime.xdebug\"><engine version=\"2.2.3\"><![CDATA[Xdebug]]></engine><author><![CDAT\n\nzend_extension=/usr/lib/php5/20121212/xdebug.so\n\nxdebug.remote_enable = 1\nxdebug.remote_port = 9000\nxdebug.remote_handler = \"dbgp\"\nxdebug.remote_mode = req\nxdebug.remote_connect_back = 1\nxdebug.remote_log = \"/tmp/xdebug.log\"\nxdebug.max_nesting_level = 200\nxdebug.profiler_enable_trigger = 1\nxdebug.profiler_enable = 1",
+  "expected_fix_hint": "Fix argument type/shape; check signature changes between library versions.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:SublimeTextXdebug",
+    "multi-file",
+    "protocol",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

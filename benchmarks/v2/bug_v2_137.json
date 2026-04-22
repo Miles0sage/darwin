@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_137",
+  "source_url": "https://github.com/vibrantlabsai/ragas/issues/1102",
+  "source_type": "github",
+  "error_class": "HTTPStatusError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/*****/python3.10/site-packages/openai/_base_client.py\", line 1599, in _request\r\n    response.raise_for_status()\r\n  File \"/*****/python3.10/site-packages/httpx/_models.py\", line 761, in raise_for_status\r\n    raise HTTPStatusError(message, request=request, response=self)",
+  "source_code": "# source: https://github.com/vibrantlabsai/ragas/issues/1102\n# repo: vibrantlabsai/ragas\n# title: getting \"asyncio.exceptions.CancelledError\" error whenever I run a simple script using ragas\n# \n# [ ] I have checked the [documentation](https://docs.ragas.io/) and related resources and couldn't resolve my bug.\n# **Describe the bug**\n# Getting \"asyncio.exceptions.CancelledError\" as an error\n# Ragas version:\n# Python version: 3.10\n# **Code to Reproduce**\n# **Error trace**\n# **Expected behavior**\n# Expected to output the faithfulness score without any errors.\n# **Additional context**\n# Add any other context about the problem here.\n\nfrom datasets import Dataset\r\nfrom ragas.metrics import answer_relevancy, faithfulness\r\nfrom ragas import evaluate\r\n\r\ndata_samples = {\r\n    'question': [\"How are you?\"],\r\n    'answer': [\"It's raining.\"],\r\n    'contexts' : [[\"I'm feeling sad today. It's raining and I can't go outside.\"]],\r\n}\r\ndataset = Dataset.from_dict(data_samples)\r\nscore = evaluate(dataset, metrics=[faithfulness], raise_exceptions=False)\r\nscore.to_pandas()",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "data-science",
+    "library:ragas",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

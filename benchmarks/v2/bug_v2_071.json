@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_071",
+  "source_url": "https://github.com/pyro-ppl/numpyro/issues/1045",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"broken.py\", line 55, in <module>\r\n    svi.run(rng_key, 200, 5, resp)\r\n...\r\n  File \"broken.py\", line 31, in irt2pl\r\n    predictor = jnp.expand_dims(abilities, 1) * jnp.expand_dims(discriminations, 0)\r\n  File \"/path/to/python3.8/site-packages/jax/_src/numpy/lax_numpy.py\", line 5256, in deferring_binary_op\r\n    return binary_op(self, other)\r\n  File \"/home/frankier/edu/doc/vocabmodel/.direnv/python-3.8.6/lib/python3.8/site-packages/jax/_src/numpy/lax_numpy.py\", line 396, in fn\r\n    x1, x2 = _promote_args(numpy_fn.__name__, x1, x2)\r\n  File \"/path/to/python3.8/site-packages/jax/_src/numpy/lax_numpy.py\", line 333, in _promote_args\r\n    return _promote_shapes(fun_name, *_promote_dtypes(*args))\r\n  File \"/path/to/python3.8/site-packages/jax/_src/numpy/lax_numpy.py\", line 251, in _promote_shapes\r\n    result_rank = len(lax.broadcast_shapes(*shapes))\r\n  File \"/path/to/python3.8/site-packages/jax/_src/util.py\", line 198, in wrapper\r\n    return cached(bool(config.x64_enabled), *args, **kwargs)\r\n  File \"/path/to/python3.8/site-packages/jax/_src/util.py\", line 191, in cached\r\n    return f(*args, **kwargs)\r\n  File \"/path/to/python3.8/site-packages/jax/_src/lax/lax.py\", line 97, in broadcast_shapes\r\n    raise ValueError(\"Incompatible shapes for broadcasting: {}\"",
+  "source_code": "import sys\r\n\r\nimport numpyro\r\nimport numpyro.distributions as dist\r\nfrom jax import numpy as jnp\r\nfrom jax import random\r\nfrom numpyro.infer import SVI, Trace_ELBO\r\nfrom numpyro.infer.autoguide import AutoDelta\r\nfrom numpyro.infer.initialization import init_to_median\r\nfrom numpyro.optim import Adam\r\n\r\n\r\ndef irt2pl(ncls, resp, word_subsample_size=None):\r\n    nstud, nitems = resp.shape\r\n    difficulty_offsets = numpyro.sample(\r\n        \"difficulty_offsets\",\r\n        dist.TransformedDistribution(\r\n            dist.Normal(0, 1).expand([ncls - 1]), dist.transforms.OrderedTransform()\r\n        ),\r\n    )\r\n    with numpyro.plate(\"nstud\", nstud, dim=-1):\r\n        abilities = numpyro.sample(\"abilities\", dist.Normal())\r\n    with numpyro.plate(\"nitems\", nitems, dim=-1):\r\n        difficulties = numpyro.sample(\"difficulties\", dist.Normal())\r\n        discriminations = numpyro.sample(\"discriminations\", dist.HalfNormal())\r\n    offset_difficulties = jnp.expand_dims(difficulties, 1) + jnp.expand_dims(\r\n        difficulty_offsets, 0\r\n    )\r\n    print(\"abilities.shape\", abilities.shape)\r\n    print(\"discriminations.shape\", discriminations.shape)\r\n    predictor = jnp.expand_dims(abilities, 1) * jnp.expand_dims(discriminations, 0)\r\n    cutpoints = jnp.expand_dims(\r\n        offset_difficulties * jnp.expand_dims(discriminations, 0), 0\r\n    )\r\n    with numpyro.plate(\"nstud\", nstud, dim=-2), numpyro.plate(\"nitems\", nitems, dim=-1):\r\n        numpyro.sample(\"resp\", dist.OrderedLogistic(predictor, cutpoints), obs=resp)\r\n\r\n\r\nresp = jnp.array(\r\n    [[0, 1, 4, 3], [0, 1, 4, 3], [3, 4, 4, 4], [2, 2, 4, 4], [2, 2, 4, 4], [1, 2, 3, 3]]\r\n)\r\n\r\noptim = Adam(0.1, 0.8, 0.99)\r\nelbo = Trace_ELBO()\r\nguide = AutoDelta(irt2pl, init_loc_fn=init_to_median())\r\nrng_key = random.PRNGKey(42)\r\nsvi = SVI(irt2pl, guide, optim, loss=elbo)\r\nsvi.run(rng_key, 200, 5, resp)\r\nprint(guide(5, resp))",
+  "expected_fix_hint": "Validate input range/shape; sanitize untrusted values at boundary.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "data-science",
+    "deep-trace",
+    "library:numpyro",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

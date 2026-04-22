@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_049",
+  "source_url": "https://stackoverflow.com/questions/17390652/python-filenotfounderror-no-such-file-or-directory",
+  "source_type": "stackoverflow",
+  "error_class": "FileNotFoundError",
+  "complexity_score": 2,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Use absolute path or os.path.join with __file__-relative dir.",
+  "stderr": "Traceback (most recent call last):\n  File \"loader.py\", line 26, in <module>\n    main()\n  File \"loader.py\", line 22, in main\n    cfg = load_config()\n  File \"loader.py\", line 16, in load_config\n    with open(self.path) as f:\n  File \"/usr/lib/python3.11/genericpath.py\", line 50, in isfile\n    st = os.stat(path)\nFileNotFoundError: [Errno 2] No such file or directory: 'config.json'\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "import os\nimport json\n\n\nclass ConfigLoader:\n    def __init__(self, path='config.json'):\n        # BUG: relative path breaks when cwd differs\n        self.path = path\n\n    def load_config(self):\n        with open(self.path) as f:\n            return json.load(f)\n\n    def abspath(self):\n        return os.path.abspath(self.path)\n\n\ndef load_config():\n    return ConfigLoader().load_config()\n\n\ndef main():\n    os.chdir('/tmp')  # cwd != script location\n    cfg = load_config()\n    print(cfg)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

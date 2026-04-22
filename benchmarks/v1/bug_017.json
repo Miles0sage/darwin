@@ -1,0 +1,11 @@
+{
+  "id": "bug_017",
+  "source_url": "https://github.com/vllm-project/vllm/issues/17327",
+  "source_type": "github",
+  "error_class": "IndexError",
+  "stderr": "File \".../vllm/model_executor/parameter.py\", line 149, in load_qkv_weight\n    param_data = param_data.narrow(self.output_dim, shard_offset,\nIndexError: start out of range (expected to be in range of [-18, 18], but got 2048)",
+  "source_code": "File \".../vllm/model_executor/parameter.py\", line 149, in load_qkv_weight\n    param_data = param_data.narrow(self.output_dim, shard_offset,\nIndexError: start out of range (expected to be in range of [-18, 18], but got 2048)",
+  "expected_fix_hint": "",
+  "has_reproducer": true,
+  "license": "Apache-2.0"
+}

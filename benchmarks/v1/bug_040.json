@@ -1,0 +1,11 @@
+{
+  "id": "bug_040",
+  "source_url": "https://github.com/huggingface/transformers/issues/8690",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "stderr": "File \"/anaconda3/envs/torch-xla-1.7/lib/python3.6/site-packages/transformers/file_utils.py\", line 955, in cached_path\r\n    local_files_only=local_files_only,\r\n  File \"/anaconda3/envs/torch-xla-1.7/lib/python3.6/site-packages/transformers/file_utils.py\", line 1125, in get_from_cache\r\n    \"Connection error, and we cannot find the requested files in the cached path.\"\r\nValueError: Connection error, and we cannot find the requested files in the cached path. Please try again or make sure your Internet connection is on.",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "Apache-2.0"
+}

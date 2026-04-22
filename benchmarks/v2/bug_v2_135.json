@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_135",
+  "source_url": "https://github.com/Azure/azure-functions-python-worker/issues/915",
+  "source_type": "github",
+  "error_class": "ImportError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n\u00c42021-02-16T20:28:10.783Z\u00c5   File \"/opt/homebrew/Cellar/azure-functions-core-tools\u00c93/3.0.3284/workers/python/3.9/OSX/X64/worker.py\", line 84, in <module>\r\n\u00c42021-02-16T20:28:10.783Z\u00c5     from azure_functions_worker import main\r\n\u00c42021-02-16T20:28:10.783Z\u00c5   File \"/opt/homebrew/Cellar/azure-functions-core-tools\u00c93/3.0.3284/workers/python/3.9/OSX/X64/azure_functions_worker/main.py\", line 8, in <module>\r\n\u00c42021-02-16T20:28:10.783Z\u00c5     from . import dispatcher\r\n\u00c42021-02-16T20:28:10.783Z\u00c5   File \"/opt/homebrew/Cellar/azure-functions-core-tools\u00c93/3.0.3284/workers/python/3.9/OSX/X64/azure_functions_worker/dispatcher.py\", line 21, in <module>\r\n\u00c42021-02-16T20:28:10.783Z\u00c5     import grpc\r\n\u00c42021-02-16T20:28:10.783Z\u00c5   File \"/opt/homebrew/Cellar/azure-functions-core-tools\u00c93/3.0.3284/workers/python/3.9/OSX/X64/grpc/__init__.py\", line 23, in <module>\r\n\u00c42021-02-16T20:28:10.783Z\u00c5     from grpc._cython import cygrpc as _cygrpc\r\n\u00c42021-02-16T20:28:10.784Z\u00c5 ImportError: dlopen(/opt/homebrew/Cellar/azure-functions-core-tools\u00c93/3.0.3284/workers/python/3.9/OSX/X64/grpc/_cython/cygrpc.cpython-39-darwin.so, 2): no suitable image found.  Did find:",
+  "source_code": "# Reproducer derived from https://github.com/Azure/azure-functions-python-worker/issues/915\n# repo: Azure/azure-functions-python-worker\n# title: Support running on M1 Macs [Python]\n\n# Last frames in traceback:\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # Hey,\n    # i am running into issues with python azure function under VSCode. FYI the same example I will present is working fine wi\n    # Set up:\n    # Mac M1 Big Sur v11.2.1\n    # python 3.9.1\n    # Core Tools Version:       3.0.3284\n    # I am following the usual workflow: func init, func new, func start. When I start the function, this is what I get:\n    raise ImportError('reproduce: see https://github.com/Azure/azure-functions-python-worker/issues/915')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Install missing package or pin compatible version; check import path.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:azure-functions-python-worker",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

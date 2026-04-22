@@ -1,0 +1,11 @@
+{
+  "id": "bug_012",
+  "source_url": "https://github.com/home-assistant/core/issues/130245",
+  "source_type": "github",
+  "error_class": "KeyError",
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 266, in _handle_refresh_interval\r\n    await self._async_refresh(log_failures=True, scheduled=True)\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 481, in _async_refresh\r\n    self.async_update_listeners()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 176, in async_update_listeners\r\n    update_callback()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 561, in _handle_coordinator_update\r\n    self.async_write_ha_state()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 1007, in async_write_ha_state\r\n    self._async_write_ha_state()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 1132, in _async_write_ha_state\r\n    self.__async_calculate_state()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 1069, in __async_calculate_state\r\n    state = self._stringify_state(available)\r\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 1013, in _stringify_state\r\n    if (state := self.state) is None:\r\n                 ^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/components/sensor/__init__.py\", line 544, in state\r\n    value = self.native_value\r\n            ^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/components/pi_hole/sensor.py\", line 111, in native_value\r\n    return round(self.api.data[self.entity_description.key], 2)  # type: ignore[no-any-return]\r\n                 ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nKeyError: 'ads_blocked_today'",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "Apache-2.0"
+}

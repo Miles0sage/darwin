@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_075",
+  "source_url": "https://github.com/jazzband/pip-tools/issues/2252",
+  "source_type": "github",
+  "error_class": "AttributeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/usr/local/bin/pip-compile\", line 7, in <module>\n    sys.exit(cli())\n             ^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/click/core.py\", line 1442, in __call__\n    return self.main(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/click/core.py\", line 1363, in main\n    rv = self.invoke(ctx)\n         ^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/click/core.py\", line 1226, in invoke\n    return ctx.invoke(self.callback, **ctx.params)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/click/core.py\", line 794, in invoke\n    return callback(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/click/decorators.py\", line 34, in new_func\n    return f(get_current_context(), *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/piptools/scripts/compile.py\", line 460, in cli\n    resolver = resolver_cls(\n               ^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/piptools/resolver.py\", line 513, in __init__\n    self._constraints_map = {\n                            ^\n  File \"/usr/local/lib/python3.11/site-packages/piptools/resolver.py\", line 514, in <dictcomp>\n    ireq_key: combine_install_requirements(ireqs)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/piptools/resolver.py\", line 136, in combine_install_requirements\n    combined_ireq = copy_install_requirement(\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.11/site-packages/piptools/utils.py\", line 492, in copy_install_requirement\n    \"use_pep517\": template.use_pep517,\n                  ^^^^^^^^^^^^^^^^^^^\nAttributeError: 'InstallRequirement' object has no attribute 'use_pep517'",
+  "source_code": "# Reproducer derived from https://github.com/jazzband/pip-tools/issues/2252\n# repo: jazzband/pip-tools\n# title: pip-tools 7.5.1 is not compatible with pip 25.3\n\n# Last frames in traceback:\n#   /usr/local/lib/python3.11/site-packages/click/core.py line 794 in invoke\n#   /usr/local/lib/python3.11/site-packages/click/decorators.py line 34 in new_func\n#   /usr/local/lib/python3.11/site-packages/piptools/scripts/compile.py line 460 in cli\n#   /usr/local/lib/python3.11/site-packages/piptools/resolver.py line 513 in __init__\n#   /usr/local/lib/python3.11/site-packages/piptools/resolver.py line 136 in combine_install_requirements\n#   /usr/local/lib/python3.11/site-packages/piptools/utils.py line 492 in copy_install_requirement\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # > [!warning]\n    # > ### \u26a0\ufe0f Ensuring compatibility with the released versions \u26a0\ufe0f\n    # >\n    # > A workaround is to make sure that `pip < 25.3` in the environment where `pip-tools` is installed. It is a good idea to\n    # >\n    # > *Eventually*, `pip-tools` will merge a compatibility PR (likely #2253, which is WIP as of now). Then, *at some point i\n    raise AttributeError('reproduce: see https://github.com/jazzband/pip-tools/issues/2252')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "workaround is to make sure that `pip < 25.3` in the environment where `pip-tools` is installed. It is a good idea to use `pip-tools` for pinning its own env, just like any other app.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:pip-tools",
+    "multi-file",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

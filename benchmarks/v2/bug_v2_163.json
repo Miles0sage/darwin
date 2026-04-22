@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_163",
+  "source_url": "https://stackoverflow.com/questions/43362688/pandas-concat-memoryerror",
+  "source_type": "stackoverflow",
+  "error_class": "MemoryError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/opt/etl/merge.py\", line 41, in build\n    big = pd.concat(frames, ignore_index=True, copy=False)\n  File \"/usr/lib/python3.11/site-packages/pandas/core/reshape/concat.py\", line 431, in concat\n    return op.get_result()\n  File \"/usr/lib/python3.11/site-packages/pandas/core/reshape/concat.py\", line 657, in get_result\n    new_data = concatenate_managers(\n  File \"/usr/lib/python3.11/site-packages/pandas/core/internals/concat.py\", line 243, in concatenate_managers\n    values = _concatenate_join_units(join_units, concat_axis, copy=copy)\n  File \"/usr/lib/python3.11/site-packages/pandas/core/internals/concat.py\", line 488, in _concatenate_join_units\n    concat_values = concat_compat(concat_values, axis=1)\n  File \"/usr/lib/python3.11/site-packages/pandas/core/dtypes/concat.py\", line 85, in concat_compat\n    return np.concatenate(to_concat, axis=axis, dtype=to_concat[0].dtype)\nMemoryError: Unable to allocate 14.8 GiB for an array with shape (200000000, 10) and data type float64",
+  "source_code": "import pandas as pd\nimport numpy as np\n\ndef load_partition(i):\n    # 1M rows x 10 floats => ~80MB each\n    return pd.DataFrame(np.random.rand(1_000_000, 10), columns=[f'c{j}' for j in range(10)])\n\ndef build():\n    frames = [load_partition(i) for i in range(200)]  # 16GB+ total\n    # BUG: building one giant frame in-memory\n    big = pd.concat(frames, ignore_index=True, copy=False)\n    return big.mean()\n\nif __name__ == '__main__':\n    print(build())",
+  "expected_fix_hint": "Stream partitions (process each, then release) or use dask/polars for out-of-core aggregation. Aggregate incrementally.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "data-science",
+    "deep-trace",
+    "library:pandas",
+    "memory",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

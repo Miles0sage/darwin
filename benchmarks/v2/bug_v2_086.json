@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_086",
+  "source_url": "https://github.com/pypa/pip/issues/5367",
+  "source_type": "github",
+  "error_class": "ImportError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"get-pip.py\", line 20649, in <module>\r\n    main()\r\n  File \"get-pip.py\", line 197, in main\r\n    bootstrap(tmpdir=tmpdir)\r\n  File \"get-pip.py\", line 82, in bootstrap\r\n    import pip._internal\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/__init__.py\", line 42, in <module>\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/cmdoptions.py\", line 16, in <module>\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/index.py\", line 25, in <module>\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/download.py\", line 35, in <module>\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/locations.py\", line 10, in <module>\r\nImportError: cannot import name 'sysconfig'",
+  "source_code": "python3.6 get-pip.py\r\n```\r\n\r\nThe error message:\r\n```\r\nTraceback (most recent call last):\r\n  File \"get-pip.py\", line 20649, in <module>\r\n    main()\r\n  File \"get-pip.py\", line 197, in main\r\n    bootstrap(tmpdir=tmpdir)\r\n  File \"get-pip.py\", line 82, in bootstrap\r\n    import pip._internal\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/__init__.py\", line 42, in <module>\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/cmdoptions.py\", line 16, in <module>\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/index.py\", line 25, in <module>\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/download.py\", line 35, in <module>\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/locations.py\", line 10, in <module>\r\nImportError: cannot import name 'sysconfig'\r\nError in sys.excepthook:\r\nTraceback (most recent call last):\r\n  File \"/usr/lib/python3/dist-packages/apport_python_hook.py\", line 63, in apport_excepthook\r\n    from apport.fileutils import likely_packaged, get_recent_crashes\r\n  File \"/usr/lib/python3/dist-packages/apport/__init__.py\", line 5, in <module>\r\n    from apport.report import Report\r\n  File \"/usr/lib/python3/dist-packages/apport/report.py\", line 30, in <module>\r\n    import apport.fileutils\r\n  File \"/usr/lib/python3/dist-packages/apport/fileutils.py\", line 23, in <module>\r\n    from apport.packaging_impl import impl as packaging\r\n  File \"/usr/lib/python3/dist-packages/apport/packaging_impl.py\", line 23, in <module>\r\n    import apt\r\n  File \"/usr/lib/python3/dist-packages/apt/__init__.py\", line 23, in <module>\r\n    import apt_pkg\r\nModuleNotFoundError: No module named 'apt_pkg'\r\n\r\nOriginal exception was:\r\nTraceback (most recent call last):\r\n  File \"get-pip.py\", line 20649, in <module>\r\n    main()\r\n  File \"get-pip.py\", line 197, in main\r\n    bootstrap(tmpdir=tmpdir)\r\n  File \"get-pip.py\", line 82, in bootstrap\r\n    import pip._internal\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/__init__.py\", line 42, in <module>\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/cmdoptions.py\", line 16, in <module>\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/index.py\", line 25, in <module>\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/download.py\", line 35, in <module>\r\n  File \"/tmp/tmpodo51doi/pip.zip/pip/_internal/locations.py\", line 10, in <module>\r\nImportError: cannot import name 'sysconfig'",
+  "expected_fix_hint": "solution proposed in #5356 doesn't solve the problem with this version of Ubuntu\r",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:pip",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

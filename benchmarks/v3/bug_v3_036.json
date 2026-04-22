@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_036",
+  "source_url": "https://github.com/openai/openai-python/issues/743",
+  "source_type": "github",
+  "error_class": "ModuleNotFoundError",
+  "complexity_score": 2,
+  "library": "openai",
+  "license": "MIT",
+  "complexity_tags": [
+    "openai",
+    "async"
+  ],
+  "expected_fix_hint": "openai.error module removed in v1.0. Use openai.APIError, openai.RateLimitError, etc.",
+  "stderr": "Traceback (most recent call last):\n  File \"call.py\", line 28, in <module>\n    main()\n  File \"call.py\", line 24, in main\n    result = call_with_retry('hi')\n  File \"call.py\", line 18, in call_with_retry\n    except openai.error.RateLimitError:\n  File \"/usr/lib/python3.11/site-packages/openai/__init__.py\", line 305, in __getattr__\n    raise ModuleNotFoundError(name)\nModuleNotFoundError: No module named 'openai.error'",
+  "source_code": "import time\nimport openai\n\n\nclass OpenAIClient:\n    def __init__(self, api_key='dummy', retries=3):\n        self.api_key = api_key\n        self.retries = retries\n\n    def call_with_retry(self, prompt):\n        for i in range(self.retries):\n            try:\n                # BUG: openai.error removed in v1.x\n                return openai.ChatCompletion.create(\n                    model='gpt-4', messages=[{'role': 'user', 'content': prompt}]\n                )\n            except openai.error.RateLimitError:\n                time.sleep(2**i)\n        raise RuntimeError('exhausted')\n\n\ndef call_with_retry(p):\n    return OpenAIClient().call_with_retry(p)\n\n\ndef main():\n    result = call_with_retry('hi')\n    print(result)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_080",
+  "source_url": "https://github.com/ipython/ipython/issues/12745",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/local/lib/python3.8/site-packages/IPython/terminal/ptutils.py\", line 113, in get_completions\r\n    yield from self._get_completions(body, offset, cursor_position, self.ipy_completer)\r\n  File \"/usr/local/lib/python3.8/site-packages/IPython/terminal/ptutils.py\", line 129, in _get_completions\r\n    for c in completions:\r\n  File \"/usr/local/lib/python3.8/site-packages/IPython/core/completer.py\", line 438, in _deduplicate_completions\r\n    completions = list(completions)\r\n  File \"/usr/local/lib/python3.8/site-packages/IPython/core/completer.py\", line 1818, in completions\r\n    for c in self._completions(text, offset, _timeout=self.jedi_compute_type_timeout/1000):\r\n  File \"/usr/local/lib/python3.8/site-packages/IPython/core/completer.py\", line 1861, in _completions\r\n    matched_text, matches, matches_origin, jedi_matches = self._complete(\r\n  File \"/usr/local/lib/python3.8/site-packages/IPython/core/completer.py\", line 2029, in _complete\r\n    completions = self._jedi_matches(\r\n  File \"/usr/local/lib/python3.8/site-packages/IPython/core/completer.py\", line 1373, in _jedi_matches\r\n    interpreter = jedi.Interpreter(\r\n  File \"/usr/local/lib/python3.8/site-packages/jedi/api/__init__.py\", line 725, in __init__\r\n    super().__init__(code, environment=environment,\r\nTypeError: __init__() got an unexpected keyword argument 'column'",
+  "source_code": "# source: https://github.com/ipython/ipython/issues/12745\n# repo: ipython/ipython\n# title: NameError: name 'sys' is not defined\n# \n# Got the below error when I use this code snipets,\n# Error:\n\nIn [1]: from elasticsearch import Elasticsearch\r\nIn [2]: es = Elasticsearch(hosts=[{\"host\": \"host.docker.internal\", \"port\": 9200}],\r\n   ...:                     max_retries=30,\r\n   ...:                     retry_on_timeout=True,\r\n   ...:                     request_timeout=30)\r\nIn [3]: es.info()",
+  "expected_fix_hint": "Fix argument type/shape; check signature changes between library versions.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "deep-trace",
+    "library:ipython",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

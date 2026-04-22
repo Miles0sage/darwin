@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_101",
+  "source_url": "https://github.com/huggingface/trl/issues/813",
+  "source_type": "github",
+  "error_class": "EnvironmentError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"<stdin>\", line 1, in <module>\r\n  File \"/home/ray/anaconda3/lib/python3.8/site-packages/transformers/models/auto/auto_factory.py\", line 527, in from_pretrained\r\n    config, kwargs = AutoConfig.from_pretrained(\r\n  File \"/home/ray/anaconda3/lib/python3.8/site-packages/transformers/models/auto/configuration_auto.py\", line 1023, in from_pretrained\r\n    config_dict, unused_kwargs = PretrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)\r\n  File \"/home/ray/anaconda3/lib/python3.8/site-packages/transformers/configuration_utils.py\", line 620, in get_config_dict\r\n    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)\r\n  File \"/home/ray/anaconda3/lib/python3.8/site-packages/transformers/configuration_utils.py\", line 675, in _get_config_dict\r\n    resolved_config_file = cached_file(\r\n  File \"/home/ray/anaconda3/lib/python3.8/site-packages/transformers/utils/hub.py\", line 400, in cached_file\r\n    raise EnvironmentError(",
+  "source_code": "# source: https://github.com/huggingface/trl/issues/813\n# repo: huggingface/trl\n# title: Support for exporting XLA trained models\n# \n# If I train a Transformers model on Google TPU VMs, it appears that when I try to save the `SFTTrainer` models, that not everything I need gets included, I think?\n# I've tried doing both `.save_model()` and `trainer.model.save_pretrained`.\n# If I try to load the directory created by `.save_model` directly I see:\n# If I try to load the adapter from calling `trainer.model.save_pretrained` then I see:\n# ---\n# How should I be saving the model so that I can load it again later? Thank you in advance!\n\n>>> AutoModelForCausalLM.from_pretrained(\"/tmp/sft\")\r\nTraceback (most recent call last):\r\n  File \"<stdin>\", line 1, in <module>\r\n  File \"/home/ray/anaconda3/lib/python3.8/site-packages/transformers/models/auto/auto_factory.py\", line 527, in from_pretrained\r\n    config, kwargs = AutoConfig.from_pretrained(\r\n  File \"/home/ray/anaconda3/lib/python3.8/site-packages/transformers/models/auto/configuration_auto.py\", line 1023, in from_pretrained\r\n    config_dict, unused_kwargs = PretrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)\r\n  File \"/home/ray/anaconda3/lib/python3.8/site-packages/transformers/configuration_utils.py\", line 620, in get_config_dict\r\n    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)\r\n  File \"/home/ray/anaconda3/lib/python3.8/site-packages/transformers/configuration_utils.py\", line 675, in _get_config_dict\r\n    resolved_config_file = cached_file(\r\n  File \"/home/ray/anaconda3/lib/python3.8/site-packages/transformers/utils/hub.py\", line 400, in cached_file\r\n    raise EnvironmentError(\r\nOSError: /tmp/sft does not appear to have a file named config.json. Checkout 'https://huggingface.co//tmp/sft/None' for available files.",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "data-science",
+    "deep-trace",
+    "library:trl",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "bug_029",
+  "source_url": "https://github.com/alandtse/alexa_media_player/issues/2418",
+  "source_type": "github",
+  "error_class": "InvalidUrlClientError",
+  "stderr": "File \"/usr/local/lib/python3.12/site-packages/alexapy/alexalogin.py\", line 687, in login\r\n    post_resp = await self._session.post(\r\n\r\naiohttp.client_exceptions.InvalidUrlClientError: /errors/validateCaptcha",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "Apache-2.0"
+}

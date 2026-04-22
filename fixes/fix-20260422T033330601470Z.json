@@ -1,0 +1,12 @@
+{
+  "fingerprint": "255557337aa3ea77",
+  "error_class": "FileNotFoundError",
+  "error_signature": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/api/v3/data.json'",
+  "root_cause": "soak-missing_file",
+  "fix_applied": true,
+  "fix_code": "from pathlib import Path\n\nBASE_DIR = Path(\"/tmp\")\n\ndef load_delta():\n    try:\n        api_path = BASE_DIR / \"api\" / \"v3\" / \"data.json\"\n        if not api_path.exists():\n            api_path = BASE_DIR / \"api\" / \"v1\" / \"data.json\"\n        return api_path.read_text()\n    except Exception as e:\n        raise\n\ndef run_delta():\n    data = load_delta()\n    print(data)\n\nif __name__ == \"__main__\":\n    try:\n        run_delta()\n    except Exception as e:\n        raise",
+  "timestamp": "20260422T033330601470Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

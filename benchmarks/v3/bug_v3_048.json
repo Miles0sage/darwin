@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_048",
+  "source_url": "https://github.com/python/cpython/issues/89519",
+  "source_type": "github",
+  "error_class": "RecursionError",
+  "complexity_score": 3,
+  "library": "stdlib",
+  "license": "Python-2.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "__getattr__ recursively accessing self.attr. Use object.__setattr__ or __dict__.",
+  "stderr": "Traceback (most recent call last):\n  File \"proxy.py\", line 28, in <module>\n    main()\n  File \"proxy.py\", line 24, in main\n    print(p.name)\n  File \"proxy.py\", line 14, in __getattr__\n    return self.data[name]\n  File \"proxy.py\", line 14, in __getattr__\n    return self.data[name]\n  File \"proxy.py\", line 14, in __getattr__\n    return self.data[name]\nRecursionError: maximum recursion depth exceeded\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "class Proxy:\n    def __init__(self, data):\n        # BUG: self.data = data triggers __setattr__ which ok\n        # but __getattr__ accessing self.data recurses\n        self.data = data\n\n    def __getattr__(self, name):\n        # self.data isn't set yet when Python invokes __getattr__\n        # during __init__ if anything indirectly queries the attr,\n        # infinite recursion\n        return self.data[name]\n\n\nclass LazyProxy(Proxy):\n    def __init__(self, loader):\n        super().__init__({})\n        self.loader = loader\n\n\ndef main():\n    # Deleting 'data' then reading triggers infinite recursion\n    p = Proxy({'name': 'alice'})\n    del p.__dict__['data']\n    print(p.name)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_023",
+  "source_url": "https://github.com/scikit-learn/scikit-learn/issues/20664",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "complexity_score": 4,
+  "library": "scikit-learn",
+  "license": "BSD-3-Clause",
+  "complexity_tags": [
+    "sklearn",
+    "ml"
+  ],
+  "expected_fix_hint": "Fit a transformer on 2D array. Reshape 1D to (-1, 1).",
+  "stderr": "Traceback (most recent call last):\n  File \"pipeline.py\", line 28, in <module>\n    main()\n  File \"pipeline.py\", line 24, in main\n    fit_and_transform(data)\n  File \"pipeline.py\", line 17, in fit_and_transform\n    return scaler.fit_transform(X)\n  File \"/usr/lib/python3.11/site-packages/sklearn/base.py\", line 890, in fit_transform\n    return self.fit(X, **fit_params).transform(X)\nValueError: Expected 2D array, got 1D array instead. Reshape your data using array.reshape(-1, 1).",
+  "source_code": "import numpy as np\nfrom sklearn.preprocessing import StandardScaler\n\n\nclass Pipeline:\n    def __init__(self):\n        self.scaler = StandardScaler()\n\n    def fit_and_transform(self, X):\n        # BUG: X is 1D array, scaler requires 2D\n        return self.scaler.fit_transform(X)\n\n\ndef fit_and_transform(X):\n    p = Pipeline()\n    return p.fit_and_transform(X)\n\n\ndef main():\n    np.random.seed(0)\n    data = np.random.rand(100) * 10  # 1D!\n    result = fit_and_transform(data)\n    print(result.shape)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

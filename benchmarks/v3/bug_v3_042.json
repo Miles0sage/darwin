@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_042",
+  "source_url": "https://github.com/pytorch/pytorch/issues/77743",
+  "source_type": "github",
+  "error_class": "AssertionError",
+  "complexity_score": 4,
+  "library": "torch",
+  "license": "BSD-3-Clause",
+  "complexity_tags": [
+    "torch",
+    "ml"
+  ],
+  "expected_fix_hint": "Tensor shape mismatch in test. Ensure forward produces expected output shape.",
+  "stderr": "Traceback (most recent call last):\n  File \"test_model.py\", line 30, in <module>\n    test_output_shape()\n  File \"test_model.py\", line 26, in test_output_shape\n    assert out.shape == (batch, n_classes), f'got {out.shape}'\n  File \"/usr/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\nAssertionError: got torch.Size([8, 4, 10])",
+  "source_code": "import torch\nimport torch.nn as nn\n\n\nclass Model(nn.Module):\n    def __init__(self, in_dim=32, n_classes=10):\n        super().__init__()\n        self.fc = nn.Linear(in_dim, n_classes)\n\n    def forward(self, x):\n        # BUG: didn't flatten before final FC\n        return self.fc(x)\n\n\ndef test_output_shape():\n    torch.manual_seed(0)\n    batch = 8\n    n_classes = 10\n    model = Model(32, n_classes)\n    x = torch.randn(batch, 4, 32)  # includes seq dim\n    out = model(x)\n    assert out.shape == (batch, n_classes), f'got {out.shape}'\n\n\nif __name__ == '__main__':\n    test_output_shape()\n",
+  "has_reproducer": true
+}

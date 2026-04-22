@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_030",
+  "source_url": "https://github.com/python/cpython/issues/98636",
+  "source_type": "github",
+  "error_class": "RuntimeError",
+  "complexity_score": 4,
+  "library": "asyncio",
+  "license": "Python-2.0",
+  "complexity_tags": [
+    "async",
+    "asyncio"
+  ],
+  "expected_fix_hint": "asyncio.run() cannot be called from inside a running event loop. Use await or get_running_loop.",
+  "stderr": "Traceback (most recent call last):\n  File \"/home/user/srv/main.py\", line 30, in <module>\n    asyncio.run(outer())\n  File \"/usr/lib/python3.11/asyncio/runners.py\", line 44, in run\n    return loop.run_until_complete(main)\n  File \"/home/user/srv/main.py\", line 24, in outer\n    return nested()\n  File \"/home/user/srv/main.py\", line 18, in nested\n    return asyncio.run(inner())\n  File \"/usr/lib/python3.11/asyncio/runners.py\", line 33, in run\n    raise RuntimeError(\nRuntimeError: asyncio.run() cannot be called from a running event loop",
+  "source_code": "import asyncio\n\n\nclass Scheduler:\n    def __init__(self):\n        self.jobs = []\n\n    async def inner(self):\n        await asyncio.sleep(0.01)\n        return 'inner done'\n\n    def nested(self):\n        # BUG: already inside event loop; cannot call asyncio.run again\n        return asyncio.run(self.inner())\n\n    async def outer(self):\n        return self.nested()\n\n\nasync def outer():\n    s = Scheduler()\n    return await s.outer() if asyncio.iscoroutine(s.outer()) else s.outer()\n\n\nif __name__ == '__main__':\n    asyncio.run(outer())\n",
+  "has_reproducer": true
+}

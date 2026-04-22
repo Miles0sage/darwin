@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_100",
+  "source_url": "https://github.com/SuLvXiangXin/zipnerf-pytorch/issues/83",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"D:\\zipnerf-pytorch\\extract.py\", line 640, in <module>\r\n    app.run(main)\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python39\\lib\\site-packages\\absl\\app.py\", line 308, in run\r\n    _run_main(main, args)\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python39\\lib\\site-packages\\absl\\app.py\", line 254, in _run_main\r\n    sys.exit(main(argv))\r\n  File \"D:\\zipnerf-pytorch\\extract.py\", line 381, in main\r\n    verts, faces, normals, values = measure.marching_cubes(\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python39\\lib\\site-packages\\skimage\\measure\\_marching_cubes_lewiner.py\", line 131, in marching_cubes\r\n    return _marching_cubes_lewiner(volume, level, spacing,\r\n  File \"C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python39\\lib\\site-packages\\skimage\\measure\\_marching_cubes_lewiner.py\", line 160, in _marching_cubes_lewiner\r\n    raise ValueError(\"Surface level must be within volume data range.\")",
+  "source_code": "# source: https://github.com/SuLvXiangXin/zipnerf-pytorch/issues/83\n# repo: SuLvXiangXin/zipnerf-pytorch\n# title: ValueError: surface level must be within volume data range. \n# \n# I've been trying to use the mesh extraction operation from this library, but I'm constantly getting the error above. I've used the example data and pretrained weights. \n# Here's the console output: \n# When I attempted to running the training process myself first, I got an MemoryError and after adjusting the number of workers from 8 to 4 it crashed with \"ValueError: The histogram is empty, please file a bug report.\".\n# MemoryError:\n# ```\n# PS C:\\Users\\Administrator\\Documents\\zipnerf-pytorch> python train.py --gin_configs=configs/360.gin --gin_bindings=\"Config.data_dir = 'C:/Users/Administrator/Documents/zipnerf-pytorch/data/360_v2/bicycle'\" --gin_bindings=\"Config.exp_name = 'C:/Users/Administrator/Documents/zipnerf-pytorch/360_v2/bicycle'\" --gin_bindings=\"Config.factor = 4\" --gin_bindi\n\nWhen I attempted to running the training process myself first, I got an MemoryError and after adjusting the number of workers from 8 to 4 it crashed with \"ValueError: The histogram is empty, please file a bug report.\".\r\n\r\nMemoryError:",
+  "expected_fix_hint": "Validate input range/shape; sanitize untrusted values at boundary.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "data-science",
+    "deep-trace",
+    "library:zipnerf-pytorch",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

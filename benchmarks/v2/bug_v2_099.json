@@ -1,0 +1,21 @@
+{
+  "id": "bug_v2_099",
+  "source_url": "https://github.com/PrefectHQ/prefect/issues/8597",
+  "source_type": "github",
+  "error_class": "CancelledError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/local/lib/python3.8/site-packages/httpcore/backends/asyncio.py\", line 34, in read\r\n    return await self._stream.receive(max_bytes=max_bytes)\r\n  File \"/usr/local/lib/python3.8/site-packages/anyio/streams/tls.py\", line 195, in receive\r\n    data = await self._call_sslobject_method(self._ssl_object.read, max_bytes)\r\n  File \"/usr/local/lib/python3.8/site-packages/anyio/streams/tls.py\", line 137, in _call_sslobject_method\r\n    data = await self.transport_stream.receive()\r\n  File \"/usr/local/lib/python3.8/site-packages/anyio/_backends/_asyncio.py\", line 1265, in receive\r\n    await self._protocol.read_event.wait()\r\n  File \"/usr/local/lib/python3.8/asyncio/locks.py\", line 309, in wait\r\n    await fut\r\nasyncio.exceptions.CancelledError",
+  "source_code": "# source: https://github.com/PrefectHQ/prefect/issues/8597\n# repo: PrefectHQ/prefect\n# title: \"Task run 'xxx' received abort during orchestration\" errors for large flows with DaskTaskRunner\n# \n# ### First check\n# - [X] I added a descriptive title to this issue.\n# - [X] I used the GitHub search to find a similar issue and didn't find it.\n# - [X] I searched the Prefect documentation for this issue.\n# - [X] I checked that this issue is related to Prefect and not one of its dependencies.\n# ### Bug summary\n# Our flow is encountering the following error on a daily basis:\n# `Task run 'name_of_task-1234' - Task run 'task_run_id' received abort during orchestration: This run cannot transition to the RUNNING state from the RUNNING state. Task run is in RUNNING state.`\n# It is not entirely clear why this is happening, but feels like it's a cloud-side issue with very large flows. We had a [similar issue previously](https://github.com/PrefectHQ/prefect/issues/8435) with DB timeouts, but that error at l\n\n### Setup / Flow / Infrastructure\r\nThe Flow is 3700 tasks, up to 64 tasks running in paralle at once. Flow is executed with DaskTaskRunner, on 4x ephemeral Dask Worker pods (running on EKS k8s), 16 threads each. All of the k8s pods (agent, job, dask scheduler and 4x dask workers) are alive and healthy for the duration of the flow run, i.e. there are no infrastructure issues, no pod crashes or restarts etc.\r\n\r\n\r\n### Recent occurences\r\nSome examples from when it's happened in the last couple of days. Timestamps are in UTC (to cross-ref with cloud-side logs)\r\n\r\n**2023-02-19**\r\nhttps://app.prefect.cloud/account/1235831b-7019-4987-b759-4341850b4c5a/workspace/85fb93b5-ea3a-4da7-8be7-aa4e13c6397d/flow-runs/flow-run/126d302e-b300-42f0-9751-3ff3f9a2b0cd",
+  "expected_fix_hint": "Catch and re-raise or suppress per policy; avoid swallowing inside shield.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:prefect",
+    "multi-file",
+    "protocol",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

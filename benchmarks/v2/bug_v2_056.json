@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_056",
+  "source_url": "https://github.com/thtrieu/darkflow/issues/633",
+  "source_type": "github",
+  "error_class": "OverflowError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/home/ubuntu/anaconda3/envs/yolo/bin/flow\", line 6, in <module>\r\n    exec(compile(open(__file__).read(), __file__, 'exec'))\r\n  File \"/home/ubuntu/darkflow/flow\", line 6, in <module>\r\n    cliHandler(sys.argv)\r\n  File \"/home/ubuntu/darkflow/darkflow/cli.py\", line 41, in cliHandler\r\n    tfnet.predict()\r\n  File \"/home/ubuntu/darkflow/darkflow/net/flow.py\", line 143, in predict\r\n    enumerate(out))\r\n  File \"/home/ubuntu/anaconda3/envs/yolo/lib/python3.6/multiprocessing/pool.py\", line 266, in map\r\n    return self._map_async(func, iterable, mapstar, chunksize).get()\r\n  File \"/home/ubuntu/anaconda3/envs/yolo/lib/python3.6/multiprocessing/pool.py\", line 644, in get\r\n    raise self._value\r\n  File \"/home/ubuntu/anaconda3/envs/yolo/lib/python3.6/multiprocessing/pool.py\", line 119, in worker\r\n    result = (True, func(*args, **kwds))\r\n  File \"/home/ubuntu/anaconda3/envs/yolo/lib/python3.6/multiprocessing/pool.py\", line 44, in mapstar\r\n    return list(map(*args))\r\n  File \"/home/ubuntu/darkflow/darkflow/net/flow.py\", line 142, in <lambda>\r\n    prediction, os.path.join(inp_path, this_batch[i])))(*p),\r\n  File \"/home/ubuntu/darkflow/darkflow/net/flow.py\", line 142, in <lambda>\r\n    prediction, os.path.join(inp_path, this_batch[i])))(*p),\r\n  File \"/home/ubuntu/darkflow/darkflow/net/yolov2/predict.py\", line 45, in postprocess\r\n    boxResults = self.process_box(b, h, w, threshold)\r\n  File \"/home/ubuntu/darkflow/darkflow/net/yolo/predict.py\", line 28, in process_box\r\n    left  = int ((b.x - b.w/2.) * w)\r\nOverflowError: cannot convert float infinity to integer",
+  "source_code": "# Reproducer derived from https://github.com/thtrieu/darkflow/issues/633\n# repo: thtrieu/darkflow\n# title: OverflowError: cannot convert float infinity to integer\n\n# Last frames in traceback:\n#   /home/ubuntu/anaconda3/envs/yolo/lib/python3.6/multiprocessing/pool.py line 266 in map\n#   /home/ubuntu/anaconda3/envs/yolo/lib/python3.6/multiprocessing/pool.py line 644 in get\n#   /home/ubuntu/anaconda3/envs/yolo/lib/python3.6/multiprocessing/pool.py line 119 in worker\n#   /home/ubuntu/anaconda3/envs/yolo/lib/python3.6/multiprocessing/pool.py line 44 in mapstar\n#   /home/ubuntu/darkflow/darkflow/net/yolov2/predict.py line 45 in postprocess\n#   /home/ubuntu/darkflow/darkflow/net/yolo/predict.py line 28 in process_box\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # Hi,\n    # I am facing below issue when trying to run the test.\n    # Forwarding 6 inputs ...\n    # Total time = 7.751178503036499s / 6 inps = 0.7740758386159626 ips\n    # Post processing 6 inputs ...\n    # Traceback (most recent call last):\n    # File \"/home/ubuntu/anaconda3/envs/yolo/bin/flow\", line 6, in <module>\n    # exec(compile(open(__file__).read(), __file__, 'exec'))\n    raise OverflowError('reproduce: see https://github.com/thtrieu/darkflow/issues/633')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Use Decimal or math.inf handling; pre-scale values.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "async",
+    "deep-trace",
+    "library:darkflow",
+    "multi-file",
+    "multiprocessing"
+  ],
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_149",
+  "source_url": "https://stackoverflow.com/questions/60789567/pytorch-tensor-device-mismatch",
+  "source_type": "stackoverflow",
+  "error_class": "RuntimeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"train.py\", line 62, in <module>\n    loss.backward()\n  File \"/usr/lib/python3.11/site-packages/torch/_tensor.py\", line 524, in backward\n    torch.autograd.backward(self, gradient, retain_graph, create_graph, inputs=inputs)\n  File \"/usr/lib/python3.11/site-packages/torch/autograd/__init__.py\", line 267, in backward\n    _engine_run_backward(\n  File \"/usr/lib/python3.11/site-packages/torch/autograd/graph.py\", line 744, in _engine_run_backward\n    return Variable._execution_engine.run_backward(\nRuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu! (when checking argument for argument mat2 in method wrapper_CUDA_addmm)\nTensor self: cuda:0, shape [128, 512]\nTensor mat2: cpu,    shape [512, 10]",
+  "source_code": "import torch\nimport torch.nn as nn\n\nclass CustomLoss(nn.Module):\n    def __init__(self, class_weights):\n        super().__init__()\n        # BUG: class_weights are a plain list -> stored as CPU tensor\n        # even when the model is moved to CUDA.\n        self.weights = torch.tensor(class_weights, dtype=torch.float32)\n\n    def forward(self, logits, targets):\n        # logits on cuda:0, self.weights on cpu -> mismatched matmul\n        weighted = logits @ torch.diag(self.weights)\n        return nn.functional.cross_entropy(weighted, targets)\n\nclass Model(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.backbone = nn.Linear(768, 512)\n        self.head = nn.Linear(512, 10)\n\n    def forward(self, x):\n        return self.head(torch.relu(self.backbone(x)))\n\ndef train_step():\n    model = Model().cuda()\n    loss_fn = CustomLoss([1.0, 2.0, 1.5] + [1.0] * 7)\n    x = torch.randn(128, 768, device='cuda:0')\n    y = torch.randint(0, 10, (128,), device='cuda:0')\n    logits = model(x)\n    loss = loss_fn(logits, y)\n    loss.backward()\n\nif __name__ == '__main__':\n    train_step()",
+  "expected_fix_hint": "Register weights as a buffer (self.register_buffer) or move them to model.device in forward() so .to(device) propagates.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "data-science",
+    "deep-trace",
+    "library:pytorch",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

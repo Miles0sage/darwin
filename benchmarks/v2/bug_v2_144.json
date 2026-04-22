@@ -1,0 +1,21 @@
+{
+  "id": "bug_v2_144",
+  "source_url": "https://stackoverflow.com/questions/58774718/asyncio-event-loop-is-closed-when-getting-loop",
+  "source_type": "stackoverflow",
+  "error_class": "RuntimeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/app/pipeline/worker.py\", line 84, in _drain\n    results = await asyncio.gather(*self._pending, return_exceptions=True)\n  File \"/usr/lib/python3.11/asyncio/tasks.py\", line 452, in wait_for\n    return await fut\n  File \"/usr/lib/python3.11/asyncio/locks.py\", line 214, in wait\n    await fut\n  File \"/app/pipeline/worker.py\", line 139, in _post_result\n    loop.call_soon_threadsafe(self._queue.put_nowait, payload)\n  File \"/usr/lib/python3.11/asyncio/base_events.py\", line 808, in call_soon_threadsafe\n    self._check_closed()\n  File \"/usr/lib/python3.11/asyncio/base_events.py\", line 515, in _check_closed\n    raise RuntimeError('Event loop is closed')\nRuntimeError: Event loop is closed\nTask exception was never retrieved\nfuture: <Task finished name='Task-27' coro=<Worker._post_result() done, defined at /app/pipeline/worker.py:129> exception=RuntimeError('Event loop is closed')>",
+  "source_code": "import asyncio\nimport threading\nfrom concurrent.futures import ThreadPoolExecutor\n\nclass Worker:\n    def __init__(self):\n        self._queue: asyncio.Queue = asyncio.Queue()\n        self._pending: list[asyncio.Task] = []\n        self._pool = ThreadPoolExecutor(max_workers=4)\n        self._loop = asyncio.get_event_loop()\n\n    async def submit(self, items):\n        for it in items:\n            self._pending.append(asyncio.create_task(self._process(it)))\n        return self._pending\n\n    async def _process(self, item):\n        # Dispatch to thread pool, then schedule post-result on event loop\n        return await self._loop.run_in_executor(self._pool, self._cpu_bound, item)\n\n    def _cpu_bound(self, item):\n        # Blocking work; when done we schedule result back to loop\n        result = sum(range(item * 1000))\n        self._post_result({'item': item, 'r': result})\n        return result\n\n    def _post_result(self, payload):\n        loop = self._loop  # captured during __init__\n        loop.call_soon_threadsafe(self._queue.put_nowait, payload)\n\n    async def _drain(self):\n        results = await asyncio.gather(*self._pending, return_exceptions=True)\n        return results\n\nasync def main():\n    w = Worker()\n    await w.submit([1, 2, 3, 4])\n    results = await w._drain()\n    return results\n\nif __name__ == '__main__':\n    asyncio.run(main())\n    # On shutdown, pool threads still holding references call\n    # loop.call_soon_threadsafe after loop is closed -> RuntimeError.",
+  "expected_fix_hint": "Keep the event loop alive until the executor is shut down (pool.shutdown(wait=True) before loop close), or guard _post_result with try/except RuntimeError.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "asyncio",
+    "deep-trace",
+    "library:asyncio",
+    "multi-file",
+    "race",
+    "threading"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

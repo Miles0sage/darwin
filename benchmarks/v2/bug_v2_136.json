@@ -1,0 +1,16 @@
+{
+  "id": "bug_v2_136",
+  "source_url": "https://github.com/sqlalchemy-continuum/sqlalchemy-continuum/issues/178",
+  "source_type": "github",
+  "error_class": "IntegrityError",
+  "complexity_score": 3,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/local/lib/python3.6/site-packages/sqlalchemy/engine/base.py\", line 1182, in _execute_context\r\n    context)\r\n  File \"/usr/local/lib/python3.6/site-packages/sqlalchemy/engine/default.py\", line 470, in do_execute\r\n    cursor.execute(statement, parameters)\r\npsycopg2.IntegrityError: duplicate key value violates unique constraint \"version_membership_pkey\"",
+  "source_code": "# source: https://github.com/sqlalchemy-continuum/sqlalchemy-continuum/issues/178\n# repo: sqlalchemy-continuum/sqlalchemy-continuum\n# title: Duplicate key value on many-to-many relationship versioning\n# \n# I have a many-to-many relationship, here's the models:\n# When I tried to create the association model, I got `psycopg2.IntegrityError` error on the versioned membership table. \n# However, it seems to work fine if I use the association table instead of the association object to create this relationship:\n# But I do need association object in my case to support extra columns. Does Continuum actually support versioning use of association object for many-to-many relationship? Or is there any configuration I'm missing here to get this work?\n\nclass Membership(BaseModel):\r\n    tenant_id = Column(Integer, ForeignKey('tenant.tenant_id', ondelete='CASCADE'), primary_key=True)\r\n    user_id = Column(Integer, ForeignKey('user.user_id', ondelete='CASCADE'), primary_key=True)\r\n\r\nclass User(BaseModel):\r\n    user_id = Column(Integer, primary_key=True)\r\n\r\nclass Tenant(BaseModel):\r\n    tenant_id = Column(Integer, primary_key=True)",
+  "expected_fix_hint": "Add UPSERT / handle unique constraint collision; transaction rollback.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "library:sqlalchemy-continuum",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

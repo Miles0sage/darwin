@@ -1,0 +1,11 @@
+{
+  "id": "bug_020",
+  "source_url": "https://github.com/langchain-ai/langchain/issues/18820",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "stderr": "TypeError                                 Traceback (most recent call last)\r\n[<ipython-input-61-69f05d02fa37>](https://localhost:8080/#) in <cell line: 48>()\r\n     46 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)\r\n     47 \r\n---> 48 agent_executor.invoke({\"input\": \"get me three datapoints\"})\r\n     49 \r\n     50 \r\n\r\n27 frames\r\n[/usr/local/lib/python3.10/dist-packages/langchain/chains/base.py](https://localhost:8080/#) in invoke(self, input, config, **kwargs)\r\n    161         except BaseException as e:",
+  "source_code": "### Error Message and Stack Trace (if applicable)",
+  "expected_fix_hint": "",
+  "has_reproducer": true,
+  "license": "MIT"
+}

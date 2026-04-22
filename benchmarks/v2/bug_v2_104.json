@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_104",
+  "source_url": "https://github.com/benoitc/gunicorn/issues/2164",
+  "source_type": "github",
+  "error_class": "RecursionError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\napi      |   File \"/usr/local/lib/python3.7/site-packages/gunicorn/workers/base_async.py\", line 111, in handle_request\r\napi      |     resp.write_file(respiter)\r\napi      |   File \"/usr/local/lib/python3.7/site-packages/gunicorn/http/wsgi.py\", line 397, in write_file\r\napi      |     if not self.sendfile(respiter):\r\napi      |   File \"/usr/local/lib/python3.7/site-packages/gunicorn/http/wsgi.py\", line 387, in sendfile\r\napi      |     sent += os.sendfile(sockno, fileno, offset + sent, count)\r\napi      |   File \"/usr/local/lib/python3.7/site-packages/gunicorn/workers/ggevent.py\", line 36, in _gevent_sendfile\r\napi      |     return os.sendfile(fdout, fdin, offset, nbytes)\r\napi      |   File \"/usr/local/lib/python3.7/site-packages/gunicorn/workers/ggevent.py\", line 36, in _gevent_sendfile\r\napi      |     return os.sendfile(fdout, fdin, offset, nbytes)\r\napi      |   File \"/usr/local/lib/python3.7/site-packages/gunicorn/workers/ggevent.py\", line 36, in _gevent_sendfile \r\napi      |     return os.sendfile(fdout, fdin, offset, nbytes)\r\napi      |   [Previous line repeated 868 more times]\r\napi      | RecursionError: maximum recursion depth exceeded",
+  "source_code": "# Reproducer derived from https://github.com/benoitc/gunicorn/issues/2164\n# repo: benoitc/gunicorn\n# title: RecursionError in v20.0.0 from Docker\n\n# Last frames in traceback:\n#   /usr/local/lib/python3.7/site-packages/gunicorn/workers/base_async.py line 111 in handle_request\n#   /usr/local/lib/python3.7/site-packages/gunicorn/http/wsgi.py line 397 in write_file\n#   /usr/local/lib/python3.7/site-packages/gunicorn/http/wsgi.py line 387 in sendfile\n#   /usr/local/lib/python3.7/site-packages/gunicorn/workers/ggevent.py line 36 in _gevent_sendfile\n#   /usr/local/lib/python3.7/site-packages/gunicorn/workers/ggevent.py line 36 in _gevent_sendfile\n#   /usr/local/lib/python3.7/site-packages/gunicorn/workers/ggevent.py line 36 in _gevent_sendfile\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # I'm developed several python web services from Docker-compose, I'm using following Docker images:\n    # * python:3.7\n    # *  nginx:1.13.3\n    # So I'm create two services (containers) that communicates between them.\n    # We have no errors until today, and I think that the error is the version of gunicorn that in my requirements.txt is bein\n    # So in the latest days, after remove containers and images, it was installed the latest version of gunicorn (that's\n    raise RecursionError('reproduce: see https://github.com/benoitc/gunicorn/issues/2164')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Convert to iterative; increase sys.setrecursionlimit guardedly.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:gunicorn",
+    "multi-file",
+    "recursion"
+  ],
+  "license": "Apache-2.0"
+}

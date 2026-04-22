@@ -1,0 +1,12 @@
+{
+  "fingerprint": "e232c8669b1e371c",
+  "error_class": "TypeError",
+  "error_signature": "TypeError: 'dict_keys' object is not subscriptable",
+  "root_cause": "real-TypeError",
+  "fix_applied": true,
+  "fix_code": "metadata = {\"instance-id\": \"i-abcdef123\", \"region\": \"us-east-1\"}\n# Python 3 dict.keys() returns a view, not a list.\n# To make it subscriptable, it must be explicitly converted to a list.\ninstance_id = list(metadata.keys())[0]\n",
+  "timestamp": "20260422T040421130497Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

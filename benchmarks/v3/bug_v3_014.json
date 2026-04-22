@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_014",
+  "source_url": "https://stackoverflow.com/questions/4841782/python-constructor-and-default-value",
+  "source_type": "stackoverflow",
+  "error_class": "TypeError",
+  "complexity_score": 2,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Positional argument passed as keyword or vice versa. Match signature.",
+  "stderr": "Traceback (most recent call last):\n  File \"user.py\", line 30, in <module>\n    main()\n  File \"user.py\", line 26, in main\n    u = make_user('alice', email='a@x.com', 42)\n                                             ^^\nSyntaxError: positional argument follows keyword argument\nTraceback (most recent call last):\n  File \"user.py\", line 30, in <module>\n    main()\n  File \"user.py\", line 26, in main\n    u = make_user('alice', 42, 'a@x.com')\n  File \"user.py\", line 17, in make_user\n    return User(name, email, age)\nTypeError: User.__init__() got multiple values for argument 'email'",
+  "source_code": "from dataclasses import dataclass\n\n\n@dataclass\nclass User:\n    name: str\n    email: str\n    age: int = 0\n\n\ndef make_user(name, age=0, email=None):\n    # BUG: calling order swaps positional args\n    # caller passes (name, 42, 'a@x.com') -> age=42, email='a@x.com'\n    # but we pass (name, email, age) to User which causes conflict with kwarg email\n    return User(name, email, age=age, email=email)\n\n\ndef fetch_defaults():\n    return ('alice', 42, 'a@x.com')\n\n\ndef main():\n    name, age, email = fetch_defaults()\n    u = make_user(name, age, email)\n    print(u)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

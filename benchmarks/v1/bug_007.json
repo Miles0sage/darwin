@@ -1,0 +1,11 @@
+{
+  "id": "bug_007",
+  "source_url": "https://stackoverflow.com/questions/74649481/typeerror-dict-keys-object-is-not-subscriptable",
+  "source_type": "stackoverflow",
+  "error_class": "TypeError",
+  "stderr": "Traceback (most recent call last):\n  File \"main.py\", line 5, in <module>\n    instance_id = metadata.keys()[0]\nTypeError: 'dict_keys' object is not subscriptable",
+  "source_code": "metadata = {\"instance-id\": \"i-abcdef123\", \"region\": \"us-east-1\"}\n# Python 3 dict.keys() returns a view, not a list.\ninstance_id = metadata.keys()[0]",
+  "expected_fix_hint": "dict.keys() is a view; wrap in list() or use next(iter(metadata)) to get the first key.",
+  "has_reproducer": true,
+  "license": "CC BY-SA 4.0"
+}

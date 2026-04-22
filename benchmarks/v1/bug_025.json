@@ -1,0 +1,11 @@
+{
+  "id": "bug_025",
+  "source_url": "https://github.com/langchain-ai/langchain/issues/24225",
+  "source_type": "github",
+  "error_class": "ChatGoogleGenerativeAIError",
+  "stderr": "ChatGoogleGenerativeAIError               Traceback (most recent call last)\r\n[<ipython-input-18-49ad0989f74d>](https://localhost:8080/#) in <cell line: 1>()\r\n----> 1 results = rag_extractor.invoke(\"Key developments associated with cars\")\r\n\r\n[/usr/local/lib/python3.10/dist-packages/langchain_core/runnables/base.py](https://localhost:8080/#) in invoke(self, input, config, **kwargs)\r\n   2794                     input = step.invoke(input, config, **kwargs)\r\n   2795                 else:\r\n-> 2796                     input = step.invoke(input, config)\r\n   2797         # finish the root run\r\n   2798         except BaseException as e:",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "MIT"
+}

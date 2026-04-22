@@ -1,0 +1,16 @@
+Darwin acknowledges the following projects:
+
+1. Hermes Agent — Multi-provider LLM dispatch and circuit breaking patterns
+   https://github.com/uber-research/hermes
+
+2. Helix — Patch synthesis and test-driven healing workflows
+   https://github.com/heap-lab/helix
+
+3. langgraph-factory — Agentic workflow composition and state management
+   https://github.com/langchain-ai/langgraph
+
+4. LibCST — Concrete syntax tree parsing and AST-preserving transformations
+   https://github.com/Instagram/LibCST
+
+Darwin's core innovation — vendor-neutral failure-driven agent evolution —
+integrates these patterns into a unified self-healing runtime for Python agents.

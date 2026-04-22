@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+.venv/
+.env
+*.log
+nohup.out
+/tmp/
+runner_*.log
+real-bugs-*-results.json
+darwin-budget.json
+darwin-crossfeed-inbox/
+darwin-crossfeed-whitelist.json
+*.cast

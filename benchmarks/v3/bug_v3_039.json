@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_039",
+  "source_url": "https://github.com/numpy/numpy/issues/20294",
+  "source_type": "github",
+  "error_class": "IndexError",
+  "complexity_score": 2,
+  "library": "numpy",
+  "license": "BSD-3-Clause",
+  "complexity_tags": [
+    "numpy"
+  ],
+  "expected_fix_hint": "Array is 1D; don't use 2D indexing. Or reshape first.",
+  "stderr": "Traceback (most recent call last):\n  File \"slice.py\", line 24, in <module>\n    main()\n  File \"slice.py\", line 20, in main\n    r = slice_2d(arr)\n  File \"slice.py\", line 14, in slice_2d\n    return arr[0, :5]\nIndexError: too many indices for array: array is 1-dimensional, but 2 were indexed\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "import numpy as np\n\n\nclass Slicer:\n    def __init__(self, cols=5):\n        self.cols = cols\n\n    def slice_2d(self, arr):\n        # BUG: assumes 2D but arr is 1D\n        return arr[0, :self.cols]\n\n    def reshape_first(self, arr, rows):\n        return arr.reshape(rows, -1)\n\n\ndef slice_2d(arr):\n    return Slicer().slice_2d(arr)\n\n\ndef main():\n    arr = np.arange(20)\n    r = slice_2d(arr)\n    print(r)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

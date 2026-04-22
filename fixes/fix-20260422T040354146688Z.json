@@ -1,0 +1,12 @@
+{
+  "fingerprint": "076967e4179ad234",
+  "error_class": "KeyError",
+  "error_signature": "KeyError: 'id'",
+  "root_cause": "real-KeyError",
+  "fix_applied": true,
+  "fix_code": "try:\n    raise ValueError(\"outer\")\nexcept ValueError:\n    # Inside an exception handler, CPython 3.9-3.11 bug:\n    # the TypeError normalizer fails so a raw KeyError surfaces\n    dict({'id': 1}, **{'id': 2})\n",
+  "timestamp": "20260422T040354146688Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

@@ -1,0 +1,18 @@
+{
+  "id": "bug_v3_044",
+  "source_url": "https://github.com/aio-libs/aiohttp/issues/6481",
+  "source_type": "github",
+  "error_class": "TimeoutError",
+  "complexity_score": 4,
+  "library": "aiohttp",
+  "license": "Apache-2.0",
+  "complexity_tags": [
+    "async",
+    "asyncio",
+    "aiohttp"
+  ],
+  "expected_fix_hint": "Raise timeout or increase timeout window. Check server responsiveness.",
+  "stderr": "Traceback (most recent call last):\n  File \"fetch.py\", line 30, in <module>\n    asyncio.run(main())\n  File \"/usr/lib/python3.11/asyncio/runners.py\", line 44, in run\n    return loop.run_until_complete(main)\n  File \"fetch.py\", line 26, in main\n    data = await fetch_with_timeout(url)\n  File \"fetch.py\", line 20, in fetch_with_timeout\n    async with asyncio.timeout(0.001):\n  File \"/usr/lib/python3.11/asyncio/timeouts.py\", line 98, in __aexit__\n    raise TimeoutError from exc_val\nTimeoutError",
+  "source_code": "import asyncio\n\n\nclass SlowFetcher:\n    def __init__(self, timeout=0.001):\n        self.timeout = timeout\n\n    async def slow_fetch(self):\n        # simulate slow network\n        await asyncio.sleep(0.5)\n        return {'body': 'ok'}\n\n    async def fetch_with_timeout(self, url):\n        # BUG: 1ms timeout is too aggressive for real work\n        async with asyncio.timeout(self.timeout):\n            return await self.slow_fetch()\n\n\nasync def fetch_with_timeout(url):\n    return await SlowFetcher().fetch_with_timeout(url)\n\n\nasync def main():\n    url = 'https://example.com'\n    data = await fetch_with_timeout(url)\n    print(data)\n\n\nif __name__ == '__main__':\n    asyncio.run(main())\n",
+  "has_reproducer": true
+}

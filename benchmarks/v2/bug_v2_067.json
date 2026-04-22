@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_067",
+  "source_url": "https://github.com/pydantic/pydantic/issues/1578",
+  "source_type": "github",
+  "error_class": "AssertionError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \".../generic_type.py\", line 54, in <module>\r\n    print(Model.schema())\r\n  File \"pydantic\\main.py\", line 556, in pydantic.main.BaseModel.schema\r\n  File \"pydantic\\schema.py\", line 132, in pydantic.schema.model_schema\r\n  File \"pydantic\\schema.py\", line 455, in pydantic.schema.model_process_schema\r\n  File \"pydantic\\schema.py\", line 491, in pydantic.schema.model_type_schema\r\n  File \"pydantic\\schema.py\", line 185, in pydantic.schema.field_schema\r\n  File \"pydantic\\schema.py\", line 411, in pydantic.schema.field_type_schema\r\nAssertionError: 10",
+  "source_code": "from pydantic import BaseModel, ValidationError\r\nfrom pydantic.fields import ModelField\r\nfrom typing import TypeVar, Generic\r\n\r\nAgedType = TypeVar('AgedType')\r\nQualityType = TypeVar('QualityType')\r\n\r\n# This is not a pydantic model, it's an arbitrary generic class\r\nclass TastingModel(Generic[AgedType, QualityType]):\r\n    def __init__(self, name: str, aged: AgedType, quality: QualityType):\r\n        self.name = name\r\n        self.aged = aged\r\n        self.quality = quality\r\n\r\n    @classmethod\r\n    def __get_validators__(cls):\r\n        yield cls.validate\r\n\r\n    @classmethod\r\n    # You don't need to add the \"ModelField\", but it will help your\r\n    # editor give you completion and catch errors\r\n    def validate(cls, v, field: ModelField):\r\n        if not isinstance(v, cls):\r\n            # The value is not even a TastingModel\r\n            raise TypeError('Invalid value')\r\n        if not field.sub_fields:\r\n            # Generic parameters were not provided so we don't try to validate\r\n            # them and just return the value as is\r\n            return v\r\n        aged_f = field.sub_fields[0]\r\n        quality_f = field.sub_fields[1]\r\n        errors = []\r\n        # Here we don't need the validated value, but we want the errors\r\n        valid_value, error = aged_f.validate(v.aged, {}, loc='aged')\r\n        if error:\r\n            errors.append(error)\r\n        # Here we don't need the validated value, but we want the errors\r\n        valid_value, error = quality_f.validate(v.quality, {}, loc='quality')\r\n        if error:\r\n            errors.append(error)\r\n        if errors:\r\n            raise ValidationError(errors, cls)\r\n        # Validation passed without errors, return the same instance received\r\n        return v\r\n\r\nclass Model(BaseModel):\r\n    # for wine, \"aged\" is an int with years, \"quality\" is a float\r\n    wine: TastingModel[int, float]\r\n    # for cheese, \"aged\" is a bool, \"quality\" is a str\r\n    cheese: TastingModel[bool, str]\r\n    # for thing, \"aged\" is a Any, \"quality\" is Any\r\n    thing: TastingModel\r\n\r\nprint(Model.schema())\r\n\"\"\"\r\nTraceback (most recent call last):\r\n  File \".../generic_type.py\", line 54, in <module>\r\n    print(Model.schema())\r\n  File \"pydantic\\main.py\", line 556, in pydantic.main.BaseModel.schema\r\n  File \"pydantic\\schema.py\", line 132, in pydantic.schema.model_schema\r\n  File \"pydantic\\schema.py\", line 455, in pydantic.schema.model_process_schema\r\n  File \"pydantic\\schema.py\", line 491, in pydantic.schema.model_type_schema\r\n  File \"pydantic\\schema.py\", line 185, in pydantic.schema.field_schema\r\n  File \"pydantic\\schema.py\", line 411, in pydantic.schema.field_type_schema\r\nAssertionError: 10\r\n\"\"\"",
+  "expected_fix_hint": "Fix underlying invariant; adjust test expectation only if spec changed.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "generic",
+    "library:pydantic",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

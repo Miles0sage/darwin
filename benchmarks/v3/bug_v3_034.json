@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_034",
+  "source_url": "https://github.com/langchain-ai/langchain/issues/11713",
+  "source_type": "github",
+  "error_class": "ImportError",
+  "complexity_score": 2,
+  "library": "langchain",
+  "license": "MIT",
+  "complexity_tags": [
+    "langchain"
+  ],
+  "expected_fix_hint": "LangChain split packages in 0.1. Use langchain_openai instead of langchain.chat_models.",
+  "stderr": "Traceback (most recent call last):\n  File \"agent.py\", line 28, in <module>\n    main()\n  File \"agent.py\", line 24, in main\n    chain = build_chain()\n  File \"agent.py\", line 14, in build_chain\n    from langchain.chat_models import ChatOpenAI\n  File \"/usr/lib/python3.11/site-packages/langchain/chat_models/__init__.py\", line 23, in __getattr__\n    raise ImportError(msg)\nImportError: langchain.chat_models.ChatOpenAI has been moved to langchain_openai.ChatOpenAI",
+  "source_code": "from langchain_core.prompts import ChatPromptTemplate\nfrom langchain_core.runnables import RunnableLambda\n\n\nclass ChainBuilder:\n    def __init__(self, model='gpt-4'):\n        self.model = model\n\n    def build(self):\n        # BUG: deprecated import path in langchain 0.1+\n        from langchain.chat_models import ChatOpenAI\n        llm = ChatOpenAI(model=self.model)\n        prompt = ChatPromptTemplate.from_messages([('user', '{q}')])\n        return prompt | llm\n\n\ndef build_chain():\n    return ChainBuilder().build()\n\n\ndef main():\n    chain = build_chain()\n    print(chain)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

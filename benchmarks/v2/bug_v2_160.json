@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_160",
+  "source_url": "https://stackoverflow.com/questions/52318017/numpy-broadcasting-shape-mismatch",
+  "source_type": "stackoverflow",
+  "error_class": "ValueError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\n  File \"/opt/ml/featurize.py\", line 94, in compute_features\n    diffs = points - centroids\nValueError: operands could not be broadcast together with shapes (512,3) (4,)\nDuring handling of the above exception, another exception occurred:\n  File \"/opt/ml/featurize.py\", line 118, in fit\n    self._compute_all()\n  File \"/opt/ml/featurize.py\", line 73, in _compute_all\n    feats.append(self.compute_features(batch, self._centroids))\n  File \"/opt/ml/featurize.py\", line 97, in compute_features\n    raise ValueError(f\"shape mismatch: points={points.shape} centroids={centroids.shape}; expected centroids (K,3)\") from e\nValueError: shape mismatch: points=(512, 3) centroids=(4,); expected centroids (K, 3)",
+  "source_code": "import numpy as np\n\nclass KMeansLite:\n    def __init__(self, k: int = 4):\n        self.k = k\n        self._centroids = None\n\n    def _init_centroids(self, X):\n        # BUG: taking mean over axis=1 collapses to (K,) instead of (K, D)\n        init = X[:self.k]\n        self._centroids = init.mean(axis=1)  # shape (K,) \u2014 WRONG\n\n    def compute_features(self, points, centroids):\n        try:\n            diffs = points - centroids  # (N, 3) - (K,) -> cannot broadcast\n            return np.linalg.norm(diffs, axis=-1)\n        except ValueError as e:\n            raise ValueError(\n                f\"shape mismatch: points={points.shape} centroids={centroids.shape}; \"\n                f\"expected centroids (K,3)\"\n            ) from e\n\n    def _compute_all(self):\n        feats = []\n        for batch in self._batches:\n            feats.append(self.compute_features(batch, self._centroids))\n        return feats\n\n    def fit(self, X, batches):\n        self._init_centroids(X)\n        self._batches = batches\n        return self._compute_all()\n\nif __name__ == '__main__':\n    X = np.random.rand(1000, 3)\n    km = KMeansLite(4)\n    km.fit(X, [np.random.rand(512, 3) for _ in range(8)])",
+  "expected_fix_hint": "Use axis=0 (mean over rows) so centroids keep shape (K, D); verify centroid.ndim == 2 before the subtraction.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "data-science",
+    "deep-trace",
+    "library:numpy",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

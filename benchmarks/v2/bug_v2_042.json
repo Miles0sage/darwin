@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_042",
+  "source_url": "https://github.com/huggingface/transformers/issues/42381",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"<python-input-1>\", line 1, in <module>\n    model=SentenceTransformer(\"OrdalieTech/Solon-embeddings-large-0.1\")\n  File \"D:\\Nextcloud\\IA\\UtopIA_posit\\env_UtopIA\\Lib\\site-packages\\sentence_transformers\\SentenceTransformer.py\", line 327, in __init__\n    modules, self.module_kwargs = self._load_sbert_model(\n                                  ~~~~~~~~~~~~~~~~~~~~~~^\n        model_name_or_path,\n        ^^^^^^^^^^^^^^^^^^^\n    ...<7 lines>...\n        config_kwargs=config_kwargs,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"D:\\Nextcloud\\IA\\UtopIA_posit\\env_UtopIA\\Lib\\site-packages\\sentence_transformers\\SentenceTransformer.py\", line 2305, in _load_sbert_model\n    module = module_class.load(\n        model_name_or_path,\n    ...<11 lines>...\n        backend=self.backend,\n    )\n  File \"D:\\Nextcloud\\IA\\UtopIA_posit\\env_UtopIA\\Lib\\site-packages\\sentence_transformers\\models\\Transformer.py\", line 366, in load\n    return cls(model_name_or_path=model_name_or_path, **init_kwargs)\n  File \"D:\\Nextcloud\\IA\\UtopIA_posit\\env_UtopIA\\Lib\\site-packages\\sentence_transformers\\models\\Transformer.py\", line 88, in __init__\n    config, is_peft_model = self._load_config(model_name_or_path, cache_dir, backend, config_args)\n                            ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Nextcloud\\IA\\UtopIA_posit\\env_UtopIA\\Lib\\site-packages\\sentence_transformers\\models\\Transformer.py\", line 163, in _load_config\n    return AutoConfig.from_pretrained(model_name_or_path, **config_args, cache_dir=cache_dir), False\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Nextcloud\\IA\\UtopIA_posit\\env_UtopIA\\Lib\\site-packages\\transformers\\models\\auto\\configuration_auto.py\", line 1380, in from_pretrained\n    raise ValueError(",
+  "source_code": "# source: https://github.com/huggingface/transformers/issues/42381\n# repo: huggingface/transformers\n# title: ValueError: Unrecognized model in OrdalieTech/Solon-embeddings-large-0.1. Should have a `model_type` key in its config.json\n# \n# ### System Info\n# - Python 3.13.7\n# - Transformers 4.57.2\n# - Sentence-transformers 5.2.0.dev0\n# - Windows 11\n# ### Who can help?\n# @ArthurZucker @Cyrilvallez\n# ### Information\n# - [ ] The official example scripts\n# - [x] My own modified scripts\n# ### Tasks\n# - [ ] An officially supported task in the `examples` folder (such as GLUE/SQuAD, ...)\n# - [ ] My own task or dataset (give details below)\n# ### Reproduction\n# Just run the following :\n# Output : \n# Model's config.json:\n# ### Expected behavior\n# I just want to load the model :/\n\nfrom sentence_transformers import SentenceTransformer\nmodel=SentenceTransformer(\"OrdalieTech/Solon-embeddings-large-0.1\")",
+  "expected_fix_hint": "Validate input range/shape; sanitize untrusted values at boundary.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "data-science",
+    "deep-trace",
+    "library:transformers",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

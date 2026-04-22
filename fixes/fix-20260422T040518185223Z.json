@@ -1,0 +1,12 @@
+{
+  "fingerprint": "e4df8ec1ede68af9",
+  "error_class": "AttributeError",
+  "error_signature": "    567 raise ValueError(",
+  "root_cause": "real-AttributeError",
+  "fix_applied": true,
+  "fix_code": "import torch\nfrom transformers import AutoConfig, AutoModelForCausalLM, AutoProcessor # Changed import from AutoModelForVision2Seq to AutoModelForCausalLM\nfrom azure.core.credentials import AzureKeyCredential\nfrom azure.ai.formrecognizer import DocumentAnalysisClient\n\n# Dummy endpoint and api_key - replace with actual values in production\nendpoint = \"YOUR_AZURE_FORM_RECOGNIZER_ENDPOINT\"\napi_key = \"YOUR_AZURE_FORM_RECOGNIZER_API_KEY\" \n\nBASE_MODEL_PATH = \"axolotl/outputs/out_qwen_25_3b_lora_3000_512_4/merged\" \n\n# Other parts of agent.py, as implied by the error log context\nclient = DocumentAnalysisClient(endpoint=endpoint, credential=AzureKeyCredential(api_key))\n\nconfig = AutoConfig.from_pretrained(BASE_MODEL_PATH)\nmodel = AutoModelForCausalLM.from_pretrained( # THIS LINE WAS CHANGED\n    BASE_MODEL_PATH, \n    config=config,\n    torch_dtype=torch.float16, \n    device_map=\"auto\"\n)\n# print(f\"Base Model Embeddings {model.get_input_embeddings().num_embeddings}\")\n\n\n# Load processor\nprocessor = AutoProcessor.from_pretrained(BASE_MODEL_PATH,use_fast=True)\n\n# ... rest of agent.py functionality would follow here\n",
+  "timestamp": "20260422T040518185223Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

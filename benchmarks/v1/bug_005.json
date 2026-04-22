@@ -1,0 +1,11 @@
+{
+  "id": "bug_005",
+  "source_url": "https://stackoverflow.com/questions/78427983/why-does-dictid-1-id-2-sometimes-raise-keyerror-id-instead-of-a",
+  "source_type": "stackoverflow",
+  "error_class": "KeyError",
+  "stderr": "Traceback (most recent call last):\n  File \"repro.py\", line 6, in <module>\n    dict(id=1, **{'id': 2})\nKeyError: 'id'",
+  "source_code": "try:\n    raise ValueError(\"outer\")\nexcept ValueError:\n    # Inside an exception handler, CPython 3.9-3.11 bug:\n    # the TypeError normalizer fails so a raw KeyError surfaces\n    dict(id=1, **{'id': 2})",
+  "expected_fix_hint": "CPython bug in 3.9-3.11: duplicate kwargs inside an exception handler leaks a KeyError instead of the expected TypeError. Fixed in 3.12. Workaround: merge dicts explicitly or upgrade Python.",
+  "has_reproducer": true,
+  "license": "CC BY-SA 4.0"
+}

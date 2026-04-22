@@ -1,0 +1,17 @@
+{
+  "id": "bug_v2_167",
+  "source_url": "https://stackoverflow.com/questions/41492623/argparse-subparser-config-conflict",
+  "source_type": "stackoverflow",
+  "error_class": "TypeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/opt/cli/main.py\", line 47, in main\n    args = parser.parse_args()\n  File \"/usr/lib/python3.11/argparse.py\", line 1869, in parse_args\n    args, argv = self.parse_known_args(args, namespace)\n  File \"/usr/lib/python3.11/argparse.py\", line 1902, in parse_known_args\n    namespace, args = self._parse_known_args(args, namespace)\n  File \"/usr/lib/python3.11/argparse.py\", line 2132, in _parse_known_args\n    start_index = consume_optional(start_index)\n  File \"/usr/lib/python3.11/argparse.py\", line 2072, in consume_optional\n    take_action(action, args, option_string)\n  File \"/usr/lib/python3.11/argparse.py\", line 1994, in take_action\n    action(self, namespace, argument_values, option_string)\nTypeError: 'NoneType' object is not callable\nthe above is caused by subparser 'run' also registering --config, shadowing parent's required=True version",
+  "source_code": "import argparse\n\ndef main():\n    parser = argparse.ArgumentParser(prog='pipe')\n    parser.add_argument('--config', required=True, help='path to YAML config')\n\n    sub = parser.add_subparsers(dest='cmd', required=True)\n    p_run = sub.add_parser('run')\n    # BUG: re-registering --config on the subparser without dropping the parent\n    # creates an ambiguous mapping; the subparser callback becomes None.\n    p_run.add_argument('--config', default=None)\n\n    p_lint = sub.add_parser('lint')\n    p_lint.add_argument('--strict', action='store_true')\n\n    args = parser.parse_args()\n    return args\n\nif __name__ == '__main__':\n    main()",
+  "expected_fix_hint": "Do not shadow parent argparse options on subparsers; use parents=[common] or pass inherited args through.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:argparse",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_035",
+  "source_url": "https://stackoverflow.com/questions/9252543/importerror-cannot-import-name-x",
+  "source_type": "stackoverflow",
+  "error_class": "ImportError",
+  "complexity_score": 3,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib",
+    "multi-file"
+  ],
+  "expected_fix_hint": "Circular import. Move import inside function or reorganize modules.",
+  "stderr": "Traceback (most recent call last):\n  File \"main.py\", line 24, in <module>\n    from module_a import A\n  File \"/tmp/module_a.py\", line 3, in <module>\n    from module_b import B\n  File \"/tmp/module_b.py\", line 3, in <module>\n    from module_a import A\nImportError: cannot import name 'A' from partially initialized module 'module_a' (most likely due to a circular import)\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "# Simulates circular import in a single file\nimport sys\nimport types\n\n\ndef create_circular():\n    mod_a = types.ModuleType('module_a')\n    mod_b = types.ModuleType('module_b')\n    sys.modules['module_a'] = mod_a\n    sys.modules['module_b'] = mod_b\n\n    # module_a: from module_b import B\n    # module_b: from module_a import A (but A not defined yet)\n    exec(\"from module_b import B\\nclass A: pass\\n\", mod_a.__dict__)\n    exec(\"from module_a import A\\nclass B: pass\\n\", mod_b.__dict__)\n\n\ndef main():\n    create_circular()\n    from module_a import A\n    print(A)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

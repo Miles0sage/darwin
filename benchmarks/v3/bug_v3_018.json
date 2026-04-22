@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_018",
+  "source_url": "https://stackoverflow.com/questions/14749225/typeerror-got-multiple-values-for-argument",
+  "source_type": "stackoverflow",
+  "error_class": "TypeError",
+  "complexity_score": 2,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Remove kw argument from kwargs before super().__init__ call.",
+  "stderr": "Traceback (most recent call last):\n  File \"inherit.py\", line 30, in <module>\n    main()\n  File \"inherit.py\", line 26, in main\n    doc = RichDoc('hello', color='red', size=12)\n  File \"inherit.py\", line 18, in __init__\n    super().__init__(text, size=size, **kwargs)\nTypeError: Document.__init__() got multiple values for keyword argument 'size'\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "class Document:\n    def __init__(self, text, size=10, color='black'):\n        self.text = text\n        self.size = size\n        self.color = color\n\n    def render(self):\n        return f'{self.text}({self.size},{self.color})'\n\n\nclass RichDoc(Document):\n    def __init__(self, text, size=14, **kwargs):\n        # BUG: kwargs may already carry 'size', then we pass it again\n        super().__init__(text, size=size, **kwargs)\n        self.rich = True\n\n\ndef create_rich(**cfg):\n    return RichDoc('title', **cfg)\n\n\ndef main():\n    doc = create_rich(color='red', size=12)\n    print(doc.render())\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

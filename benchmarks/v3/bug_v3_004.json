@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_004",
+  "source_url": "https://github.com/pandas-dev/pandas/issues/40470",
+  "source_type": "github",
+  "error_class": "AttributeError",
+  "complexity_score": 2,
+  "library": "pandas",
+  "license": "BSD-3-Clause",
+  "complexity_tags": [
+    "pandas"
+  ],
+  "expected_fix_hint": "DataFrame.append was removed in pandas 2.0. Use pd.concat([df1, df2]) instead.",
+  "stderr": "Traceback (most recent call last):\n  File \"pipeline.py\", line 25, in <module>\n    main()\n  File \"pipeline.py\", line 21, in main\n    combined = combine_frames(a, b)\n  File \"pipeline.py\", line 14, in combine_frames\n    return df1.append(df2, ignore_index=True)\n  File \"/usr/lib/python3.11/site-packages/pandas/core/generic.py\", line 5989, in __getattr__\n    return object.__getattribute__(self, name)\nAttributeError: 'DataFrame' object has no attribute 'append'",
+  "source_code": "import pandas as pd\nimport numpy as np\n\n\ndef make_frame(n, start=0):\n    return pd.DataFrame({\n        'id': range(start, start + n),\n        'value': np.random.rand(n),\n    })\n\n\ndef combine_frames(df1, df2):\n    # BUG: DataFrame.append removed in pandas 2.0\n    return df1.append(df2, ignore_index=True)\n\n\ndef main():\n    a = make_frame(5, 0)\n    b = make_frame(5, 5)\n    combined = combine_frames(a, b)\n    print(combined.shape)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

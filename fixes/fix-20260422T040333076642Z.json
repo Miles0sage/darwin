@@ -1,0 +1,12 @@
+{
+  "fingerprint": "bd84152e0415bdf2",
+  "error_class": "AttributeError",
+  "error_signature": "AttributeError: 'NoneType' object has no attribute 'real'",
+  "root_cause": "real-AttributeError",
+  "fix_applied": true,
+  "fix_code": "def return_something(someint):\n    if someint > 5:\n        return someint\n    else: # Explicitly return an integer for the 'else' branch\n        return 0 # Provide a default integer value to prevent NoneType\n\ny = return_something(2)\ny.real()\n",
+  "timestamp": "20260422T040333076642Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

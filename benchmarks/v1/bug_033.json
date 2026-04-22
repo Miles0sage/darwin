@@ -1,0 +1,11 @@
+{
+  "id": "bug_033",
+  "source_url": "https://github.com/huggingface/transformers/issues/4444",
+  "source_type": "github",
+  "error_class": "NotImplementedError",
+  "stderr": "NotImplementedError                       Traceback (most recent call last)\r\n> <ipython-input-269-557c9cec7497> in <module>\r\n> ----> 1 model.get_config()\r\n> \r\n> /usr/local/lib/python3.7/site-packages/tensorflow/python/keras/engine/network.py in get_config(self)\r\n>     966     if not self._is_graph_network:\r\n>     967       raise NotImplementedError",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "Apache-2.0"
+}

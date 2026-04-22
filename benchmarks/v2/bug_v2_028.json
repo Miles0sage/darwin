@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_028",
+  "source_url": "https://github.com/pydantic/pydantic/issues/3859",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/code/test.py\", line 14, in <module>\r\n    movie_model = create_model_from_typeddict(Movie)\r\n  File \"pydantic/annotated_types.py\", line 35, in pydantic.annotated_types.create_model_from_typeddict\r\n  File \"pydantic/main.py\", line 972, in pydantic.main.create_model\r\n  File \"pydantic/main.py\", line 204, in pydantic.main.ModelMetaclass.__new__\r\n  File \"pydantic/fields.py\", line 488, in pydantic.fields.ModelField.infer\r\n  File \"pydantic/fields.py\", line 419, in pydantic.fields.ModelField.__init__\r\n  File \"pydantic/fields.py\", line 534, in pydantic.fields.ModelField.prepare\r\n  File \"pydantic/fields.py\", line 638, in pydantic.fields.ModelField._type_analysis\r\n  File \"/usr/local/lib/python3.9/typing.py\", line 851, in __subclasscheck__\r\n    return issubclass(cls, self.__origin__)\r\nTypeError: issubclass() arg 1 must be a class",
+  "source_code": "# source: https://github.com/pydantic/pydantic/issues/3859\n# repo: pydantic/pydantic\n# title: `create_model_from_typeddict` doesn't play nice with `NotRequired`\n# \n# ### Checks\n# * [ x] I added a descriptive title to this issue\n# * [ x] I have searched (google, github) for similar issues and couldn't find anything\n# * [ x] I have read and followed [the docs](https://pydantic-docs.helpmanual.io/) and still think this is a bug\n# <!-- Sorry to sound so draconian, but every second saved replying to issues is time spend improving pydantic :-) -->\n# # Bug\n# Output of `python -c \"import pydantic.utils; print(pydantic.utils.version_info())\"`:\n# Hey there!\n# `NotRequired` is a relatively new feature for TypedDict, available in typing_extensions. (Check out [PEP 0655](https://www.python.org/dev/peps/pep-0655/).) You basically just wrap a type with NotRequired and it means \"this property could either be _this type_, or it could not be present on the diction\n\nroot@9e1532e73d46:/code# python3 test.py\r\nTraceback (most recent call last):\r\n  File \"/code/test.py\", line 14, in <module>\r\n    movie_model = create_model_from_typeddict(Movie)\r\n  File \"pydantic/annotated_types.py\", line 35, in pydantic.annotated_types.create_model_from_typeddict\r\n  File \"pydantic/main.py\", line 972, in pydantic.main.create_model\r\n  File \"pydantic/main.py\", line 204, in pydantic.main.ModelMetaclass.__new__\r\n  File \"pydantic/fields.py\", line 488, in pydantic.fields.ModelField.infer\r\n  File \"pydantic/fields.py\", line 419, in pydantic.fields.ModelField.__init__\r\n  File \"pydantic/fields.py\", line 534, in pydantic.fields.ModelField.prepare\r\n  File \"pydantic/fields.py\", line 638, in pydantic.fields.ModelField._type_analysis\r\n  File \"/usr/local/lib/python3.9/typing.py\", line 851, in __subclasscheck__\r\n    return issubclass(cls, self.__origin__)\r\nTypeError: issubclass() arg 1 must be a class",
+  "expected_fix_hint": "Fix argument type/shape; check signature changes between library versions.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:pydantic",
+    "metaclass",
+    "multi-file",
+    "typeddict"
+  ],
+  "license": "Apache-2.0"
+}

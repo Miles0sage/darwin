@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_113",
+  "source_url": "https://github.com/boppreh/keyboard/issues/157",
+  "source_type": "github",
+  "error_class": "ArgumentError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"threading.py\", line 916, in _bootstrap_inner\r\n  File \"threading.py\", line 864, in run\r\n  File \"site-packages\\keyboard\\__init__.py\", line 296, in listen\r\n  File \"site-packages\\keyboard\\_winkeyboard.py\", line 562, in listen\r\n  File \"site-packages\\keyboard\\_winkeyboard.py\", line 555, in prepare_intercept\r\nctypes.ArgumentError: argument 3: <class 'OverflowError'>: int too long to convert",
+  "source_code": "# source: https://github.com/boppreh/keyboard/issues/157\n# repo: boppreh/keyboard\n# title: Exception with Python 3.6.5 64 bit and pyinstaller\n# \n# When using keyboard with python 3.6.5 64 bit and running inside of pyinstaller, this error is returned:\n# I found a couple of other issues on other projects describing the same issue:\n# https://github.com/rene-aguirre/pywinusb/issues/30\n# https://github.com/jaraco/jaraco.windows/issues/7\n# https://stackoverflow.com/questions/44163105/python-3-5-1-amd64-ctypes-argumenterror-argument-1-class-overflowerror\n# https://bitbucket.org/pyglet/pyglet/issues/147/ctypesargumenterror-argument-4-int-too\n# Not sure exactly how to solve this for keyboard, but I am using 0.13.1. This error does not appear for me when I force using 32 bit Python in pyinstaller. I also only see the error inside of pyinstaller, not when just running a project normally with Python 3.6.5 64 bit.\n# This is all being done on W\n\nException in thread Thread-1:\r\nTraceback (most recent call last):\r\n  File \"threading.py\", line 916, in _bootstrap_inner\r\n  File \"threading.py\", line 864, in run\r\n  File \"site-packages\\keyboard\\__init__.py\", line 296, in listen\r\n  File \"site-packages\\keyboard\\_winkeyboard.py\", line 562, in listen\r\n  File \"site-packages\\keyboard\\_winkeyboard.py\", line 555, in prepare_intercept\r\nctypes.ArgumentError: argument 3: <class 'OverflowError'>: int too long to convert",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:keyboard",
+    "multi-file",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_043",
+  "source_url": "https://stackoverflow.com/questions/3302949/best-way-to-assert-for-numpy-array-equality",
+  "source_type": "stackoverflow",
+  "error_class": "AssertionError",
+  "complexity_score": 2,
+  "library": "numpy",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "numpy"
+  ],
+  "expected_fix_hint": "np.array_equal, not ==. Or use np.testing.assert_array_equal.",
+  "stderr": "Traceback (most recent call last):\n  File \"test_arr.py\", line 28, in <module>\n    test_equal()\n  File \"test_arr.py\", line 24, in test_equal\n    assert a == b, 'arrays differ'\n  File \"/usr/lib/python3.11/site-packages/numpy/core/_methods.py\", line 50, in _sum\n    return umr_sum(a, axis, dtype, out, keepdims, initial, where)\nValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()",
+  "source_code": "import numpy as np\n\n\nclass ArrComparator:\n    def __init__(self, tol=1e-6):\n        self.tol = tol\n\n    def equal(self, a, b):\n        # BUG: uses == which returns elementwise bool array\n        return a == b\n\n    def shape_ok(self, a, b):\n        return a.shape == b.shape\n\n\ndef test_equal():\n    a = np.array([1, 2, 3])\n    b = np.array([1, 2, 3])\n    cmp = ArrComparator()\n    # BUG: ambiguous truth value\n    assert cmp.equal(a, b), 'arrays differ'\n\n\nif __name__ == '__main__':\n    test_equal()\n",
+  "has_reproducer": true
+}

@@ -1,0 +1,17 @@
+{
+  "id": "bug_v2_117",
+  "source_url": "https://github.com/espressif/esptool/issues/540",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/Library/Frameworks/Python.framework/Versions/3.8/bin/esptool.py\", line 57, in <module>\r\n    import serial.tools.list_ports as list_ports\r\n  File \"/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/serial/tools/list_ports.py\", line 29, in <module>\r\n    from serial.tools.list_ports_posix import comports\r\n  File \"/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/serial/tools/list_ports_posix.py\", line 31, in <module>\r\n    from serial.tools.list_ports_osx import comports\r\n  File \"/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/serial/tools/list_ports_osx.py\", line 32, in <module>\r\n    kIOMasterPortDefault = ctypes.c_void_p.in_dll(iokit, \"kIOMasterPortDefault\")\r\nValueError: dlsym(RTLD_DEFAULT, kIOMasterPortDefault): symbol not found",
+  "source_code": "# source: https://github.com/espressif/esptool/issues/540\n# repo: espressif/esptool\n# title: MacOS Big Sur dlsym(RTLD_DEFAULT, kIOMasterPortDefault): symbol not found (ESPTOOL-82)\n# \n# * Operating system: MacOS Big Sur\n# * Python version: Python 3.8.1\n# # Full esptool.py command line as run:\n# `esptool.py chip_id`\n# # Full output from esptool.py\n# # What is the expected behaviour?\n# Connected device info\n# # Do you have any other information from investigating this?\n# I worked before the MacOS upgrade\n# # Is there any other information you can think of which will help us reproduce this problem?\n\nTraceback (most recent call last):\r\n  File \"/Library/Frameworks/Python.framework/Versions/3.8/bin/esptool.py\", line 57, in <module>\r\n    import serial.tools.list_ports as list_ports\r\n  File \"/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/serial/tools/list_ports.py\", line 29, in <module>\r\n    from serial.tools.list_ports_posix import comports\r\n  File \"/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/serial/tools/list_ports_posix.py\", line 31, in <module>\r\n    from serial.tools.list_ports_osx import comports\r\n  File \"/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/serial/tools/list_ports_osx.py\", line 32, in <module>\r\n    kIOMasterPortDefault = ctypes.c_void_p.in_dll(iokit, \"kIOMasterPortDefault\")\r\nValueError: dlsym(RTLD_DEFAULT, kIOMasterPortDefault): symbol not found",
+  "expected_fix_hint": "Validate input range/shape; sanitize untrusted values at boundary.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:esptool",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

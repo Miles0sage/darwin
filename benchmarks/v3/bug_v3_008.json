@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_008",
+  "source_url": "https://stackoverflow.com/questions/1319615/proper-way-to-declare-custom-exceptions-in-modern-python",
+  "source_type": "stackoverflow",
+  "error_class": "AttributeError",
+  "complexity_score": 2,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Use @property decorator. Without it, `price` shadows the method as attribute.",
+  "stderr": "Traceback (most recent call last):\n  File \"shop.py\", line 26, in <module>\n    main()\n  File \"shop.py\", line 22, in main\n    total = compute_total(items)\n  File \"shop.py\", line 16, in compute_total\n    return sum(item.price() for item in items)\n  File \"shop.py\", line 16, in <genexpr>\n    return sum(item.price() for item in items)\nAttributeError: 'int' object has no attribute 'price'. Did you mean: '__ceil__'?",
+  "source_code": "from dataclasses import dataclass\n\n\n@dataclass\nclass Item:\n    name: str\n    unit_price: float\n    qty: int\n\n    # BUG: decorator missing \u2014 price becomes method, but caller treats it as attribute\n    def price(self):\n        return self.unit_price * self.qty\n\n\ndef compute_total(items):\n    # typo: iterates over integers not items\n    return sum(item.price() for item in items)\n\n\ndef main():\n    items = [Item('a', 2.5, 3).qty, Item('b', 1.0, 10).qty]\n    total = compute_total(items)\n    print('total:', total)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_019",
+  "source_url": "https://stackoverflow.com/questions/10414860/python-valueerror-invalid-literal-for-int-with-base-10",
+  "source_type": "stackoverflow",
+  "error_class": "ValueError",
+  "complexity_score": 1,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Strip whitespace and validate before int(). Use try/except or int(s.strip() or 0).",
+  "stderr": "Traceback (most recent call last):\n  File \"csv_load.py\", line 28, in <module>\n    main()\n  File \"csv_load.py\", line 24, in main\n    rows = load_rows(text)\n  File \"csv_load.py\", line 18, in load_rows\n    rows.append(parse_row(line))\n  File \"csv_load.py\", line 12, in parse_row\n    return {'id': int(parts[0]), 'age': int(parts[1])}\nValueError: invalid literal for int() with base 10: ' '\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "import csv\nfrom io import StringIO\n\n\nclass Loader:\n    def parse_row(self, line):\n        parts = line.split(',')\n        # BUG: int() can't parse whitespace / empty strings\n        return {'id': int(parts[0]), 'age': int(parts[1])}\n\n    def load_rows(self, text):\n        rows = []\n        for line in text.splitlines():\n            if not line:\n                continue\n            rows.append(self.parse_row(line))\n        return rows\n\n\ndef load_rows(text):\n    return Loader().load_rows(text)\n\n\ndef main():\n    text = '1,30\\n2, \\n3,25'\n    rows = load_rows(text)\n    print(rows)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

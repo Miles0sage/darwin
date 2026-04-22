@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_142",
+  "source_url": "https://github.com/home-assistant/core/issues/65112",
+  "source_type": "github",
+  "error_class": "SSLWantReadError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/local/lib/python3.9/site-packages/anyio/streams/tls.py\", line 108, in _call_sslobject_method\r\n    result = func(*args)\r\n  File \"/usr/local/lib/python3.9/ssl.py\", line 888, in read\r\n    v = self._sslobj.read(len)\r\nssl.SSLWantReadError: The operation did not complete (read) (_ssl.c:2633)",
+  "source_code": "# Reproducer derived from https://github.com/home-assistant/core/issues/65112\n# repo: home-assistant/core\n# title: Sensor Community Sensors changes from available to unavailable every few minutes\n\n# Last frames in traceback:\n#   /usr/local/lib/python3.9/site-packages/anyio/streams/tls.py line 108 in _call_sslobject_method\n#   /usr/local/lib/python3.9/ssl.py line 888 in read\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # ### The problem\n    # Every minutes, state of an Sensor Community Sensor switch tu unavailable, after a few minutes it comes back., then unava\n    # ### What version of Home Assistant Core has the issue?\n    # core-2022.2.0b1\n    # ### What was the last working version of Home Assistant Core?\n    raise SSLWantReadError('reproduce: see https://github.com/home-assistant/core/issues/65112')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "library:home-assistant",
+    "multi-file",
+    "protocol",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,12 @@
+{
+  "fingerprint": "4c93a8b4873905b8",
+  "error_class": "TypeError",
+  "error_signature": "TypeError: expected str, bytes or os.PathLike object, not list",
+  "root_cause": "real-TypeError",
+  "fix_applied": true,
+  "fix_code": "import os\nimport pandas as pd\n\nseason_ep = {\"pilot\": \"s01e01\"}\nerrors = []\n# os.walk yields (root, dirs, files). `dirs` is a list, not a path.\n# Modified mock data to correctly simulate os.walk (root, dirs, files) tuple.\n# Using '.' as a placeholder root for the mock, and providing empty list for `dirs` as it's not used.\nfor root, dirs, files in [(\".\", [], [\"show-pilot.mp4\"])]:\n    for name in files:\n        try:\n            to_print = season_ep[name.split('-')[-1][:-4]]\n            print(to_print)\n        except KeyError:\n            # Fix: Use 'root' (the current directory path) instead of 'dirs' (list of subdirectories)\n            errors.append(os.path.join(root, name))\n",
+  "timestamp": "20260422T040416327347Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

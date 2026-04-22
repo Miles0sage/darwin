@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_146",
+  "source_url": "https://stackoverflow.com/questions/70279229/metaclass-conflict-when-using-pydantic-and-django",
+  "source_type": "stackoverflow",
+  "error_class": "TypeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/opt/app/schemas.py\", line 12, in <module>\n    class HybridUser(DjangoUser, BaseModel):\n  File \"/opt/app/venv/lib/python3.11/site-packages/django/db/models/base.py\", line 106, in __new__\n    new_class = super().__new__(cls, name, bases, new_attrs, **kwargs)\n  File \"/opt/app/venv/lib/python3.11/site-packages/pydantic/_internal/_model_construction.py\", line 113, in __new__\n    return super().__new__(mcs, cls_name, bases, namespace, **kwargs)\nTypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases",
+  "source_code": "from django.db import models\nfrom pydantic import BaseModel, Field\n\nclass DjangoUser(models.Model):\n    name = models.CharField(max_length=64)\n    email = models.EmailField()\n    class Meta:\n        app_label = 'users'\n\n# BUG: Django's ModelBase metaclass and Pydantic's ModelMetaclass are unrelated.\n# Python refuses to synthesize a common metaclass for subclasses that inherit both.\n\nclass HybridUser(DjangoUser, BaseModel):\n    full_name: str = Field(default=\"\")\n\n    def display(self) -> str:\n        return f\"{self.full_name} <{self.email}>\"\n\nif __name__ == '__main__':\n    u = HybridUser(name=\"Ada\", email=\"ada@example.com\", full_name=\"Ada Lovelace\")\n    print(u.display())",
+  "expected_fix_hint": "Do NOT inherit from both Django Model and Pydantic BaseModel. Use composition: embed a Pydantic schema field on the Model, or use django-ninja schemas.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:django",
+    "library:pydantic",
+    "metaclass",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

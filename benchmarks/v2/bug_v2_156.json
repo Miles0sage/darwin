@@ -1,0 +1,17 @@
+{
+  "id": "bug_v2_156",
+  "source_url": "https://stackoverflow.com/questions/78543210/langchain-buffer-as-messages-attributeerror",
+  "source_type": "stackoverflow",
+  "error_class": "AttributeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/app/agent/run.py\", line 66, in chat\n    response = chain.invoke({\"question\": user_text, \"history\": memory.buffer_as_messages})\n  File \"/usr/lib/python3.11/site-packages/langchain/memory/buffer.py\", line 53, in buffer\n    return self.buffer_as_messages if self.return_messages else self.buffer_as_str\nAttributeError: 'ConversationBufferMemory' object has no attribute 'buffer_as_messages'. Did you mean: 'buffer_as_str'?\nNote: In LangChain 0.2.x, 'buffer_as_messages' was renamed to 'chat_memory.messages'\nDuring handling of the above exception, another exception occurred:\n  File \"/app/agent/run.py\", line 72, in chat\n    raise RuntimeError(f\"memory access failed: {e}\") from e\nRuntimeError: memory access failed: 'ConversationBufferMemory' object has no attribute 'buffer_as_messages'. Did you mean: 'buffer_as_str'?",
+  "source_code": "from langchain.memory import ConversationBufferMemory\nfrom langchain_core.prompts import ChatPromptTemplate\nfrom langchain_core.runnables import RunnableLambda\n\nmemory = ConversationBufferMemory(return_messages=True)\nprompt = ChatPromptTemplate.from_messages([\n    (\"system\", \"You are helpful.\"),\n    (\"placeholder\", \"{history}\"),\n    (\"user\", \"{question}\"),\n])\n\ndef mock_llm(msgs):\n    return {\"text\": \"ok\"}\n\nchain = prompt | RunnableLambda(lambda m: mock_llm(m.to_messages()))\n\ndef chat(user_text: str):\n    try:\n        # BUG: post-0.2 upgrade, buffer_as_messages attribute no longer exists\n        response = chain.invoke({\"question\": user_text, \"history\": memory.buffer_as_messages})\n        memory.save_context({\"input\": user_text}, {\"output\": response[\"text\"]})\n        return response\n    except AttributeError as e:\n        raise RuntimeError(f\"memory access failed: {e}\") from e\n\nif __name__ == '__main__':\n    chat(\"hello\")",
+  "expected_fix_hint": "Migrate to langchain_core.messages + RunnableWithMessageHistory; access memory.chat_memory.messages instead of buffer_as_messages.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:langchain",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

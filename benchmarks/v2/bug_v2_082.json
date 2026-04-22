@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_082",
+  "source_url": "https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor/issues/563",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 942, in async_update_ha_state\r\n    await self.async_device_update()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 1302, in async_device_update\r\n    await hass.async_add_executor_job(self.update)\r\n  File \"/usr/local/lib/python3.12/concurrent/futures/thread.py\", line 58, in run\r\n    result = self.fn(*self.args, **self.kwargs)\r\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/config/custom_components/xiaomi_cloud_map_extractor/camera.py\", line 278, in update\r\n    self._handle_map_data(map_name)\r\n  File \"/config/custom_components/xiaomi_cloud_map_extractor/camera.py\", line 335, in _handle_map_data\r\n    map_data, map_stored = self._device.get_map(map_name, self._colors, self._drawables, self._texts,\r\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/config/custom_components/xiaomi_cloud_map_extractor/common/vacuum.py\", line 27, in get_map\r\n    response = self.get_raw_map_data(map_name)\r\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/config/custom_components/xiaomi_cloud_map_extractor/common/vacuum.py\", line 45, in get_raw_map_data\r\n    map_url = self.get_map_url(map_name)\r\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/config/custom_components/xiaomi_cloud_map_extractor/common/vacuum_v2.py\", line 18, in get_map_url\r\n    if api_response is None or \"result\" not in api_response or \"url\" not in api_response[\"result\"]:\r\n                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nTypeError: argument of type 'NoneType' is not iterable",
+  "source_code": "# Reproducer derived from https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor/issues/563\n# repo: PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor\n# title: Request for Xiaomi S20+ ( xiaomi.vacuum.b108gl )\n\n# Last frames in traceback:\n#   /usr/local/lib/python3.12/concurrent/futures/thread.py line 58 in run\n#   /config/custom_components/xiaomi_cloud_map_extractor/camera.py line 278 in update\n#   /config/custom_components/xiaomi_cloud_map_extractor/camera.py line 335 in _handle_map_data\n#   /config/custom_components/xiaomi_cloud_map_extractor/common/vacuum.py line 27 in get_map\n#   /config/custom_components/xiaomi_cloud_map_extractor/common/vacuum.py line 45 in get_raw_map_data\n#   /config/custom_components/xiaomi_cloud_map_extractor/common/vacuum_v2.py line 18 in get_map_url\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # ### Checklist\n    # - [X] I have updated the integration to the latest version available\n    # - [X] I have checked if the vacuum/platform is already requested\n    # - [ ] I have sent raw map file to `piotr.machowski.dev [at] gmail.com` ([Retrieving map](https://github.com/PiotrMachows\n    # ### What vacuum model do you want to be supported?\n    # xiaomi.vacuum.b108gl\n    raise TypeError('reproduce: see https://github.com/PiotrMachowski/Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor/issues/563')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Fix argument type/shape; check signature changes between library versions.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "async",
+    "deep-trace",
+    "library:Home-Assistant-custom-components-Xiaomi-Cloud-Map-Extractor",
+    "multi-file",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

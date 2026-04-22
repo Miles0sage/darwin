@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_079",
+  "source_url": "https://github.com/pypa/pip/issues/6772",
+  "source_type": "github",
+  "error_class": "AttributeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/project/env/lib/python3.6/site-packages/pip/_internal/cli/base_command.py\", line 188, in main\r\n    status = self.run(options, args)\r\n  File \"/project/env/lib/python3.6/site-packages/pip/_internal/commands/list.py\", line 156, in run\r\n    packages = self.get_outdated(packages, options)\r\n  File \"/project/env/lib/python3.6/site-packages/pip/_internal/commands/list.py\", line 164, in get_outdated\r\n    dist for dist in self.iter_packages_latest_infos(packages, options)\r\n  File \"/project/env/lib/python3.6/site-packages/pip/_internal/commands/list.py\", line 164, in <listcomp>\r\n    dist for dist in self.iter_packages_latest_infos(packages, options)\r\n  File \"/project/env/lib/python3.6/site-packages/pip/_internal/commands/list.py\", line 195, in iter_packages_latest_infos\r\n    best_candidate = evaluator.get_best_candidate(all_candidates)\r\n  File \"/project/env/lib/python3.6/site-packages/pip/_internal/index.py\", line 729, in get_best_candidate\r\n    best_candidate = max(candidates, key=self._sort_key)\r\n  File \"/project/env/lib/python3.6/site-packages/pip/_internal/index.py\", line 710, in _sort_key\r\n    has_allowed_hash = int(link.is_hash_allowed(self._hashes))\r\n  File \"/project/env/lib/python3.6/site-packages/pip/_internal/models/link.py\", line 213, in is_hash_allowed\r\n    return hashes.is_hash_allowed(self.hash_name, hex_digest=self.hash)\r\nAttributeError: 'NoneType' object has no attribute 'is_hash_allowed'",
+  "source_code": "# source: https://github.com/pypa/pip/issues/6772\n# repo: pypa/pip\n# title: AttributeError: 'NoneType' object has no attribute 'is_hash_allowed'\n# \n# **Environment**\n# * pip version: 19.2\n# * Python version: 3.6.8\n# * OS: Mac OSX (Darwin Kernel Version 18.6.0)\n# **Description**\n# I made env update in my project including pip as well. After that I wanted to check outdated packages with command:\n# After that exception was raised.\n# **Expected behavior**\n# I expected list of packages or empty list.\n# **How to Reproduce**\n# 1. Get the newest version of package from PyPI.\n# 2. Then run `pip list --outdated --format=columns`\n# 3. An error occurs.\n# **Output**\n\npip list --outdated --format=columns\r\n```\r\n\r\nAfter that exception was raised.\r\n\r\n**Expected behavior**\r\nI expected list of packages or empty list.\r\n\r\n**How to Reproduce**\r\n1. Get the newest version of package from PyPI.\r\n2. Then run `pip list --outdated --format=columns`\r\n3. An error occurs.\r\n\r\n**Output**",
+  "expected_fix_hint": "Add a None-check or ensure the attribute exists before access; verify object type.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:pip",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

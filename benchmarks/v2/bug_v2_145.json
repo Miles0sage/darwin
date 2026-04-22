@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_145",
+  "source_url": "https://stackoverflow.com/questions/11233864/python-threading-deadlock",
+  "source_type": "stackoverflow",
+  "error_class": "RuntimeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/srv/billing/ledger.py\", line 201, in transfer\n    self._dst_lock.__enter__()\n  File \"/usr/lib/python3.11/threading.py\", line 152, in __enter__\n    return self._block.__enter__()\n  File \"/usr/lib/python3.11/threading.py\", line 327, in __enter__\n    return self.acquire(*args, **kwargs)\n  File \"/usr/lib/python3.11/threading.py\", line 313, in acquire\n    rc = self._block.acquire(blocking, timeout)\nRuntimeError: cannot acquire lock held by another thread (detected via watchdog timeout after 30s)\nThread-7 acquired lock id=0x7f9... on account B while Thread-3 was waiting for lock id=0x7f9... on account A\nCircular wait: T-3 holds A waits B; T-7 holds B waits A",
+  "source_code": "import threading\nimport time\nfrom contextlib import contextmanager\n\nclass Account:\n    def __init__(self, aid: str, balance: float):\n        self.id = aid\n        self.balance = balance\n        self.lock = threading.RLock()\n\nclass Ledger:\n    def __init__(self, accounts):\n        self._accounts = {a.id: a for a in accounts}\n\n    def transfer(self, src_id: str, dst_id: str, amount: float):\n        src = self._accounts[src_id]\n        dst = self._accounts[dst_id]\n        # BUG: locks always acquired in (src, dst) order \u2014 so two threads\n        # doing opposite transfers can deadlock each other.\n        self._src_lock = src.lock\n        self._dst_lock = dst.lock\n        with self._src_lock:\n            time.sleep(0.01)  # simulates I/O window\n            self._dst_lock.__enter__()\n            try:\n                src.balance -= amount\n                dst.balance += amount\n            finally:\n                self._dst_lock.__exit__(None, None, None)\n\ndef run():\n    a = Account('A', 100); b = Account('B', 100)\n    L = Ledger([a, b])\n    t1 = threading.Thread(target=L.transfer, args=('A','B', 10))\n    t2 = threading.Thread(target=L.transfer, args=('B','A', 5))\n    t1.start(); t2.start()\n    t1.join(30); t2.join(30)\n    if t1.is_alive() or t2.is_alive():\n        raise RuntimeError('cannot acquire lock held by another thread (detected via watchdog timeout after 30s)')\n\nif __name__ == '__main__':\n    run()",
+  "expected_fix_hint": "Acquire locks in a canonical order (e.g., sorted by account id) to prevent circular wait, or use a single coarse lock / optimistic concurrency.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deadlock",
+    "deep-trace",
+    "library:threading",
+    "multi-file",
+    "threading"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

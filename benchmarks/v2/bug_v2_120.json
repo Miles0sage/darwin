@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_120",
+  "source_url": "https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/2349",
+  "source_type": "github",
+  "error_class": "IndexError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\n  File \"launch.py\", line 169, in <module>\r\n    start_webui()\r\n  File \"launch.py\", line 164, in start_webui\r\n    webui.webui()\r\n  File \"/var/home/kityr/stable-diffusion-webui/webui.py\", line 101, in webui\r\n    demo = modules.ui.create_ui(wrap_gradio_gpu_call=wrap_gradio_gpu_call)\r\n  File \"/var/home/kityr/stable-diffusion-webui/modules/ui.py\", line 925, in create_ui\r\n    extras_upscaler_1 = gr.Radio(label='Upscaler 1', choices=[x.name for x in shared.sd_upscalers], value=shared.sd_upscalers[0].name, type=\"index\")\r\nIndexError: list index out of range",
+  "source_code": "# source: https://github.com/AUTOMATIC1111/stable-diffusion-webui/issues/2349\n# repo: AUTOMATIC1111/stable-diffusion-webui\n# title: IndexError: list index out of range when starting webui\n# \n# **Describe the bug**\n# The webui does not start due to a python error\n# **To Reproduce**\n# Steps to reproduce the behavior:\n# run \n# **Desktop:**\n#  - OS: Fedora 37 Silverblue\n#  - Browser: Firefox\n#  - Commit revision: fd07b103aeb70a80e3641068e483475e32c9750c\n# **Additional context**\n# Relevant part of the output:\n\n**Desktop:**\r\n - OS: Fedora 37 Silverblue\r\n - Browser: Firefox\r\n - Commit revision: fd07b103aeb70a80e3641068e483475e32c9750c\r\n\r\n**Additional context**\r\nRelevant part of the output:",
+  "expected_fix_hint": "Check list length before indexing; handle empty sequences.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:sd-webui",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

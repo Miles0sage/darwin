@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_038",
+  "source_url": "https://stackoverflow.com/questions/1663807/how-to-iterate-through-two-lists-in-parallel",
+  "source_type": "stackoverflow",
+  "error_class": "IndexError",
+  "complexity_score": 1,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Off-by-one. Iterate with zip() or check len() before indexing.",
+  "stderr": "Traceback (most recent call last):\n  File \"pair.py\", line 26, in <module>\n    main()\n  File \"pair.py\", line 22, in main\n    out = pair_up(names, ages)\n  File \"pair.py\", line 17, in pair_up\n    pairs.append((names[i], ages[i]))\nIndexError: list index out of range\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "class Pairer:\n    def __init__(self, strict=True):\n        self.strict = strict\n\n    def pair_up(self, a, b):\n        pairs = []\n        # BUG: loops over longer list but indexes shorter one\n        longest = max(len(a), len(b))\n        for i in range(longest):\n            pairs.append((a[i], b[i]))\n        return pairs\n\n\ndef pair_up(a, b):\n    return Pairer().pair_up(a, b)\n\n\ndef main():\n    names = ['alice', 'bob', 'carol']\n    ages = [30, 25]\n    out = pair_up(names, ages)\n    print(out)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

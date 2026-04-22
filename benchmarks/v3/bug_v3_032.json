@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_032",
+  "source_url": "https://stackoverflow.com/questions/18680712/python-set-changed-size-during-iteration",
+  "source_type": "stackoverflow",
+  "error_class": "RuntimeError",
+  "complexity_score": 2,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Can't modify set during iteration. Iterate a copy: for x in list(s): ...",
+  "stderr": "Traceback (most recent call last):\n  File \"dedupe.py\", line 26, in <module>\n    main()\n  File \"dedupe.py\", line 22, in main\n    out = dedupe(items)\n  File \"dedupe.py\", line 17, in dedupe\n    for item in self.seen:\nRuntimeError: Set changed size during iteration\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "class Dedupe:\n    def __init__(self):\n        self.seen = set()\n\n    def add(self, x):\n        self.seen.add(x)\n\n    def compact(self):\n        # BUG: mutating set while iterating it\n        for item in self.seen:\n            if item.startswith('_'):\n                self.seen.discard(item)\n        return self.seen\n\n\ndef dedupe(items):\n    d = Dedupe()\n    for x in items:\n        d.add(x)\n    return d.compact()\n\n\ndef main():\n    items = ['a', '_private', 'b', '_hidden', 'c']\n    out = dedupe(items)\n    print(out)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

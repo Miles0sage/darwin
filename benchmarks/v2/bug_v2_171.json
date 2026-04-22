@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_171",
+  "source_url": "https://stackoverflow.com/questions/64815819/pytest-asyncio-coroutine-not-awaited",
+  "source_type": "stackoverflow",
+  "error_class": "AssertionError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\n  File \"/srv/tests/test_api.py\", line 44, in test_order_flow\n    assert order == {\"id\": \"o-1\", \"status\": \"CONFIRMED\"}\nAssertionError: assert <coroutine object AsyncClient.get at 0x7f...> == {'id': 'o-1', 'status': 'CONFIRMED'}\n  where <coroutine object AsyncClient.get at 0x7f...> = <coroutine object test_order_flow.<locals>._fetch at 0x7f...>()\nsys:1: RuntimeWarning: coroutine 'AsyncClient.get' was never awaited",
+  "source_code": "import pytest\nimport httpx\n\n@pytest.mark.asyncio\nasync def test_order_flow():\n    async with httpx.AsyncClient(base_url=\"http://localhost:8000\") as client:\n        # BUG: missing await -> compares a coroutine object to a dict\n        def _fetch():\n            return client.get(\"/orders/o-1\")\n        order = _fetch()  # should be: order = (await client.get(...)).json()\n        assert order == {\"id\": \"o-1\", \"status\": \"CONFIRMED\"}",
+  "expected_fix_hint": "Add await before client.get(...) and call .json() on the response; enable warnings as errors in pytest.ini to catch un-awaited coroutines.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "library:httpx",
+    "library:pytest",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_017",
+  "source_url": "https://github.com/numpy/numpy/issues/21685",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "complexity_score": 4,
+  "library": "numpy",
+  "license": "BSD-3-Clause",
+  "complexity_tags": [
+    "numpy"
+  ],
+  "expected_fix_hint": "np.int / np.float deprecated. Use int, float, or np.int64.",
+  "stderr": "Traceback (most recent call last):\n  File \"stats.py\", line 28, in <module>\n    main()\n  File \"stats.py\", line 24, in main\n    result = compute(arr)\n  File \"stats.py\", line 17, in compute\n    out = arr.astype(np.int)\n  File \"/usr/lib/python3.11/site-packages/numpy/__init__.py\", line 305, in __getattr__\n    raise AttributeError(__former_attrs__[attr])\nTypeError: Cannot interpret '<attribute \"int\">' as a data type",
+  "source_code": "import numpy as np\n\n\nclass Stats:\n    def __init__(self, dtype=np.int):  # BUG: np.int removed since numpy 1.20\n        self.dtype = dtype\n\n    def compute(self, arr):\n        out = arr.astype(self.dtype)\n        return out.mean(), out.std()\n\n\ndef compute(arr):\n    s = Stats()\n    return s.compute(arr)\n\n\ndef main():\n    np.random.seed(0)\n    arr = np.random.rand(100) * 10\n    result = compute(arr)\n    print(result)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

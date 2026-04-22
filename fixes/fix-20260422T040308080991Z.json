@@ -1,0 +1,12 @@
+{
+  "fingerprint": "fc6d748ea1c7cb92",
+  "error_class": "AttributeError",
+  "error_signature": "AttributeError: 'NoneType' object has no attribute 'next'",
+  "root_cause": "real-AttributeError",
+  "fix_applied": true,
+  "fix_code": "class Node:\n    def __init__(self, val):\n        self.next = None\n        self.prev = None\n        self.val = val\n\nclass dll:\n    def __init__(self):\n        self.head = None\n        self.tail = None\n        self.length = 0\n\n    def append(self, val):\n        new = Node(val)\n        if not self.head:\n            self.head = new\n            self.tail = new\n            self.length += 1\n            return\n        self.tail.next = new\n        new.prev = self.tail\n        self.tail = new\n        self.length += 1\n\n    def __str__(self):\n        curr = self.head\n        res = str()\n        if not self.head:\n            return \"Linked list is empty\"\n        while curr is not None:\n            res += str(curr.val)\n            # Add separator only if there is a next node\n            # The original error was that curr was already advanced to None before this check\n            if curr.next is not None:\n                res += ' <-> '\n            curr = curr.next\n        return res\n\nll = dll()\nll.append(10)\nll.append(30)\nprint(ll)\n",
+  "timestamp": "20260422T040308080991Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

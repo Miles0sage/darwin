@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_092",
+  "source_url": "https://github.com/PrefectHQ/prefect/issues/19332",
+  "source_type": "github",
+  "error_class": "ForeignKeyViolationError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py\", line 550, in _prepare_and_execute\n    self._rows = deque(await prepared_stmt.fetch(*parameters))\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/asyncpg/prepared_stmt.py\", line 176, in fetch\n    data = await self.__bind_execute(args, 0, timeout)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/asyncpg/prepared_stmt.py\", line 267, in __bind_execute\n    data, status, _ = await self.__do_execute(\n                      ^^^^^^^^^^^^^^^^^^^^^^^^\n        lambda protocol: protocol.bind_execute(\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            self._state, args, '', limit, True, timeout))\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/asyncpg/prepared_stmt.py\", line 256, in __do_execute\n    return await executor(protocol)\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"asyncpg/protocol/protocol.pyx\", line 206, in bind_execute\nasyncpg.exceptions.ForeignKeyViolationError: insert or update on table \"automation_bucket\" violates foreign key constraint \"fk_automation_bucket__automation_id__automation\"",
+  "source_code": "# the flow is defined like this\n@flow(\n    name=PREFECT_CONSTANTS.FLOW_NAMES.POLL_FOO,\n    log_prints=True,\n    flow_run_name=generate_flow_run_name,\n    retries=1,\n)\nasync def poll_FOO_flow()\n{\n\n    #... some stuff ...\n    downloaded_foo = {... some stuff ...}\n\n    # Trigger event to notify updated I-ALiRT data\n    logger.debug(f\"Emitting {PREFECT_CONSTANTS.EVENT.FOO_UPDATED} event\")\n\n    event: Event | None = emit_event(\n        event=\"thing.foo.updated\",\n        resource={\n            \"prefect.resource.id\": f\"prefect.flow-run.{flow_run.id}\",\n            \"prefect.resource.name\": flow_run.name,\n            \"prefect.resource.role\": \"flow-run\",\n        },\n        payload={\"files\": list(downloaded_foo.keys())},\n    )\n\n    if event is None:\n        logger.warning(\"Failed to emit FOO updated event\")\n}",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:prefect",
+    "multi-file",
+    "protocol"
+  ],
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_020",
+  "source_url": "https://github.com/pytorch/pytorch/issues/60673",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "complexity_score": 4,
+  "library": "torch",
+  "license": "BSD-3-Clause",
+  "complexity_tags": [
+    "torch",
+    "ml"
+  ],
+  "expected_fix_hint": "Expected input batch size doesn't match target batch size. Reshape or drop extra dim.",
+  "stderr": "Traceback (most recent call last):\n  File \"train.py\", line 32, in <module>\n    main()\n  File \"train.py\", line 28, in main\n    train_step(model, x, y)\n  File \"train.py\", line 22, in train_step\n    loss = criterion(logits, targets)\n  File \"/usr/lib/python3.11/site-packages/torch/nn/modules/loss.py\", line 1174, in forward\n    return F.cross_entropy(input, target, ...)\nValueError: Expected input batch_size (4) to match target batch_size (8).",
+  "source_code": "import torch\nimport torch.nn as nn\n\n\nclass Classifier(nn.Module):\n    def __init__(self, in_dim=32, n_classes=10):\n        super().__init__()\n        self.fc = nn.Linear(in_dim, n_classes)\n\n    def forward(self, x):\n        return self.fc(x)\n\n\ndef train_step(model, x, y):\n    criterion = nn.CrossEntropyLoss()\n    # BUG: reshape flattens batch dim into features\n    x = x.view(-1, 32)\n    logits = model(x)\n    # logits batch is now 4 but targets is 8\n    loss = criterion(logits, y)\n    return loss\n\n\ndef main():\n    torch.manual_seed(0)\n    model = Classifier()\n    x = torch.randn(8, 2, 16)  # 8 batches, but reshape collapses to 4\n    y = torch.randint(0, 10, (8,))\n    train_step(model, x, y)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

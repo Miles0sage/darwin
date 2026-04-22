@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_009",
+  "source_url": "https://github.com/pydantic/pydantic/issues/6381",
+  "source_type": "github",
+  "error_class": "AttributeError",
+  "complexity_score": 4,
+  "library": "pydantic",
+  "license": "MIT",
+  "complexity_tags": [
+    "pydantic"
+  ],
+  "expected_fix_hint": "Pydantic v2 renamed .dict() to .model_dump(). Migrate or pin pydantic<2.",
+  "stderr": "Traceback (most recent call last):\n  File \"api.py\", line 28, in <module>\n    main()\n  File \"api.py\", line 24, in main\n    payload = serialize(user)\n  File \"api.py\", line 17, in serialize\n    data = model.dict()\n  File \"/usr/lib/python3.11/site-packages/pydantic/main.py\", line 813, in __getattr__\n    raise AttributeError(item)\nAttributeError: 'User' object has no attribute 'dict'\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "from pydantic import BaseModel\nimport json\n\n\nclass User(BaseModel):\n    id: int\n    email: str\n    active: bool = True\n\n\nclass Session(BaseModel):\n    user: User\n    token: str\n\n\ndef serialize(model):\n    # BUG: pydantic v2 removed .dict() in favor of .model_dump()\n    data = model.dict()\n    return json.dumps(data)\n\n\ndef main():\n    user = User(id=1, email='u@example.com')\n    payload = serialize(user)\n    print(payload)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

@@ -1,0 +1,21 @@
+{
+  "id": "bug_v2_016",
+  "source_url": "https://github.com/home-assistant/core/issues/42563",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/src/homeassistant/homeassistant/core.py\", line 1351, in catch_exceptions\r\n    await coro_or_task\r\n  File \"/usr/src/homeassistant/homeassistant/core.py\", line 1370, in _execute_service\r\n    await handler.func(service_call)\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity_component.py\", line 204, in handle_service\r\n    await self.hass.helpers.service.entity_service_call(\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/service.py\", line 470, in entity_service_call\r\n    future.result()  # pop exception if have\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 655, in async_request_call\r\n    await coro\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/service.py\", line 507, in _handle_entity_call\r\n    await result\r\n  File \"/usr/src/homeassistant/homeassistant/components/light/__init__.py\", line 249, in async_handle_light_on_service\r\n    await light.async_turn_on(**params)\r\n  File \"/usr/src/homeassistant/homeassistant/components/tradfri/light.py\", line 262, in async_turn_on\r\n    await self._api(command)\r\n  File \"/usr/src/homeassistant/homeassistant/components/tradfri/base_class.py\", line 22, in wrapper\r\n    await func(command)\r\n  File \"/usr/local/lib/python3.8/site-packages/pytradfri/api/aiocoap_api.py\", line 164, in request\r\n    result = await self._execute(api_commands)\r\n  File \"/usr/local/lib/python3.8/site-packages/pytradfri/api/aiocoap_api.py\", line 148, in _execute\r\n    _, res = await self._get_response(msg)\r\n  File \"/usr/local/lib/python3.8/site-packages/pytradfri/api/aiocoap_api.py\", line 96, in _get_response\r\n    r = await pr.response\r\n  File \"/usr/local/lib/python3.8/site-packages/aiocoap/protocol.py\", line 731, in _run_outer\r\n    await cls._run(app_request, response, weak_observation, protocol, log)\r\n  File \"/usr/local/lib/python3.8/site-packages/aiocoap/protocol.py\", line 783, in _run\r\n    blockresponse = await blockrequest.response\r\n  File \"/usr/local/lib/python3.8/site-packages/aiocoap/protocol.py\", line 313, in send\r\n    request_interface.request(plumbing_request)\r\n  File \"/usr/local/lib/python3.8/site-packages/aiocoap/tokenmanager.py\", line 243, in request\r\n    self.outgoing_requests[key] = request\r\nTypeError: 'NoneType' object does not support item assignment",
+  "source_code": "# source: https://github.com/home-assistant/core/issues/42563\n# repo: home-assistant/core\n# title: The Tradfri integration stops working every few days.\n# \n# <!-- READ THIS FIRST:\n#   - If you need additional help with this template, please refer to https://www.home-assistant.io/help/reporting_issues/\n#   - Make sure you are running the latest version of Home Assistant before reporting an issue: https://github.com/home-assistant/core/releases\n#   - Do not report issues for integrations if you are using custom components or integrations.\n#   - Provide as many details as possible. Paste logs, configuration samples and code into the backticks.\n#   DO NOT DELETE ANY TEXT from this template! Otherwise, your issue may be closed without comment.\n# -->\n# ## The problem\n# <!-- \n#   Describe the issue you are experiencing here to communicate to the\n#   maintainers. Tell us what you were trying to do and what happened.\n# -->\n# The Tradfri integration stops working \n\n## Traceback/Error logs\r\n<!--\r\n  If you come across any trace or error logs, please provide them.\r\n-->",
+  "expected_fix_hint": "Fix argument type/shape; check signature changes between library versions.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:home-assistant",
+    "multi-file",
+    "protocol",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

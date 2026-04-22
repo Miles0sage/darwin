@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_155",
+  "source_url": "https://stackoverflow.com/questions/70555112/ray-cant-pickle-local-object",
+  "source_type": "stackoverflow",
+  "error_class": "RuntimeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/app/pipeline/runner.py\", line 82, in _launch\n    futs = [self._score.remote(b) for b in batches]\n  File \"/usr/lib/python3.11/site-packages/ray/remote_function.py\", line 213, in remote\n    return self._remote(args=args, kwargs=kwargs)\n  File \"/usr/lib/python3.11/site-packages/ray/remote_function.py\", line 309, in _remote\n    serialized_args = serialize_args(args, kwargs)\n  File \"/usr/lib/python3.11/site-packages/ray/_private/serialization.py\", line 421, in dumps\n    return pickle.dumps(value)\nRuntimeError: Can't pickle local object 'Runner._build_scorer.<locals>.score_one' \u2014 remote Ray functions require module-level or serializable callables",
+  "source_code": "import ray\nfrom typing import Callable\n\nray.init(ignore_reinit_error=True)\n\nclass Model:\n    def __init__(self, weights):\n        self.weights = weights\n    def predict(self, x):\n        return sum(self.weights[c] for c in x)\n\nclass Runner:\n    def __init__(self, model: Model):\n        self._model = model\n        # BUG: wrapping a ray.remote around a local closure that captures self._model\n        # \u2014 Ray tries to pickle the closure and fails.\n        self._score = ray.remote(self._build_scorer())\n\n    def _build_scorer(self) -> Callable:\n        model = self._model\n        def score_one(batch):\n            return [model.predict(x) for x in batch]\n        return score_one\n\n    def run(self, batches):\n        futs = [self._score.remote(b) for b in batches]\n        return ray.get(futs)\n\nif __name__ == '__main__':\n    r = Runner(Model({'a': 1, 'b': 2}))\n    print(r.run([[('a','b')], [('a','a','b')]]))",
+  "expected_fix_hint": "Define the remote function at module scope, or decorate a staticmethod; avoid closures that capture instance state.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:ray",
+    "multi-file",
+    "multiprocessing"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

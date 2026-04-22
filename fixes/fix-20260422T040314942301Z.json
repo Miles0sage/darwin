@@ -1,0 +1,12 @@
+{
+  "fingerprint": "6aff837db3bfa28b",
+  "error_class": "AttributeError",
+  "error_signature": "AttributeError: 'NoneType' object has no attribute 'name'",
+  "root_cause": "real-AttributeError",
+  "fix_applied": true,
+  "fix_code": "class asas(object):\n    def b(self):\n        self.name = \"Berkhan\"\n        return self # Return self to allow method chaining or direct attribute access on the instance\n\na = asas()\na.b().name\n",
+  "timestamp": "20260422T040314942301Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

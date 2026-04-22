@@ -1,0 +1,11 @@
+{
+  "id": "bug_013",
+  "source_url": "https://github.com/huggingface/transformers/issues/4336",
+  "source_type": "github",
+  "error_class": "AttributeError",
+  "stderr": "AttributeError                            Traceback (most recent call last)\r\n~/anaconda3/lib/python3.7/site-packages/torch/serialization.py in _check_seekable(f)\r\n    226     try:\r\n--> 227         f.seek(f.tell())\r\n    228         return True\r\n\r\nAttributeError: 'NoneType' object has no attribute 'seek'",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "Apache-2.0"
+}

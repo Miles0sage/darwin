@@ -1,0 +1,12 @@
+{
+  "fingerprint": "0599453b89fcca3d",
+  "error_class": null,
+  "error_signature": "  File \"/Users/vincent.min/Projects/l",
+  "root_cause": "real-TypeError",
+  "fix_applied": true,
+  "fix_code": "from typing import Annotated\n\nfrom langchain_core.tools import tool\nfrom langchain_openai import ChatOpenAI\nfrom langgraph.checkpoint.memory import InMemorySaver\nfrom langgraph.prebuilt import InjectedStore, create_react_agent\nfrom langgraph.store.base import BaseStore\nfrom langgraph.store.memory import InMemoryStore\n\n\n@tool\ndef add(\n    a,\n    b,\n    # store: Annotated[BaseStore, InjectedStore], # This argument is not used and causes serialization issues\n):\n    \"\"\"Add 2 numbers\"\"\"\n    return str(a + b)\n\n\nagent = create_react_agent(\n    model=ChatOpenAI(model=\"gpt-4.1-nano\"),\n    tools=[add],\n    checkpointer=InMemorySaver(),\n    store=InMemoryStore(),\n    # version=\"v1\",\n)\n\n\nfor event in agent.stream(\n    input={\"messages\": [\"What is 1 + 1?\"]},\n    config={\"configurable\": {\"thread_id\": \"abc\"}},\n):\n    print(event)\n",
+  "timestamp": "20260422T040620286258Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

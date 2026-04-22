@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_072",
+  "source_url": "https://github.com/python/cpython/issues/94345",
+  "source_type": "github",
+  "error_class": "RecursionError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/home/classic/dev/sqlalchemy/test4.py\", line 29, in <module>\r\n    dataclasses.asdict(a1)\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1232, in asdict\r\n    return _asdict_inner(obj, dict_factory)\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1239, in _asdict_inner\r\n    value = _asdict_inner(getattr(obj, f.name), dict_factory)\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1267, in _asdict_inner\r\n    return type(obj)(_asdict_inner(v, dict_factory) for v in obj)\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1267, in <genexpr>\r\n    return type(obj)(_asdict_inner(v, dict_factory) for v in obj)\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1239, in _asdict_inner\r\n    value = _asdict_inner(getattr(obj, f.name), dict_factory)\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1239, in _asdict_inner\r\n\r\n...\r\n\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1236, in _asdict_inner\r\n    if _is_dataclass_instance(obj):\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1201, in _is_dataclass_instance\r\n    return hasattr(type(obj), _FIELDS)\r\nRecursionError: maximum recursion depth exceeded while calling a Python object",
+  "source_code": "A(b=[B(a=...)])\r\nB(a=A(b=[...]))\r\nTraceback (most recent call last):\r\n  File \"/home/classic/dev/sqlalchemy/test4.py\", line 29, in <module>\r\n    dataclasses.asdict(a1)\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1232, in asdict\r\n    return _asdict_inner(obj, dict_factory)\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1239, in _asdict_inner\r\n    value = _asdict_inner(getattr(obj, f.name), dict_factory)\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1267, in _asdict_inner\r\n    return type(obj)(_asdict_inner(v, dict_factory) for v in obj)\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1267, in <genexpr>\r\n    return type(obj)(_asdict_inner(v, dict_factory) for v in obj)\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1239, in _asdict_inner\r\n    value = _asdict_inner(getattr(obj, f.name), dict_factory)\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1239, in _asdict_inner\r\n\r\n...\r\n\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1236, in _asdict_inner\r\n    if _is_dataclass_instance(obj):\r\n  File \"/opt/python-3.10.0/lib/python3.10/dataclasses.py\", line 1201, in _is_dataclass_instance\r\n    return hasattr(type(obj), _FIELDS)\r\nRecursionError: maximum recursion depth exceeded while calling a Python object",
+  "expected_fix_hint": "workaround as these two methods are pretty simple and don't accept any arguments like \"check_recursion\", IIUC there is also no directive on field() that would change this either?  ",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:cpython",
+    "multi-file",
+    "recursion"
+  ],
+  "license": "Apache-2.0"
+}

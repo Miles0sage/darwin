@@ -1,0 +1,11 @@
+{
+  "id": "bug_022",
+  "source_url": "https://github.com/langchain-ai/langchain/issues/34155",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "stderr": "File \".../langchain_groq/chat_models.py\", line 611, in _agenerate\n    response = await self.async_client.create(messages=message_dicts, **params)\nTypeError: AsyncCompletions.create() got an unexpected keyword argument 'strict'",
+  "source_code": "from pydantic import BaseModel, Field\nfrom typing import List, Optional\nfrom langchain.agents import create_agent\nfrom langchain.agents.structured_output import ToolStrategy\nfrom langchain_groq import ChatGroq\n\nclass MovieRecommendation(BaseModel):\n    title: str = Field(description=\"The movie title\")\n    genre: str = Field(description=\"Primary genre of the movie\")\n    year: Optional[int] = Field(description=\"Release year\")\n    similar_movies: List[str] = Field(description=\"List of 2-3 similar movies\")\n\n# Method 1: create_agent with Auto strategy (ProviderStrategy) - FAILS\nagent = create_agent(model=\"groq:openai/gpt-oss-120b\", response_format=MovieRecommendation)\nresult = await agent.ainvoke({\"messages\": [{\"role\": \"user\", \"content\": \"Recommend a sci-fi movie\"}]})\n\n# Method 2: create_agent with ToolStrategy - FAILS\nagent = create_agent(model=\"groq:openai/gpt-oss-120b\", response_format=ToolStrategy(MovieRecommendation))\nresult = await agent.ainvoke({\"messages\": [{\"role\": \"user\", \"content\": \"Recommend a sci-fi movie\"}]})\n\n# Method 3: ChatGroq.with_structured_output() - FAILS\nllm = ChatGroq(model=\"openai/gpt-oss-120b\")\nstructured_llm = llm.with_structured_output(MovieRecommendation)\nresult = await structured_llm.ainvoke(\"Recommend a sci-fi movie\")",
+  "expected_fix_hint": "",
+  "has_reproducer": true,
+  "license": "MIT"
+}

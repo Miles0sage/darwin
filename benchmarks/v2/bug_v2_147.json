@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_147",
+  "source_url": "https://stackoverflow.com/questions/54713018/descriptor-set-name-not-called",
+  "source_type": "stackoverflow",
+  "error_class": "AttributeError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\n  File \"/app/models/orm.py\", line 88, in <module>\n    row = UserRow(name=\"alice\")\n  File \"/app/models/orm.py\", line 47, in __init__\n    setattr(self, k, v)\n  File \"/app/models/orm.py\", line 32, in __set__\n    instance.__dict__[self.name] = self._coerce(value)\nAttributeError: 'Column' object has no attribute 'name'\nDuring handling of the above exception, another exception occurred:\n  File \"/app/models/orm.py\", line 88, in <module>\n    row = UserRow(name=\"alice\")\n  File \"/app/models/orm.py\", line 49, in __init__\n    raise AttributeError(f\"column {k!r} failed to bind: {e}\") from e\nAttributeError: column 'name' failed to bind: 'Column' object has no attribute 'name'",
+  "source_code": "from typing import Any\n\nclass Column:\n    def __init__(self, coerce=str):\n        self._coerce = coerce\n        # BUG: Descriptor should populate .name in __set_name__, but we skip it\n        # and rely on a for-loop below that never actually calls __set_name__.\n\n    def __get__(self, instance, owner):\n        if instance is None:\n            return self\n        return instance.__dict__.get(self.name)\n\n    def __set__(self, instance, value):\n        instance.__dict__[self.name] = self._coerce(value)\n\n\nclass ModelMeta(type):\n    def __new__(mcs, name, bases, ns):\n        cls = super().__new__(mcs, name, bases, ns)\n        # BUG: Iterating ns.items() but Column instances were added AFTER class\n        # creation via ``cls.attr = Column()`` in the user model, so __set_name__\n        # was never triggered for those.\n        return cls\n\n\nclass Model(metaclass=ModelMeta):\n    def __init__(self, **kwargs):\n        for k, v in kwargs.items():\n            try:\n                setattr(self, k, v)\n            except AttributeError as e:\n                raise AttributeError(f\"column {k!r} failed to bind: {e}\") from e\n\n\nclass UserRow(Model):\n    pass\n\n\n# User patches class dynamically (real pattern in plugin systems)\nUserRow.name = Column(str)\nUserRow.age  = Column(int)\n\nif __name__ == \"__main__\":\n    row = UserRow(name=\"alice\")\n    print(row.name)",
+  "expected_fix_hint": "Call __set_name__ manually when assigning descriptors after class creation, or use a proper declarative base that registers fields at class-body time.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "descriptor",
+    "library:stdlib",
+    "metaclass",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

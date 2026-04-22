@@ -1,0 +1,17 @@
+{
+  "id": "bug_v2_157",
+  "source_url": "https://stackoverflow.com/questions/77222012/pydantic-v2-field-validator-typeerror",
+  "source_type": "stackoverflow",
+  "error_class": "TypeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/srv/api/schemas.py\", line 38, in <module>\n    bad = Product(sku=\"a1\", price=\"19.99\", tags=\"premium\")\n  File \"/usr/lib/python3.11/site-packages/pydantic/main.py\", line 171, in __init__\n    self.__pydantic_validator__.validate_python(data, self_instance=self)\n  File \"/srv/api/schemas.py\", line 22, in normalize_tags\n    return [t.strip().lower() for t in values.get('tags', '').split(',')]\nTypeError: field_validator with mode='before' received a ValidationInfo object, not a dict. In Pydantic v2 the 'values' positional parameter was replaced with info: ValidationInfo; use info.data to access sibling fields.\nUse field_validator(..., mode='before') -> decorator signature (cls, value, info: ValidationInfo).",
+  "source_code": "from pydantic import BaseModel, field_validator, ValidationInfo\nfrom typing import List\n\nclass Product(BaseModel):\n    sku: str\n    price: float\n    tags: List[str] = []\n\n    @field_validator('tags', mode='before')\n    @classmethod\n    def normalize_tags(cls, v, values):  # BUG: pydantic v2 expects (cls, v, info), not (cls, v, values)\n        if isinstance(v, str):\n            # Old v1 code that assumed ``values`` is a dict of sibling fields\n            return [t.strip().lower() for t in values.get('tags', '').split(',')]\n        return v\n\nif __name__ == '__main__':\n    bad = Product(sku=\"a1\", price=\"19.99\", tags=\"premium\")\n    print(bad)",
+  "expected_fix_hint": "Rename third arg to info: ValidationInfo and use info.data instead of values.get(...). Or pin pydantic<2.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:pydantic",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

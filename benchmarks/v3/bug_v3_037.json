@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_037",
+  "source_url": "https://github.com/huggingface/transformers/issues/25272",
+  "source_type": "github",
+  "error_class": "ModuleNotFoundError",
+  "complexity_score": 4,
+  "library": "transformers",
+  "license": "Apache-2.0",
+  "complexity_tags": [
+    "transformers",
+    "async"
+  ],
+  "expected_fix_hint": "Missing sentencepiece dependency. pip install sentencepiece or use a different tokenizer.",
+  "stderr": "Traceback (most recent call last):\n  File \"encode.py\", line 28, in <module>\n    main()\n  File \"encode.py\", line 24, in main\n    ids = encode('hello')\n  File \"encode.py\", line 18, in encode\n    tokenizer = AutoTokenizer.from_pretrained('xlm-roberta-base')\n  File \"/usr/lib/python3.11/site-packages/transformers/models/xlm_roberta/tokenization.py\", line 3, in <module>\n    import sentencepiece as spm\nModuleNotFoundError: No module named 'sentencepiece'",
+  "source_code": "from transformers import AutoTokenizer\n\n\nclass TokenizerWrapper:\n    def __init__(self, model_name='xlm-roberta-base'):\n        self.model_name = model_name\n        # requires sentencepiece which may not be installed\n        self.tokenizer = AutoTokenizer.from_pretrained(model_name)\n\n    def encode(self, text):\n        return self.tokenizer.encode(text)\n\n    def decode(self, ids):\n        return self.tokenizer.decode(ids)\n\n\ndef encode(text):\n    w = TokenizerWrapper()\n    return w.encode(text)\n\n\ndef main():\n    ids = encode('hello world')\n    print(ids)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

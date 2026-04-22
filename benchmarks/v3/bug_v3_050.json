@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_050",
+  "source_url": "https://stackoverflow.com/questions/12485666/permissionerror-errno-13-permission-denied",
+  "source_type": "stackoverflow",
+  "error_class": "PermissionError",
+  "complexity_score": 2,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Writing to read-only location. Use tempfile or user-writable dir.",
+  "stderr": "Traceback (most recent call last):\n  File \"writer.py\", line 26, in <module>\n    main()\n  File \"writer.py\", line 22, in main\n    w.save('data')\n  File \"writer.py\", line 14, in save\n    with open(self.path, \"w\") as f:\n  File \"/usr/lib/python3.11/_io.py\", line 128, in open\n    return _io_open(file, mode, buffering, encoding, errors, newline, closefd)\nPermissionError: [Errno 13] Permission denied: '/etc/critical.conf'",
+  "source_code": "import os\nimport tempfile\n\n\nclass Writer:\n    def __init__(self, path='/etc/critical.conf'):\n        # BUG: writes to system file without root\n        self.path = path\n\n    def save(self, content):\n        with open(self.path, \"w\") as f:\n            f.write(content)\n\n    def fallback_path(self):\n        return os.path.join(tempfile.gettempdir(), 'critical.conf')\n\n\ndef save(content):\n    Writer().save(content)\n\n\ndef main():\n    w = Writer()\n    w.save('hello')\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

@@ -1,0 +1,17 @@
+{
+  "id": "bug_v2_141",
+  "source_url": "https://github.com/coursera-dl/coursera-dl/issues/702",
+  "source_type": "github",
+  "error_class": "HTTPError",
+  "complexity_score": 3,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/coursera/cookies.py\", line 148, in login\r\n    r.raise_for_status()\r\n  File \"/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/requests/models.py\", line 940, in raise_for_status\r\n    raise HTTPError(http_error_msg, response=self)",
+  "source_code": "# Reproducer derived from https://github.com/coursera-dl/coursera-dl/issues/702\n# repo: coursera-dl/coursera-dl\n# title: HTTPError: 400 Client Error: Bad Request for url: https://api.coursera.org/api/login/v3\n\n# Last frames in traceback:\n#   /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/coursera/cookies.py line 148 in login\n#   /Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/requests/models.py line 940 in raise_for_status\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # \ud83d\udea8Please review the [Troubleshooting](../#troubleshooting) section\n    # before reporting any issue. Don't forget to check also the current issues to\n    # avoid duplicates.\n    # ### Subject of the issue\n    # Describe your issue here.\n    # ### Your environment\n    # * Mac OS X El Capitan:\n    # * Aleksandrs-Air:~ alekscooper$ python --version Python 2.7.10\n    raise HTTPError('reproduce: see https://github.com/coursera-dl/coursera-dl/issues/702')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "context-manager",
+    "library:coursera-dl",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

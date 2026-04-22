@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_016",
+  "source_url": "https://stackoverflow.com/questions/3061/calling-a-function-of-a-module-by-using-its-name-a-string",
+  "source_type": "stackoverflow",
+  "error_class": "TypeError",
+  "complexity_score": 2,
+  "library": "stdlib",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "stdlib"
+  ],
+  "expected_fix_hint": "Cannot unpack non-iterable. The function returned a dict; use dict.items() or indexing.",
+  "stderr": "Traceback (most recent call last):\n  File \"parse.py\", line 28, in <module>\n    main()\n  File \"parse.py\", line 24, in main\n    for k, v in parse_header(header):\n  File \"parse.py\", line 15, in parse_header\n    return {'key': name, 'value': val}\nTypeError: cannot unpack non-iterable int object\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "import re\n\n\nHEADER_RE = re.compile(r'^(?P<name>[A-Za-z-]+):\\s*(?P<val>.+)$')\n\n\nclass HeaderParser:\n    def __init__(self, pattern=HEADER_RE):\n        self.pattern = pattern\n\n    def parse_header(self, line):\n        m = self.pattern.match(line)\n        if not m:\n            return None\n        name, val = m.group('name'), m.group('val')\n        # BUG: returns dict, but caller tries to iterate as (k,v)\n        return {'key': name, 'value': val}\n\n\ndef parse_header(line):\n    return HeaderParser().parse_header(line)\n\n\ndef main():\n    header = 'Content-Type: application/json'\n    for k, v in parse_header(header):\n        print(k, '=', v)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

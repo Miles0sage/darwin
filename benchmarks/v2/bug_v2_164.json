@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_164",
+  "source_url": "https://stackoverflow.com/questions/75421235/asyncio-timeout-shielded-scope",
+  "source_type": "stackoverflow",
+  "error_class": "TimeoutError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/srv/gateway/proxy.py\", line 73, in forward\n    async with asyncio.timeout(2.0):\n  File \"/usr/lib/python3.11/asyncio/timeouts.py\", line 111, in __aexit__\n    raise TimeoutError from exc_val\nTimeoutError\nDuring handling of the above exception, another exception occurred:\n  File \"/srv/gateway/proxy.py\", line 81, in forward\n    raise TimeoutError(f\"upstream {url!r} exceeded {self.timeout:.1f}s budget (outer scope shielded inner cancel)\") from e\nTimeoutError: upstream 'https://api.example.com/v1/score' exceeded 2.0s budget (outer scope shielded inner cancel)",
+  "source_code": "import asyncio\nimport anyio\n\nclass Proxy:\n    def __init__(self, timeout: float = 2.0):\n        self.timeout = timeout\n\n    async def forward(self, url: str):\n        try:\n            # BUG: using asyncio.timeout inside an anyio CancelScope that shields\n            # the inner task \u2014 the outer deadline fires but cancellation gets stuck\n            # until the scope exits.\n            async with anyio.CancelScope(shield=True):\n                async with asyncio.timeout(self.timeout):\n                    return await self._call_upstream(url)\n        except TimeoutError as e:\n            raise TimeoutError(\n                f\"upstream {url!r} exceeded {self.timeout:.1f}s budget \"\n                f\"(outer scope shielded inner cancel)\"\n            ) from e\n\n    async def _call_upstream(self, url):\n        await asyncio.sleep(10)  # simulate hang\n        return {\"ok\": True}\n\nif __name__ == '__main__':\n    asyncio.run(Proxy(timeout=2.0).forward(\"https://api.example.com/v1/score\"))",
+  "expected_fix_hint": "Do not nest shield=True inside a timeout you want enforced. Invert the layering or use anyio.move_on_after at the correct scope.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "asyncio",
+    "deep-trace",
+    "library:anyio",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

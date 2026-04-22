@@ -1,0 +1,11 @@
+{
+  "id": "bug_011",
+  "source_url": "https://github.com/abetlen/llama-cpp-python/issues/806",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "stderr": "Traceback (most recent call last):\r\n  File \"/home/ubuntu/my_data/01_python/OPS-LLM/LLM_OPS/llm_ops_env/lib/python3.10/site-packages/llama_cpp/llama.py\", line 1658, in __del__\r\nTypeError: 'NoneType' object is not callable`",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "MIT"
+}

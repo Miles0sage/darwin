@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_112",
+  "source_url": "https://github.com/langchain-ai/langchain/issues/23904",
+  "source_type": "github",
+  "error_class": "IntegrityError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/home/zz/.cache/pypoetry/virtualenvs/charity-kg-dBz_RD7O-py3.10/lib/python3.10/site-packages/sqlalchemy/engine/base.py\", line 1960, in _exec_single_context\r\n    self.dialect.do_execute(\r\n  File \"/home/zz/.cache/pypoetry/virtualenvs/charity-kg-dBz_RD7O-py3.10/lib/python3.10/site-packages/sqlalchemy/engine/default.py\", line 924, in do_execute\r\n    cursor.execute(statement, parameters)\r\nsqlite3.IntegrityError: UNIQUE constraint failed: full_llm_cache.prompt, full_llm_cache.llm, full_llm_cache.idx",
+  "source_code": "import asyncio,sys,csv, random\r\nfrom typing import Any, Dict, List\r\nfrom langchain_community.cache import SQLiteCache\r\nfrom langchain.callbacks.base import AsyncCallbackHandler\r\nfrom langchain_community.callbacks import get_openai_callback\r\nfrom langchain_core.messages import HumanMessage\r\nfrom langchain_core.outputs import LLMResult\r\nfrom langchain_openai import ChatOpenAI\r\nfrom langchain_core.globals import set_llm_cache\r\n\r\nclass CustomAsyncHandler(AsyncCallbackHandler):\r\n\r\n    async def on_chat_model_start(self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any\r\n    ) -> None:\r\n        pass\r\n\r\n    \"\"\"Async callback handler that can be used to handle callbacks from langchain.\"\"\"\r\n    async def on_llm_start(\r\n        self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any\r\n    ) -> None:\r\n        pass\r\n\r\n    async def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:\r\n        await asyncio.sleep(1)\r\n        #print(\" >>> Your joke: {}\".format(response.generations[0][0].text))\r\n\r\nasync def summarize(chat, text):\r\n    # To enable streaming, we pass in `streaming=True` to the ChatModel constructor\r\n    # Additionally, we pass in a list with our custom handler\r\n\r\n    res=None\r\n    with get_openai_callback() as cb:\r\n        res=await chat.agenerate([[HumanMessage(content=\"Summarise the following text in 50 words:\\n\\n",
+  "expected_fix_hint": "resolved by updating to the latest stable version of LangChain (or the specific integration package).",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "library:langchain",
+    "multi-file",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "bug_v2_073",
+  "source_url": "https://github.com/pandas-dev/pandas/issues/41768",
+  "source_type": "github",
+  "error_class": "KeyError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/home/tobii.intra/jzn/.PyCharm2018.3/config/scratches/scratch_200.py\", line 22, in <module>\r\n    print(df.agg(x=('A', max), y=('B', 'min'), z=('C', lambda x: np.mean(x))))\r\n  File \"/home/tobii.intra/jzn/.virtualenvs/venv/lib/python3.7/site-packages/pandas/core/frame.py\", line 7379, in aggregate\r\n    result_in_dict = relabel_result(result, func, columns, order)\r\n  File \"/home/tobii.intra/jzn/.virtualenvs/venv/lib/python3.7/site-packages/pandas/core/aggregation.py\", line 342, in relabel_result\r\n    s = s[col_idx_order]\r\n  File \"/home/tobii.intra/jzn/.virtualenvs/venv/lib/python3.7/site-packages/pandas/core/frame.py\", line 2912, in __getitem__\r\n    indexer = self.loc._get_listlike_indexer(key, axis=1, raise_missing=True)[1]\r\n  File \"/home/tobii.intra/jzn/.virtualenvs/venv/lib/python3.7/site-packages/pandas/core/indexing.py\", line 1254, in _get_listlike_indexer\r\n    self._validate_read_indexer(keyarr, indexer, axis, raise_missing=raise_missing)\r\n  File \"/home/tobii.intra/jzn/.virtualenvs/venv/lib/python3.7/site-packages/pandas/core/indexing.py\", line 1298, in _validate_read_indexer\r\n    raise KeyError(f\"None of [{key}] are in the [{axis_name}]\")",
+  "source_code": "# source: https://github.com/pandas-dev/pandas/issues/41768\n# repo: pandas-dev/pandas\n# title: BUG: DataFrame.agg crashing with user-defined function\n# \n# - [X] I have checked that this issue has not already been reported.\n# - [X] I have confirmed this bug exists on the latest version of pandas.\n# #### Code Sample\n# #### Problem description\n# Passing lambda or user defined function causes `pd.DataFrame.agg` to crash.\n# When setting a break point in the user defined function I noticed that the input is not a `Series` containing all values of the column, but a single scalar value from that column. This seems to be isolated to `DataFrame.agg`, since my workaround was to add a trivial group by and make use of `GroupBy.agg`, which works fine.\n# #### Output of ``pd.show_versions()``\n# <details>\n# INSTALLED VERSIONS\n# ------------------\n# commit           : b5958ee1999e9aead1938c0bba2b674378807b3d\n# python           : 3.7.10.final.0\n\nTraceback (most recent call last):\r\n  File \"/home/tobii.intra/jzn/.PyCharm2018.3/config/scratches/scratch_200.py\", line 22, in <module>\r\n    print(df.agg(x=('A', max), y=('B', 'min'), z=('C', lambda x: np.mean(x))))\r\n  File \"/home/tobii.intra/jzn/.virtualenvs/venv/lib/python3.7/site-packages/pandas/core/frame.py\", line 7379, in aggregate\r\n    result_in_dict = relabel_result(result, func, columns, order)\r\n  File \"/home/tobii.intra/jzn/.virtualenvs/venv/lib/python3.7/site-packages/pandas/core/aggregation.py\", line 342, in relabel_result\r\n    s = s[col_idx_order]\r\n  File \"/home/tobii.intra/jzn/.virtualenvs/venv/lib/python3.7/site-packages/pandas/core/frame.py\", line 2912, in __getitem__\r\n    indexer = self.loc._get_listlike_indexer(key, axis=1, raise_missing=True)[1]\r\n  File \"/home/tobii.intra/jzn/.virtualenvs/venv/lib/python3.7/site-packages/pandas/core/indexing.py\", line 1254, in _get_listlike_indexer\r\n    self._validate_read_indexer(keyarr, indexer, axis, raise_missing=raise_missing)\r\n  File \"/home/tobii.intra/jzn/.virtualenvs/venv/lib/python3.7/site-packages/pandas/core/indexing.py\", line 1298, in _validate_read_indexer\r\n    raise KeyError(f\"None of [{key}] are in the [{axis_name}]\")\r\nKeyError: \"None of [Int64Index([0], dtype='int64')] are in the [columns]\"",
+  "expected_fix_hint": "workaround was to add a trivial group by and make use of `GroupBy.agg`, which works fine.\r",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "data-science",
+    "deep-trace",
+    "generic",
+    "library:pandas",
+    "multi-file",
+    "pytest"
+  ],
+  "license": "Apache-2.0"
+}

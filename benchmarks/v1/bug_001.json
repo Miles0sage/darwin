@@ -1,0 +1,11 @@
+{
+  "id": "bug_001",
+  "source_url": "https://stackoverflow.com/questions/78256229/attributeerror-nonetype-object-has-no-attribute-next-looked-through-multip",
+  "source_type": "stackoverflow",
+  "error_class": "AttributeError",
+  "stderr": "Traceback (most recent call last):\n  File \"dll.py\", line 45, in <module>\n    print(ll)\n  File \"dll.py\", line 30, in __str__\n    if curr.next is not None:\nAttributeError: 'NoneType' object has no attribute 'next'",
+  "source_code": "class Node:\n    def __init__(self, val):\n        self.next = None\n        self.prev = None\n        self.val = val\n\nclass dll:\n    def __init__(self):\n        self.head = None\n        self.tail = None\n        self.length = 0\n\n    def append(self, val):\n        new = Node(val)\n        if not self.head:\n            self.head = new\n            self.tail = new\n            self.length += 1\n            return\n        self.tail.next = new\n        new.prev = self.tail\n        self.tail = new\n        self.length += 1\n\n    def __str__(self):\n        curr = self.head\n        res = str()\n        if not self.head:\n            return \"Linked list is empty\"\n        while curr is not None:\n            res += str(curr.val)\n            curr = curr.next\n            if curr.next is not None:\n                res += ' <-> '\n        return res\n\nll = dll()\nll.append(10)\nll.append(30)\nprint(ll)",
+  "expected_fix_hint": "Check curr is not None before accessing curr.next: reorder `if curr.next is not None` to happen before `curr = curr.next`, or guard with `if curr is not None and curr.next is not None`.",
+  "has_reproducer": true,
+  "license": "CC BY-SA 4.0"
+}

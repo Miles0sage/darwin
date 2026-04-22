@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_045",
+  "source_url": "https://github.com/home-assistant/core/issues/77017",
+  "source_type": "github",
+  "error_class": "TypeError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity_platform.py\", line 428, in async_add_entities\r\n    await asyncio.gather(*tasks)\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity_platform.py\", line 673, in _async_add_entity\r\n    await entity.add_to_platform_finish()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 776, in add_to_platform_finish\r\n    self.async_write_ha_state()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 532, in async_write_ha_state\r\n    self._async_write_ha_state()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 570, in _async_write_ha_state\r\n    state = self._stringify_state(available)\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 538, in _stringify_state\r\n    if (state := self.state) is None:\r\n  File \"/usr/src/homeassistant/homeassistant/components/sensor/__init__.py\", line 388, in state\r\n    value = self.native_value\r\n  File \"/usr/src/homeassistant/homeassistant/components/mobile_app/sensor.py\", line 113, in native_value\r\n    and (timestamp := dt_util.parse_datetime(state)) is not None\r\n  File \"/usr/src/homeassistant/homeassistant/util/dt.py\", line 185, in parse_datetime\r\n    return ciso8601.parse_datetime(dt_str)\r\nTypeError: argument 1 must be str, not datetime.datetime",
+  "source_code": "Logger: homeassistant.components.sensor\r\nSource: util/dt.py:185\r\nIntegration: Sensor (documentation, issues)\r\nFirst occurred: 4:31:11 AM (2 occurrences)\r\nLast logged: 4:31:11 AM\r\n\r\nError adding entities for domain sensor with platform mobile_app\r\nError while setting up mobile_app platform for sensor\r\nTraceback (most recent call last):\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity_platform.py\", line 428, in async_add_entities\r\n    await asyncio.gather(*tasks)\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity_platform.py\", line 673, in _async_add_entity\r\n    await entity.add_to_platform_finish()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 776, in add_to_platform_finish\r\n    self.async_write_ha_state()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 532, in async_write_ha_state\r\n    self._async_write_ha_state()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 570, in _async_write_ha_state\r\n    state = self._stringify_state(available)\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 538, in _stringify_state\r\n    if (state := self.state) is None:\r\n  File \"/usr/src/homeassistant/homeassistant/components/sensor/__init__.py\", line 388, in state\r\n    value = self.native_value\r\n  File \"/usr/src/homeassistant/homeassistant/components/mobile_app/sensor.py\", line 113, in native_value\r\n    and (timestamp := dt_util.parse_datetime(state)) is not None\r\n  File \"/usr/src/homeassistant/homeassistant/util/dt.py\", line 185, in parse_datetime\r\n    return ciso8601.parse_datetime(dt_str)\r\nTypeError: argument 1 must be str, not datetime.datetime",
+  "expected_fix_hint": "Fix argument type/shape; check signature changes between library versions.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:home-assistant",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

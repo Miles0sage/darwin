@@ -1,0 +1,17 @@
+{
+  "id": "bug_v2_166",
+  "source_url": "https://stackoverflow.com/questions/57254247/sqlalchemy-bulk-insert-integrityerror-unique",
+  "source_type": "stackoverflow",
+  "error_class": "IntegrityError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/usr/lib/python3.11/site-packages/sqlalchemy/engine/base.py\", line 1967, in _exec_single_context\n    self.dialect.do_executemany(\n  File \"/usr/lib/python3.11/site-packages/sqlalchemy/dialects/sqlite/pysqlite.py\", line 678, in do_executemany\n    cursor.executemany(statement, parameters)\nsqlite3.IntegrityError: UNIQUE constraint failed: users.email\nThe above exception was the direct cause of the following exception:\nTraceback (most recent call last):\n  File \"/srv/api/import.py\", line 58, in bulk_import\n    session.bulk_insert_mappings(User, rows)\n  File \"/usr/lib/python3.11/site-packages/sqlalchemy/orm/session.py\", line 4268, in bulk_insert_mappings\n    self._bulk_save_mappings(\n  File \"/usr/lib/python3.11/site-packages/sqlalchemy/orm/session.py\", line 4367, in _bulk_save_mappings\n    transaction.rollback(_capture_exception=True)\nsqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed: users.email [SQL: INSERT INTO users (id, email, name) VALUES (?, ?, ?)] [parameters: [{'id': 1, 'email': 'a@b.com', 'name': 'Alice'}, {'id': 2, 'email': 'a@b.com', 'name': 'Alice2'}]]",
+  "source_code": "from sqlalchemy import Column, Integer, String, create_engine, UniqueConstraint\nfrom sqlalchemy.orm import declarative_base, sessionmaker\n\nBase = declarative_base()\n\nclass User(Base):\n    __tablename__ = 'users'\n    id = Column(Integer, primary_key=True)\n    email = Column(String, unique=True, nullable=False)\n    name = Column(String)\n\nengine = create_engine('sqlite:///:memory:')\nBase.metadata.create_all(engine)\nSession = sessionmaker(engine)\n\ndef bulk_import(rows):\n    with Session() as session:\n        # BUG: bulk_insert_mappings does NOT deduplicate by unique constraints;\n        # two rows with the same email collide and the whole batch aborts.\n        session.bulk_insert_mappings(User, rows)\n        session.commit()\n\nif __name__ == '__main__':\n    bulk_import([\n        {'id': 1, 'email': 'a@b.com', 'name': 'Alice'},\n        {'id': 2, 'email': 'a@b.com', 'name': 'Alice2'},  # duplicate email\n    ])",
+  "expected_fix_hint": "Deduplicate on email before insert, or use SQLAlchemy 2.0 insert(...).on_conflict_do_nothing()/update() for UPSERT semantics.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:sqlalchemy",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

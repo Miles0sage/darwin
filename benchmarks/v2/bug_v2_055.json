@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_055",
+  "source_url": "https://github.com/home-assistant/core/issues/130245",
+  "source_type": "github",
+  "error_class": "KeyError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 266, in _handle_refresh_interval\r\n    await self._async_refresh(log_failures=True, scheduled=True)\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 481, in _async_refresh\r\n    self.async_update_listeners()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 176, in async_update_listeners\r\n    update_callback()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 561, in _handle_coordinator_update\r\n    self.async_write_ha_state()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 1007, in async_write_ha_state\r\n    self._async_write_ha_state()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 1132, in _async_write_ha_state\r\n    self.__async_calculate_state()\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 1069, in __async_calculate_state\r\n    state = self._stringify_state(available)\r\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 1013, in _stringify_state\r\n    if (state := self.state) is None:\r\n                 ^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/components/sensor/__init__.py\", line 544, in state\r\n    value = self.native_value\r\n            ^^^^^^^^^^^^^^^^^\r\n  File \"/usr/src/homeassistant/homeassistant/components/pi_hole/sensor.py\", line 111, in native_value\r\n    return round(self.api.data[self.entity_description.key], 2)  # type: ignore[no-any-return]\r\n                 ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nKeyError: 'ads_blocked_today'",
+  "source_code": "# Reproducer derived from https://github.com/home-assistant/core/issues/130245\n# repo: home-assistant/core\n# title: Pi_hole integration doesn't work on pi_hole V6\n\n# Last frames in traceback:\n#   /usr/src/homeassistant/homeassistant/helpers/entity.py line 1007 in async_write_ha_state\n#   /usr/src/homeassistant/homeassistant/helpers/entity.py line 1132 in _async_write_ha_state\n#   /usr/src/homeassistant/homeassistant/helpers/entity.py line 1069 in __async_calculate_state\n#   /usr/src/homeassistant/homeassistant/helpers/entity.py line 1013 in _stringify_state\n#   /usr/src/homeassistant/homeassistant/components/sensor/__init__.py line 544 in state\n#   /usr/src/homeassistant/homeassistant/components/pi_hole/sensor.py line 111 in native_value\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # ### The problem\n    # On pi-hole V6, of which release is imminent, the integration no longer works. This is probably because the API has moved\n    # See:\n    # ![image](https://github.com/user-attachments/assets/abce6b0b-ff19-4ee5-843c-8dfbb5eeed43)\n    # ![image](https://github.com/user-attachments/assets/58284482-080d-4d9e-a084-fbfec19145d7)\n    raise KeyError('reproduce: see https://github.com/home-assistant/core/issues/130245')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Use dict.get() or check membership; handle optional keys.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:home-assistant",
+    "multi-file",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

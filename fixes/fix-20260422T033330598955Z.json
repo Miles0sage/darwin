@@ -1,0 +1,12 @@
+{
+  "fingerprint": "1def79fb36f4ad1f",
+  "error_class": "KeyError",
+  "error_signature": "KeyError: 'text'",
+  "root_cause": "soak-schema_keyerror",
+  "fix_applied": true,
+  "fix_code": "import json\n\ndef fetch_delta(api_version):\n    data = {\"text\": \"hello\"}\n    if api_version == \"v2\":\n        data = {\"data\": {\"text\": \"hello\"}}\n    return data\n\ndef run_delta():\n    try:\n        result = fetch_delta(\"v2\")\n        text = result.get(\"data\", {}).get(\"text\") or result.get(\"text\", \"\")\n        print(f\"Got: {text}\")\n    except Exception as e:\n        raise\n\nif __name__ == \"__main__\":\n    try:\n        run_delta()\n    except Exception as e:\n        raise",
+  "timestamp": "20260422T033330598955Z",
+  "originating_agent": "sentiment-tracker",
+  "llm_provider": "unknown",
+  "confidence": 0.95
+}

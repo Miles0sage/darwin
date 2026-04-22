@@ -1,0 +1,17 @@
+{
+  "id": "bug_v2_126",
+  "source_url": "https://github.com/BerriAI/litellm/issues/14895",
+  "source_type": "github",
+  "error_class": "CancelledError",
+  "complexity_score": 3,
+  "stderr": "Traceback (most recent call last):\n  File \"/usr/lib/python3.13/site-packages/aiohttp/connector.py\", line 523, in connect\n    await self._wait_for_available_connection(key, traces)\n  File \"/usr/lib/python3.13/site-packages/aiohttp/connector.py\", line 589, in _wait_for_available_connection\n    await fut\nasyncio.exceptions.CancelledError",
+  "source_code": "# source: https://github.com/BerriAI/litellm/issues/14895\n# repo: BerriAI/litellm\n# title: [Bug]: connection timeout occurs in high-concurrency scenarios\n# \n# ### What happened?\n# in high-concurrency scenarios, litellm will get such error\n# After investigation, it was found that it was because `aiohttp.TCPConnector` has default limit=100.\n# There are two solutions:\n# 1. set `DISABLE_AIOHTTP_TRANSPORT=true`, use the default transport of httpx\n# 2. Add a configuration to set the connection size of aiohttp.TCPConnector(limt=x) and httpx.Limit()\n# ### Relevant log output\n# ### Are you a ML Ops Team?\n# Yes\n# ### What LiteLLM version are you on ?\n# v1.76.1\n# ### Twitter / LinkedIn details\n# _No response_\n\nAfter investigation, it was found that it was because `aiohttp.TCPConnector` has default limit=100.\n\nThere are two solutions:\n1. set `DISABLE_AIOHTTP_TRANSPORT=true`, use the default transport of httpx\n2. Add a configuration to set the connection size of aiohttp.TCPConnector(limt=x) and httpx.Limit()\n\n### Relevant log output",
+  "expected_fix_hint": "Catch and re-raise or suppress per policy; avoid swallowing inside shield.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "library:litellm"
+  ],
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_027",
+  "source_url": "https://github.com/langchain-ai/langchain/issues/16543",
+  "source_type": "github",
+  "error_class": "KeyError",
+  "complexity_score": 3,
+  "library": "langchain",
+  "license": "MIT",
+  "complexity_tags": [
+    "langchain"
+  ],
+  "expected_fix_hint": "Prompt template variable not in input dict. Check input keys match template's variables.",
+  "stderr": "Traceback (most recent call last):\n  File \"qa.py\", line 30, in <module>\n    main()\n  File \"qa.py\", line 26, in main\n    answer = answer_question(q)\n  File \"qa.py\", line 20, in answer_question\n    return chain.invoke({'query': q})\n  File \"/usr/lib/python3.11/site-packages/langchain_core/prompts/string.py\", line 211, in format\n    return kwargs[key]\nKeyError: 'question'\n\nAdditional debugger context:\n  File \"/usr/lib/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)",
+  "source_code": "from langchain_core.prompts import PromptTemplate\nfrom langchain_core.runnables import RunnableLambda\n\n\ndef fake_llm(text):\n    return f'answer: {text[:40]}'\n\n\ndef build_qa_chain():\n    # template expects 'question' but caller passes 'query'\n    tmpl = PromptTemplate.from_template('Answer the {question}')\n    return tmpl | RunnableLambda(lambda p: fake_llm(p.to_string()))\n\n\ndef answer_question(q):\n    chain = build_qa_chain()\n    # BUG: template variable mismatch\n    return chain.invoke({'query': q})\n\n\ndef main():\n    q = 'What is the capital of France?'\n    answer = answer_question(q)\n    print(answer)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

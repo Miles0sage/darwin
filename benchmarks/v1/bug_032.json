@@ -1,0 +1,11 @@
+{
+  "id": "bug_032",
+  "source_url": "https://github.com/pytorch/pytorch/issues/574",
+  "source_type": "github",
+  "error_class": "ModuleNotFoundError",
+  "stderr": "Traceback (most recent call last):\r\n  File \"<stdin>\", line 1, in <module>\r\n  File \"/usr/lib/python3.6/site-packages/torch/__init__.py\", line 45, in <module>\r\n    from torch._C import *\r\nModuleNotFoundError: No module named 'torch._C'",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "BSD-3-Clause"
+}

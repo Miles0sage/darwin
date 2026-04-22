@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_168",
+  "source_url": "https://stackoverflow.com/questions/8804830/python-multiprocessing-picklingerror-cant-pickle",
+  "source_type": "stackoverflow",
+  "error_class": "PicklingError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/srv/batch/run.py\", line 52, in run\n    results = pool.map(transform, items)\n  File \"/usr/lib/python3.11/multiprocessing/pool.py\", line 364, in map\n    return self._map_async(func, iterable, mapstar, chunksize).get()\n  File \"/usr/lib/python3.11/multiprocessing/pool.py\", line 774, in get\n    raise self._value\n  File \"/usr/lib/python3.11/multiprocessing/pool.py\", line 540, in _handle_tasks\n    put(task)\n  File \"/usr/lib/python3.11/multiprocessing/connection.py\", line 206, in send\n    self._send_bytes(_ForkingPickler.dumps(obj))\n  File \"/usr/lib/python3.11/multiprocessing/reduction.py\", line 51, in dumps\n    cls(buf, protocol).dump(obj)\n_pickle.PicklingError: Can't pickle <function make_transform.<locals>.transform at 0x7f...>: it's not the same object as run.make_transform.<locals>.transform",
+  "source_code": "from multiprocessing import Pool\n\ndef make_transform(threshold):\n    # BUG: closure over `threshold` \u2014 unpicklable on spawn start methods\n    def transform(x):\n        return x if x > threshold else 0\n    return transform\n\ndef run(threshold, items):\n    transform = make_transform(threshold)\n    with Pool(4) as pool:\n        results = pool.map(transform, items)\n    return results\n\nif __name__ == '__main__':\n    run(5, list(range(20)))",
+  "expected_fix_hint": "Use functools.partial on a module-level function, or pass threshold via initializer so workers construct their own closure.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:multiprocessing",
+    "multi-file",
+    "multiprocessing"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

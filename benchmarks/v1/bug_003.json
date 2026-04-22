@@ -1,0 +1,11 @@
+{
+  "id": "bug_003",
+  "source_url": "https://stackoverflow.com/questions/71991635/attributeerror-nonetype-object-has-no-attribute-but-i-check-for-nonetype",
+  "source_type": "stackoverflow",
+  "error_class": "AttributeError",
+  "stderr": "---------------------------------------------------------------------------\nAttributeError                            Traceback (most recent call last)\nInput In [85], in <<module>>\n    120 fragments = fragments[1:]\n    121 if clist is not None:\n--> 122 result = [\n    123     [name, clist.rstrip()] for name, clist in zip(\n    124         fragments[::group_count+1],\n    125         fragments[group_count::group_count+1]\n    126     )\n    127 ]\nAttributeError: 'NoneType' object has no attribute 'rstrip'",
+  "source_code": "group_count = 2\nfragments = [\"a\", \"foo \", None, \"b\", \" bar\", None]\nclist = \"nonempty\"  # outer check passes\nif clist is not None:\n    result = [\n        [name, clist.rstrip()] for name, clist in zip(\n            fragments[::group_count+1],\n            fragments[group_count::group_count+1]\n        )\n    ]\nprint(result)",
+  "expected_fix_hint": "The iteration variable `clist` inside the comprehension shadows the outer name. Some iterated tuples have None in that slot. Add `if clist is not None` inside the comprehension, or filter fragments first.",
+  "has_reproducer": true,
+  "license": "CC BY-SA 4.0"
+}

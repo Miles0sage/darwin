@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_128",
+  "source_url": "https://github.com/vllm-project/vllm/issues/13707",
+  "source_type": "github",
+  "error_class": "HFValidationError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n(load_llm pid=11741, ip=10.202.0.5)   File \"/workspace/vllm/vllm/transformers_utils/config.py\", line 477, in get_sentence_transformer_tokenizer_config\n(load_llm pid=11741, ip=10.202.0.5)     repo_files = list_repo_files(model,\n(load_llm pid=11741, ip=10.202.0.5)   File \"/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py\", line 106, in _inner_fn\n(load_llm pid=11741, ip=10.202.0.5)     validate_repo_id(arg_value)\n(load_llm pid=11741, ip=10.202.0.5)   File \"/usr/local/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py\", line 154, in validate_repo_id\n(load_llm pid=11741, ip=10.202.0.5)     raise HFValidationError(",
+  "source_code": "# source: https://github.com/vllm-project/vllm/issues/13707\n# repo: vllm-project/vllm\n# title: [Bug]: vLLM Local path model loading error\n# \n# ### Your current environment\n# <details>\n# <summary>The output of `python collect_env.py`</summary>\n# </details>\n# ### \ud83d\udc1b Describe the bug\n# It's not really an error, but when I load from a local path, it complains that the repo name is not in the right format, but it is still able to load the model, which is sort of interesting. So, in other words, it basically works fine but has some extra logs that shouldn't be there?\n# Min repro script (you can remove the ray components to run it locally):\n# Error:\n# ```\n# (pid=11741, ip=10.202.0.5) WARNING:root:libtpu.so and TPU device found. Setting PJRT_DEVICE=TPU.\n# (load_llm pid=11741, ip=10.202.0.5) DEBUG 02-22 19:54:18 __init__.py:28] No plugins for group vllm.platform_plugins found.\n# (load_llm pid=11741, ip=10.202.0.5) INFO 02-22 19:54:18 __init__.py:190] A\n\n</details>\n\n### \ud83d\udc1b Describe the bug\n\nIt's not really an error, but when I load from a local path, it complains that the repo name is not in the right format, but it is still able to load the model, which is sort of interesting. So, in other words, it basically works fine but has some extra logs that shouldn't be there?\n\nMin repro script (you can remove the ray components to run it locally):",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "data-science",
+    "library:vllm",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

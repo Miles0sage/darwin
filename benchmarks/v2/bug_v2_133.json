@@ -1,0 +1,16 @@
+{
+  "id": "bug_v2_133",
+  "source_url": "https://github.com/pytube/pytube/issues/1199",
+  "source_type": "github",
+  "error_class": "RegexMatchError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\r\nFile \"/.local/lib/python3.9/site-packages/pytube/__main__.py\", line 177, in fmt_streams\r\nextract.apply_signature(stream_manifest, self.vid_info, self.js)\r\nFile \"/.local/lib/python3.9/site-packages/pytube/extract.py\", line 409, in apply_signature\r\ncipher = Cipher(js=js)\r\nFile \"/.local/lib/python3.9/site-packages/pytube/cipher.py\", line 33, in __init__\r\nraise RegexMatchError(",
+  "source_code": "# source: https://github.com/pytube/pytube/issues/1199\n# repo: pytube/pytube\n# title: [BUG] RegexMatchError ?\n# \n# Until now it's worked perfectly, but now it's showing a issue\n# is this only for me or ?, can anyone help ty\n\nIgnoring exception in on_message\r\nTraceback (most recent call last):\r\nFile \"/.local/lib/python3.9/site-packages/pytube/__main__.py\", line 177, in fmt_streams\r\nextract.apply_signature(stream_manifest, self.vid_info, self.js)\r\nFile \"/.local/lib/python3.9/site-packages/pytube/extract.py\", line 409, in apply_signature\r\ncipher = Cipher(js=js)\r\nFile \"/.local/lib/python3.9/site-packages/pytube/cipher.py\", line 33, in __init__\r\nraise RegexMatchError(\r\npytube.exceptions.RegexMatchError: __init__: could not find match for ^\\\\w+\\\\W",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "library:pytube",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

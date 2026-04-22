@@ -1,0 +1,11 @@
+{
+  "id": "bug_031",
+  "source_url": "https://github.com/home-assistant/core/issues/160084",
+  "source_type": "github",
+  "error_class": "KeyError",
+  "stderr": "Traceback (most recent call last):\n  File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 419, in _async_refresh\n    self.data = await self._async_update_data()\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/src/homeassistant/homeassistant/components/pvpc_hourly_pricing/coordinator.py\", line 60, in _async_update_data\n    api_data = await self.api.async_update_all(self.data, dt_util.utcnow())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/aiopvpc/pvpc_data.py\", line 277, in async_update_all\n    self.process_state_and_attributes(current_data, sensor_key, now)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/aiopvpc/pvpc_data.py\", line 410, in process_state_and_attributes\n    ) = get_current_and_next_tariff_periods(\n        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        local_time, zone_ceuta_melilla=self.tariff != TARIFFS[0]\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/usr/local/lib/python3.13/site-packages/aiopvpc/pvpc_tariff.py\", line 97, in get_current_and_next_tariff_periods\n    current_period = _tariff_period_key(local_ts, zone_ceuta_melilla)\n  File \"/usr/local/lib/python3.13/site-packages/aiopvpc/pvpc_tariff.py\", line 83, in _tariff_period_key\n    national_holiday = day in _NATIONAL_EXTRA_HOLIDAYS_FOR_P3_PERIOD[day.year]\n                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\nKeyError: 2026",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "Apache-2.0"
+}

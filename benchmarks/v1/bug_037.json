@@ -1,0 +1,11 @@
+{
+  "id": "bug_037",
+  "source_url": "https://github.com/huggingface/transformers/issues/35471",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "stderr": "File \"/Users/ruidazeng/Demo/chatbot.py\", line 13, in init\n    self.model = AutoModelForCausalLM.from_pretrained(\n  File \"/opt/anaconda3/envs/gaming-bot/lib/python3.10/site-packages/transformers/models/auto/auto_factory.py\", line 559, in from_pretrained\n    return model_class.from_pretrained(\n  File \"/opt/anaconda3/envs/gaming-bot/lib/python3.10/site-packages/transformers/modeling_utils.py\", line 3659, in from_pretrained\n    config.quantization_config = AutoHfQuantizer.merge_quantization_configs(\n  File \"/opt/anaconda3/envs/gaming-bot/lib/python3.10/site-packages/transformers/quantizers/auto.py\", line 173, in merge_quantization_configs\n    quantization_config = AutoQuantizationConfig.from_dict(quantization_config)\n  File \"/opt/anaconda3/envs/gaming-bot/lib/python3.10/site-packages/transformers/quantizers/auto.py\", line 97, in from_dict\n    raise ValueError(",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "Apache-2.0"
+}

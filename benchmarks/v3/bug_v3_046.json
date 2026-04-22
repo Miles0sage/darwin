@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_046",
+  "source_url": "https://stackoverflow.com/questions/56350726/python-asyncio-timeouterror",
+  "source_type": "stackoverflow",
+  "error_class": "TimeoutError",
+  "complexity_score": 3,
+  "library": "asyncio",
+  "license": "CC BY-SA 4.0",
+  "complexity_tags": [
+    "async",
+    "asyncio"
+  ],
+  "expected_fix_hint": "asyncio.gather can't finish because one task hangs. Add per-task timeout.",
+  "stderr": "Traceback (most recent call last):\n  File \"jobs.py\", line 28, in <module>\n    asyncio.run(main())\n  File \"/usr/lib/python3.11/asyncio/runners.py\", line 44, in run\n    return loop.run_until_complete(main)\n  File \"jobs.py\", line 24, in main\n    results = await run_jobs()\n  File \"jobs.py\", line 20, in run_jobs\n    return await asyncio.wait_for(asyncio.gather(*tasks), timeout=0.05)\n  File \"/usr/lib/python3.11/asyncio/tasks.py\", line 501, in wait_for\n    raise exceptions.TimeoutError() from exc\nasyncio.exceptions.TimeoutError",
+  "source_code": "import asyncio\nimport random\n\n\nclass JobRunner:\n    def __init__(self, gather_timeout=0.05):\n        self.gather_timeout = gather_timeout\n\n    async def job(self, i):\n        # one slow outlier blocks the whole batch\n        if i == 3:\n            await asyncio.sleep(5)\n        else:\n            await asyncio.sleep(0.01)\n        return i\n\n    async def run_jobs(self):\n        tasks = [self.job(i) for i in range(5)]\n        # BUG: tight gather timeout with no per-task bound\n        return await asyncio.wait_for(asyncio.gather(*tasks), timeout=self.gather_timeout)\n\n\nasync def main():\n    results = await JobRunner().run_jobs()\n    print(results)\n\n\nif __name__ == '__main__':\n    asyncio.run(main())\n",
+  "has_reproducer": true
+}

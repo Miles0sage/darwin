@@ -1,0 +1,11 @@
+{
+  "id": "bug_036",
+  "source_url": "https://github.com/langchain-ai/langchain/issues/24019",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "stderr": "ValueError                                Traceback (most recent call last)\r\nCell In[41], [line 2]\r\n      [1] message = {'message': 'Hello, I am looking for some thesis internship opportunities.'}\r\n----> [2]response = chain.invoke(message)\r\n      [4] response\r\n\r\nFile c:\\Users\\ar.ghinassi\\.venv\\notebook\\lib\\site-packages\\langchain_core\\runnables\\base.py:2499, in RunnableSequence.invoke(self, input, config, **kwargs)\r\n   [2497]             input = step.invoke(input, config, **kwargs)\r\n   [2498]         else:\r\n-> [2499]             input = step.invoke(input, config)\r\n   [2500] # finish the root run\r\n   [2501] except BaseException as e:",
+  "source_code": "",
+  "expected_fix_hint": "",
+  "has_reproducer": false,
+  "license": "MIT"
+}

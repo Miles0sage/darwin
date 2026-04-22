@@ -1,0 +1,21 @@
+{
+  "id": "bug_v2_088",
+  "source_url": "https://github.com/home-assistant/core/issues/144536",
+  "source_type": "github",
+  "error_class": "InsecureRequestWarning",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 380, in _async_refresh\n    self.data = await self._async_update_data()\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/src/homeassistant/homeassistant/components/qnap/coordinator.py\", line 86, in _async_update_data\n    return await self.hass.async_add_executor_job(self._sync_update)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/concurrent/futures/thread.py\", line 59, in run\n    result = self.fn(*self.args, **self.kwargs)\n  File \"/usr/src/homeassistant/homeassistant/components/qnap/coordinator.py\", line 72, in _sync_update\n    suppress_insecure_request_warning()\n    if not self._verify_ssl\n    else nullcontext()\n  File \"/usr/local/lib/python3.13/contextlib.py\", line 141, in __enter__\n    return next(self.gen)\n  File \"/usr/src/homeassistant/homeassistant/components/qnap/coordinator.py\", line 40, in suppress_insecure_request_warning\n    with urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning):",
+  "source_code": "# source: https://github.com/home-assistant/core/issues/144536\n# repo: home-assistant/core\n# title: Unexpected error fetching qnap data - after update to 2025.05. // TypeError: 'NoneType' object does not support the context manager protocol\n# \n# ### The problem\n# Logger: homeassistant.components.qnap.coordinator\n# Quelle: helpers/update_coordinator.py:380\n# Integration: QNAP (Dokumentation, Probleme)\n# Erstmals aufgetreten: 8. Mai 2025 um 21:39:39 (532 Vorkommnisse)\n# Zuletzt protokolliert: 09:18:58\n# Unexpected error fetching qnap data\n# Traceback (most recent call last):\n#   File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 380, in _async_refresh\n#     self.data = await self._async_update_data()\n#                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n#   File \"/usr/src/homeassistant/homeassistant/components/qnap/coordinator.py\", line 86, in _async_update_data\n#     return await self.hass.async_add_executor_job(self._sync_update)\n#            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n#   File \"/usr/local/lib/python3\n\n### Anything in the logs that might be useful for us?",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:home-assistant",
+    "multi-file",
+    "protocol",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

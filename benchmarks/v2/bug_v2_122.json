@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_122",
+  "source_url": "https://github.com/father-bot/chatgpt_telegram_bot/issues/147",
+  "source_type": "github",
+  "error_class": "CancelledError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\nchatgpt_telegram_bot    |   File \"/usr/local/lib/python3.8/site-packages/httpcore/backends/asyncio.py\", line 111, in connect_tcp\r\nchatgpt_telegram_bot    |     stream: anyio.abc.ByteStream = await anyio.connect_tcp(\r\nchatgpt_telegram_bot    |   File \"/usr/local/lib/python3.8/site-packages/anyio/_core/_sockets.py\", line 218, in connect_tcp\r\nchatgpt_telegram_bot    |     await event.wait()\r\nchatgpt_telegram_bot    |   File \"/usr/local/lib/python3.8/site-packages/anyio/_backends/_asyncio.py\", line 662, in __aexit__\r\nchatgpt_telegram_bot    |     raise exceptions[0]\r\nchatgpt_telegram_bot    |   File \"/usr/local/lib/python3.8/site-packages/anyio/_backends/_asyncio.py\", line 733, in task_done\r\nchatgpt_telegram_bot    |     exc = _task.exception()\r\nchatgpt_telegram_bot    | asyncio.exceptions.CancelledError",
+  "source_code": "# Reproducer derived from https://github.com/father-bot/chatgpt_telegram_bot/issues/147\n# repo: father-bot/chatgpt_telegram_bot\n# title: Can't build: mongo-express exited with code 0 and chatgpt_telegram_bot exited with code 1\n\n# Last frames in traceback:\n#   /usr/local/lib/python3.8/site-packages/httpcore/backends/asyncio.py line 111 in connect_tcp\n#   /usr/local/lib/python3.8/site-packages/anyio/_core/_sockets.py line 218 in connect_tcp\n#   /usr/local/lib/python3.8/site-packages/anyio/_backends/_asyncio.py line 662 in __aexit__\n#   /usr/local/lib/python3.8/site-packages/anyio/_backends/_asyncio.py line 733 in task_done\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # When running\n    # `docker-compose --env-file config/config.env up --build`\n    # I get an infinite loop of `mongo-express exited with code 0` and `chatgpt_telegram_bot exited with code 1`\n    # ```\n    # chatgpt_telegram_bot    | Traceback (most recent call last):\n    # chatgpt_telegram_bot    |   File \"/usr/local/lib/python3.8/site-packages/httpcore/backends/asyncio.py\", line 111, in con\n    # chatgpt_telegram_bot    |     stream: anyio.abc.ByteStream = await anyio.connect_tcp(\n    # chatgpt_telegram_bot    |   File \"\n    raise CancelledError('reproduce: see https://github.com/father-bot/chatgpt_telegram_bot/issues/147')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Catch and re-raise or suppress per policy; avoid swallowing inside shield.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:chatgpt_telegram_bot",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

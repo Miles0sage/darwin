@@ -1,0 +1,17 @@
+{
+  "id": "bug_v2_159",
+  "source_url": "https://stackoverflow.com/questions/44677426/pytest-fixture-scope-state-leak",
+  "source_type": "stackoverflow",
+  "error_class": "AssertionError",
+  "complexity_score": 3,
+  "stderr": "Traceback (most recent call last):\n  File \"/srv/tests/test_users.py\", line 38, in test_create_user_unique\n    assert count == 1, f\"expected 1 user after create, got {count}\"\nAssertionError: expected 1 user after create, got 3\n\nassert 3 == 1\n +  where 3 = count\n\ntests/test_users.py::test_create_user_unique FAILED\n  caused by: fixture 'db' from tests/conftest.py was session-scoped,\n  so rows inserted by earlier test_* functions persisted. Expected function scope.",
+  "source_code": "# conftest.py\nimport pytest\nfrom sqlalchemy import create_engine\nfrom sqlalchemy.orm import sessionmaker\n\nengine = create_engine('sqlite:///:memory:')\nSession = sessionmaker(engine)\n\n@pytest.fixture(scope='session')  # BUG: should be function scope for per-test isolation\ndef db():\n    s = Session()\n    yield s\n    s.close()\n\n# test_users.py\ndef test_create_user_unique(db):\n    db.execute('CREATE TABLE IF NOT EXISTS users(id int primary key, email text)')\n    db.execute(\"INSERT INTO users(id, email) VALUES (1, 'a@b.com')\")\n    count = db.execute('SELECT COUNT(*) FROM users').scalar()\n    assert count == 1, f\"expected 1 user after create, got {count}\"\n\ndef test_create_user_duplicate(db):\n    db.execute(\"INSERT INTO users(id, email) VALUES (2, 'a@b.com')\")\n    db.execute(\"INSERT INTO users(id, email) VALUES (3, 'a@b.com')\")",
+  "expected_fix_hint": "Change fixture scope to 'function' or wrap each test in a transaction that rolls back in teardown.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "deep-trace",
+    "library:pytest",
+    "multi-file"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

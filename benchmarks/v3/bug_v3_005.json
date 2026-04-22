@@ -1,0 +1,18 @@
+{
+  "id": "bug_v3_005",
+  "source_url": "https://github.com/langchain-ai/langgraph/issues/1432",
+  "source_type": "github",
+  "error_class": "AttributeError",
+  "complexity_score": 5,
+  "library": "langgraph",
+  "license": "MIT",
+  "complexity_tags": [
+    "async",
+    "langgraph",
+    "langchain"
+  ],
+  "expected_fix_hint": "State object not yet initialized when node runs. Ensure START -> node edge and initial state dict contains 'messages' key.",
+  "stderr": "Traceback (most recent call last):\n  File \"/home/user/graph/agent.py\", line 45, in <module>\n    asyncio.run(main())\n  File \"/usr/lib/python3.11/asyncio/runners.py\", line 44, in run\n    return loop.run_until_complete(main)\n  File \"/home/user/graph/agent.py\", line 40, in main\n    async for step in app.astream({}):\n  File \"/usr/lib/python3.11/site-packages/langgraph/pregel/__init__.py\", line 1203, in astream\n    async for chunk in self._astream(inputs, config, **kwargs):\n  File \"/home/user/graph/agent.py\", line 28, in respond\n    latest = state.messages[-1]\nAttributeError: 'NoneType' object has no attribute 'messages'",
+  "source_code": "import asyncio\nfrom typing import TypedDict, Annotated\nimport operator\n\n\nclass State(TypedDict):\n    messages: Annotated[list, operator.add]\n\n\nclass FakeGraph:\n    def __init__(self, node):\n        self.node = node\n\n    async def astream(self, inputs):\n        # Simulates langgraph not passing state to node on first call\n        state = None\n        result = await self.node(state)\n        yield result\n\n\nasync def respond(state):\n    latest = state.messages[-1]\n    return {'messages': [f'reply-{latest}']}\n\n\nasync def main():\n    app = FakeGraph(respond)\n    async for step in app.astream({}):\n        print(step)\n\n\nif __name__ == '__main__':\n    asyncio.run(main())\n",
+  "has_reproducer": true
+}

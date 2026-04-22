@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_083",
+  "source_url": "https://github.com/home-assistant/core/issues/160084",
+  "source_type": "github",
+  "error_class": "KeyError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\n  File \"/usr/src/homeassistant/homeassistant/helpers/update_coordinator.py\", line 419, in _async_refresh\n    self.data = await self._async_update_data()\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/src/homeassistant/homeassistant/components/pvpc_hourly_pricing/coordinator.py\", line 60, in _async_update_data\n    api_data = await self.api.async_update_all(self.data, dt_util.utcnow())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/aiopvpc/pvpc_data.py\", line 277, in async_update_all\n    self.process_state_and_attributes(current_data, sensor_key, now)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/site-packages/aiopvpc/pvpc_data.py\", line 410, in process_state_and_attributes\n    ) = get_current_and_next_tariff_periods(\n        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        local_time, zone_ceuta_melilla=self.tariff != TARIFFS[0]\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/usr/local/lib/python3.13/site-packages/aiopvpc/pvpc_tariff.py\", line 97, in get_current_and_next_tariff_periods\n    current_period = _tariff_period_key(local_ts, zone_ceuta_melilla)\n  File \"/usr/local/lib/python3.13/site-packages/aiopvpc/pvpc_tariff.py\", line 83, in _tariff_period_key\n    national_holiday = day in _NATIONAL_EXTRA_HOLIDAYS_FOR_P3_PERIOD[day.year]\n                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\nKeyError: 2026",
+  "source_code": "# source: https://github.com/home-assistant/core/issues/160084\n# repo: home-assistant/core\n# title: Failed setup, will retry: 2026\n# \n# ### The problem\n# As of january 1st 2026 the integration fails to setup properly. reloading does not solve the problem. I have not changed any settings on my end the integration has been working flawlessly for months. Until now.\n# this is the LOG error:\n# Logger: homeassistant.components.pvpc_hourly_pricing.coordinator\n# Source: helpers/update_coordinator.py:419\n# integration: Spain electricity hourly pricing (PVPC) ([documentation](https://www.home-assistant.io/integrations/pvpc_hourly_pricing), [issues](https://github.com/home-assistant/core/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+pvpc_hourly_pricing%22))\n# First occurred: 11:29:10 (21 occurrences)\n# Last logged: 11:38:03\n# Unexpected error fetching pvpc_hourly_pricing data\n# Traceback (most recent call last):\n#   File \"/usr/src/homeassi\n\n### Anything in the logs that might be useful for us?",
+  "expected_fix_hint": "Use dict.get() or check membership; handle optional keys.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "async",
+    "deep-trace",
+    "library:home-assistant",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

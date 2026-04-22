@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_105",
+  "source_url": "https://github.com/home-assistant/core/issues/130118",
+  "source_type": "github",
+  "error_class": "IndexError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity_platform.py\", line 728, in _async_add_entity\r\n    await entity.async_device_update(warning=False)\r\n  File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 1302, in async_device_update\r\n    await self.async_update()\r\n  File \"/usr/src/homeassistant/homeassistant/components/tibber/sensor.py\", line 404, in async_update\r\n    await self._fetch_data()\r\n  File \"/usr/src/homeassistant/homeassistant/components/tibber/sensor.py\", line 428, in _fetch_data\r\n    await self._tibber_home.update_info_and_price_info()\r\n  File \"/usr/local/lib/python3.12/site-packages/tibber/home.py\", line 208, in update_info_and_price_info\r\n    await self.update_price_info()\r\n  File \"/usr/local/lib/python3.12/site-packages/tibber/home.py\", line 241, in update_price_info\r\n    self.last_data_timestamp = dt.datetime.fromisoformat(data[-1][\"time\"])\r\n                                                         ~~~~^^^^\r\nIndexError: list index out of range`",
+  "source_code": "# Reproducer derived from https://github.com/home-assistant/core/issues/130118\n# repo: home-assistant/core\n# title: Tipper price-Entity \"not available\" after 2024-11\n\n# Last frames in traceback:\n#   /usr/src/homeassistant/homeassistant/helpers/entity_platform.py line 728 in _async_add_entity\n#   /usr/src/homeassistant/homeassistant/helpers/entity.py line 1302 in async_device_update\n#   /usr/src/homeassistant/homeassistant/components/tibber/sensor.py line 404 in async_update\n#   /usr/src/homeassistant/homeassistant/components/tibber/sensor.py line 428 in _fetch_data\n#   /usr/local/lib/python3.12/site-packages/tibber/home.py line 208 in update_info_and_price_info\n#   /usr/local/lib/python3.12/site-packages/tibber/home.py line 241 in update_price_info\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # ### The problem\n    # All entities seem to work except the price entity: Showing not available\n    # (restart, deactivate and activate did not help)\n    # From the logs:\n    # `tibber: Error on device update!\n    # Traceback (most recent call last):\n    # File \"/usr/src/homeassistant/homeassistant/helpers/entity_platform.py\", line 728, in _async_add_entity\n    # await entity.async_device_update(warning=False)\n    # File \"/usr/src/homeassistant/homeassistant/helpers/entity.py\", line 1302, in async_device_update\n    raise IndexError('reproduce: see https://github.com/home-assistant/core/issues/130118')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Check list length before indexing; handle empty sequences.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "async",
+    "deep-trace",
+    "library:home-assistant",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

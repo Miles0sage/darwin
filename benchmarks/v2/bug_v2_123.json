@@ -1,0 +1,18 @@
+{
+  "id": "bug_v2_123",
+  "source_url": "https://github.com/munificent/vigil/issues/22",
+  "source_type": "github",
+  "error_class": "IndexError",
+  "complexity_score": 4,
+  "stderr": "Traceback (most recent call last):\n  File \"./vigil\", line 94, in <module>\n    exec(source)\n  File \"<string>\", line 10, in <module>\n  File \"./vigil\", line 76, in vigil_uncaught\n    punish(raise_line, \"Raised '%s' which was not caught.\" % sys.exc_info()[1])\n  File \"./vigil\", line 36, in punish\n    source_lines[i] = ''\nIndexError: list assignment index out of range",
+  "source_code": "# source: https://github.com/munificent/vigil/issues/22\n# repo: munificent/vigil\n# title: Punishing main\n# \n# After modifying the swear example to make sure that every single function would be deleted, I was faced with the problem that vigil doesn't want to punish the main function. If the main function happens to call functions that were deleted, the main function is a bad girl and must be punished! Instead, this is what happens:\n# Here is what's on the source file after vigil has punished everything into oblivion.\n# How can we consider vigil the Batman of programming languages when main is above them all? Justice must be blind and applied to everybody!\n\nuncaught error from line  4\nTraceback (most recent call last):\n  File \"./vigil\", line 94, in <module>\n    exec(source)\n  File \"<string>\", line 10, in <module>\n  File \"./vigil\", line 76, in vigil_uncaught\n    punish(raise_line, \"Raised '%s' which was not caught.\" % sys.exc_info()[1])\n  File \"./vigil\", line 36, in punish\n    source_lines[i] = ''\nIndexError: list assignment index out of range",
+  "expected_fix_hint": "Check list length before indexing; handle empty sequences.",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:vigil",
+    "multi-file"
+  ],
+  "license": "Apache-2.0"
+}

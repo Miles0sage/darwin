@@ -1,0 +1,16 @@
+{
+  "id": "bug_v3_021",
+  "source_url": "https://github.com/pandas-dev/pandas/issues/45839",
+  "source_type": "github",
+  "error_class": "ValueError",
+  "complexity_score": 4,
+  "library": "pandas",
+  "license": "BSD-3-Clause",
+  "complexity_tags": [
+    "pandas"
+  ],
+  "expected_fix_hint": "Use pd.to_datetime(..., errors='coerce') or handle NaT values; strict parsing fails on mixed formats.",
+  "stderr": "Traceback (most recent call last):\n  File \"dates.py\", line 28, in <module>\n    main()\n  File \"dates.py\", line 24, in main\n    out = parse_dates(df)\n  File \"dates.py\", line 17, in parse_dates\n    df['ts'] = pd.to_datetime(df['ts_str'], format='%Y-%m-%d')\n  File \"/usr/lib/python3.11/site-packages/pandas/core/tools/datetimes.py\", line 1068, in to_datetime\n    cache_array = _maybe_cache(arg, format, cache, convert_listlike)\nValueError: time data '2024/01/15' does not match format '%Y-%m-%d'",
+  "source_code": "import pandas as pd\n\n\nclass DateProcessor:\n    def __init__(self, fmt='%Y-%m-%d'):\n        self.fmt = fmt\n\n    def parse_dates(self, df):\n        # BUG: strict format fails on mixed '/'-separated dates\n        df['ts'] = pd.to_datetime(df['ts_str'], format=self.fmt)\n        return df\n\n\ndef parse_dates(df):\n    return DateProcessor().parse_dates(df)\n\n\ndef main():\n    df = pd.DataFrame({\n        'ts_str': ['2024-01-10', '2024/01/15', '2024-01-20'],\n        'value': [1, 2, 3],\n    })\n    out = parse_dates(df)\n    print(out)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

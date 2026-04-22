@@ -1,0 +1,23 @@
+{
+  "id": "bug_v2_062",
+  "source_url": "https://github.com/psf/black/issues/4504",
+  "source_type": "github",
+  "error_class": "OSError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/home/mgorny/black/src/blackd/__init__.py\", line 124, in handle\r\n    formatted_str = await loop.run_in_executor(\r\n                          ^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/lib/python3.12/asyncio/base_events.py\", line 863, in run_in_executor\r\n    executor.submit(func, *args), loop=self)\r\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/lib/python3.12/concurrent/futures/process.py\", line 831, in submit\r\n    self._start_executor_manager_thread()\r\n  File \"/usr/lib/python3.12/concurrent/futures/process.py\", line 770, in _start_executor_manager_thread\r\n    self._launch_processes()\r\n  File \"/usr/lib/python3.12/concurrent/futures/process.py\", line 797, in _launch_processes\r\n    self._spawn_process()\r\n  File \"/usr/lib/python3.12/concurrent/futures/process.py\", line 807, in _spawn_process\r\n    p.start()\r\n  File \"/usr/lib/python3.12/multiprocessing/process.py\", line 121, in start\r\n    self._popen = self._Popen(self)\r\n                  ^^^^^^^^^^^^^^^^^\r\n  File \"/usr/lib/python3.12/multiprocessing/context.py\", line 282, in _Popen\r\n    return Popen(process_obj)\r\n           ^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/lib/python3.12/multiprocessing/popen_fork.py\", line 19, in __init__\r\n    self._launch(process_obj)\r\n  File \"/usr/lib/python3.12/multiprocessing/popen_fork.py\", line 65, in _launch\r\n    child_r, parent_w = os.pipe()\r\n                        ^^^^^^^^^\r\nOSError: [Errno 24] Too many open files",
+  "source_code": "# Reproducer derived from https://github.com/psf/black/issues/4504\n# repo: psf/black\n# title: `tests/test_blackd.py` runs out of fds on systems with high nproc (is blackd leaking fds?)\n\n# Last frames in traceback:\n#   /usr/lib/python3.12/concurrent/futures/process.py line 797 in _launch_processes\n#   /usr/lib/python3.12/concurrent/futures/process.py line 807 in _spawn_process\n#   /usr/lib/python3.12/multiprocessing/process.py line 121 in start\n#   /usr/lib/python3.12/multiprocessing/context.py line 282 in _Popen\n#   /usr/lib/python3.12/multiprocessing/popen_fork.py line 19 in __init__\n#   /usr/lib/python3.12/multiprocessing/popen_fork.py line 65 in _launch\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # **Describe the bug**\n    # When running the test suite on a machine with high nproc (i.e. large number of CPUs/cores \u2014 we have 80 on arm64 and 256 \n    # **To Reproduce**\n    # 1. Errr, get a system with high `nproc`\u2026 (perhaps some mocking will work?)\n    # 2. `tox -e py312-ci` (xdist in non-CI jobs works around the problem)\n    # **Expected\n    raise OSError('reproduce: see https://github.com/psf/black/issues/4504')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:black",
+    "multi-file",
+    "multiprocessing",
+    "protocol",
+    "pytest",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

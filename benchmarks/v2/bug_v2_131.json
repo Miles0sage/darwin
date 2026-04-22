@@ -1,0 +1,15 @@
+{
+  "id": "bug_v2_131",
+  "source_url": "https://github.com/tenable/esp32_image_parser/issues/4",
+  "source_type": "github",
+  "error_class": "NameError",
+  "complexity_score": 3,
+  "stderr": "Traceback (most recent call last):\r\n  File \"softs/esp32_image_parser/./esp32_image_parser.py\", line 281, in <module>\r\n    main()\r\n  File \"softs/esp32_image_parser/./esp32_image_parser.py\", line 264, in main\r\n    image2elf(dump_file, output_file, verbose)\r\n  File \"softs/esp32_image_parser/./esp32_image_parser.py\", line 41, in image2elf\r\n    image = LoadFirmwareImage('esp32', filename)\r\nNameError: name 'LoadFirmwareImage' is not defined",
+  "source_code": "# source: https://github.com/tenable/esp32_image_parser/issues/4\n# repo: tenable/esp32_image_parser\n# title: name 'LoadFirmwareImage' is not defined\n# \n# I get this error when I try to dump a partition:\n# This can be fixed in `esp32_image_parser.py` if you add `from esptool.bin_image import *`:\n\nimport sys\r\nimport json\r\nimport os, argparse\r\nfrom makeelf.elf import *\r\nfrom esptool import *\r\nfrom esptool.bin_image import *\r\nfrom esp32_firmware_reader import *\r\nfrom read_nvs import *\r\n...",
+  "expected_fix_hint": "fixed in `esp32_image_parser.py` if you add `from esptool.bin_image import *`:\r",
+  "has_reproducer": true,
+  "complexity_tags": [
+    "library:esp32_image_parser"
+  ],
+  "license": "Apache-2.0"
+}

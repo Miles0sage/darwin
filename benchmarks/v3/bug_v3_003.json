@@ -1,0 +1,17 @@
+{
+  "id": "bug_v3_003",
+  "source_url": "https://github.com/huggingface/transformers/issues/22222",
+  "source_type": "github",
+  "error_class": "AttributeError",
+  "complexity_score": 4,
+  "library": "transformers",
+  "license": "Apache-2.0",
+  "complexity_tags": [
+    "transformers",
+    "nlp"
+  ],
+  "expected_fix_hint": "Tokenizer returns None when trust_remote_code=False for some models. Use AutoTokenizer.from_pretrained(trust_remote_code=True) or handle None.",
+  "stderr": "Traceback (most recent call last):\n  File \"/home/user/nlp/encode.py\", line 32, in <module>\n    main()\n  File \"/home/user/nlp/encode.py\", line 28, in main\n    vectors = encode_batch(['hello', 'world'])\n  File \"/home/user/nlp/encode.py\", line 20, in encode_batch\n    tokens = tokenizer(texts, padding=True, return_tensors='pt')\n  File \"/home/user/nlp/encode.py\", line 14, in __call__\n    ids = self.tok.encode(t)\nAttributeError: 'NoneType' object has no attribute 'encode'",
+  "source_code": "from transformers import AutoTokenizer\n\n\nclass SafeTokenizer:\n    def __init__(self, model_name):\n        # AutoTokenizer can return None for some model_names without trust_remote_code\n        try:\n            self.tok = AutoTokenizer.from_pretrained(model_name)\n        except Exception:\n            self.tok = None\n\n    def __call__(self, t):\n        ids = self.tok.encode(t)\n        return ids\n\n\ndef encode_batch(texts):\n    tokenizer = SafeTokenizer('some-private-model-that-needs-trust')\n    tokens = tokenizer(texts, padding=True, return_tensors='pt')\n    return tokens\n\n\ndef main():\n    vectors = encode_batch(['hello', 'world'])\n    print(vectors)\n\n\nif __name__ == '__main__':\n    main()\n",
+  "has_reproducer": true
+}

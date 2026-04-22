@@ -1,0 +1,20 @@
+{
+  "id": "bug_v2_124",
+  "source_url": "https://github.com/home-assistant/supervisor/issues/5405",
+  "source_type": "github",
+  "error_class": "SupervisorBadRequestError",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\r\n  File \"/usr/src/homeassistant/homeassistant/components/hassio/update.py\", line 262, in async_install\r\n    await self.coordinator.supervisor_client.supervisor.update()\r\n  File \"/usr/local/lib/python3.12/site-packages/aiohasupervisor/supervisor.py\", line 43, in update\r\n    await self._client.post(\r\n  File \"/usr/local/lib/python3.12/site-packages/aiohasupervisor/client.py\", line 173, in post\r\n    return await self._request(\r\n           ^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/site-packages/aiohasupervisor/client.py\", line 122, in _request\r\n    raise exc_type(result.message, result.job_id)\r\naiohasupervisor.exceptions.SupervisorBadRequestError: Update of Supervisor failed: Can't install ghcr.io/home-assistant/amd64-hassio-supervisor:2024.11.3: 500 Server Error for http+docker://localhost/v1.47/images/create?tag=2024.11.3&fromImage=ghcr.io%",
+  "source_code": "# Reproducer derived from https://github.com/home-assistant/supervisor/issues/5405\n# repo: home-assistant/supervisor\n# title: Update of Supervisor failed version 2024.11.3\n\n# Last frames in traceback:\n#   /usr/src/homeassistant/homeassistant/components/hassio/update.py line 262 in async_install\n#   /usr/local/lib/python3.12/site-packages/aiohasupervisor/supervisor.py line 43 in update\n#   /usr/local/lib/python3.12/site-packages/aiohasupervisor/client.py line 173 in post\n#   /usr/local/lib/python3.12/site-packages/aiohasupervisor/client.py line 122 in _request\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # **:information_source: :information_source: :information_source:  We understand what the issue is and are working on a s\n    # For more background, please read [this comment](https://github.com/home-assistant/supervisor/issues/5405#issuecomment-24\n    # ### Describe the issue you are experiencing\n    # Home Assistant Superviso\n    raise SupervisorBadRequestError('reproduce: see https://github.com/home-assistant/supervisor/issues/5405')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "Investigate root cause; consult issue discussion for resolution.",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "async",
+    "context-manager",
+    "deep-trace",
+    "library:supervisor",
+    "multi-file",
+    "threading"
+  ],
+  "license": "Apache-2.0"
+}

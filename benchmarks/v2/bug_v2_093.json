@@ -1,0 +1,19 @@
+{
+  "id": "bug_v2_093",
+  "source_url": "https://github.com/pytest-dev/pytest-cov/issues/693",
+  "source_type": "github",
+  "error_class": "CoverageWarning",
+  "complexity_score": 5,
+  "stderr": "Traceback (most recent call last):\nINTERNALERROR> E               File \" /installdir/pluggy/_callers.py\", line 43, in run_old_style_hookwrapper\nINTERNALERROR> E                 teardown.send(result)\nINTERNALERROR> E                 ~~~~~~~~~~~~~^^^^^^^^\nINTERNALERROR> E               File \" /installdir/pytest_cov/plugin.py\", line 324, in pytest_runtestloop\nINTERNALERROR> E                 self.cov_controller.finish()\nINTERNALERROR> E                 ~~~~~~~~~~~~~~~~~~~~~~~~~~^^\nINTERNALERROR> E               File \" /installdir/pytest_cov/engine.py\", line 57, in ensure_topdir_wrapper\nINTERNALERROR> E                 return meth(self, *args, **kwargs)\nINTERNALERROR> E               File \" /installdir/pytest_cov/engine.py\", line 469, in finish\nINTERNALERROR> E                 self.cov.save()\nINTERNALERROR> E                 ~~~~~~~~~~~~~^^\nINTERNALERROR> E               File \" /installdir/coverage/control.py\", line 812, in save\nINTERNALERROR> E                 data = self.get_data()\nINTERNALERROR> E               File \" /installdir/coverage/control.py\", line 893, in get_data\nINTERNALERROR> E                 self._post_save_work()\nINTERNALERROR> E                 ~~~~~~~~~~~~~~~~~~~~^^\nINTERNALERROR> E               File \" /installdir/coverage/control.py\", line 915, in _post_save_work\nINTERNALERROR> E                 self._warn(\"No data was collected.\", slug=\"no-data-collected\")\nINTERNALERROR> E                 ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nINTERNALERROR> E               File \" /installdir/coverage/control.py\", line 460, in _warn\nINTERNALERROR> E                 warnings.warn(msg, category=CoverageWarning, stacklevel=2)",
+  "source_code": "# Reproducer derived from https://github.com/pytest-dev/pytest-cov/issues/693\n# repo: pytest-dev/pytest-cov\n# title: coverage collection fails when using pytest-xdist and pytest 8.4.0\n\n# Last frames in traceback:\n#    /installdir/pytest_cov/engine.py line 57 in ensure_topdir_wrapper\n#    /installdir/pytest_cov/engine.py line 469 in finish\n#    /installdir/coverage/control.py line 812 in save\n#    /installdir/coverage/control.py line 893 in get_data\n#    /installdir/coverage/control.py line 915 in _post_save_work\n#    /installdir/coverage/control.py line 460 in _warn\n\n# Minimal repro (conceptual):\n\ndef repro():\n    # Conditions described in the issue:\n    # # Summary\n    # pytest-xdist and pytest-cov plugins cause an internal error when used together but only on pytest version 8.4.0\n    # ## Expected vs actual result\n    # Expected pytest-xdist+pytest-cov to succeed.\n    # See the following chart for the actual results:\n    # | \u2b07 pytest \u2666 plugins \u27a1 | pytest-xdist+pytest-cov | pytest-cov | pytest-xdist |\n    raise CoverageWarning('reproduce: see https://github.com/pytest-dev/pytest-cov/issues/693')\n\nif __name__ == '__main__':\n    repro()",
+  "expected_fix_hint": "solution of raising an exception",
+  "has_reproducer": false,
+  "complexity_tags": [
+    "context-manager",
+    "deep-trace",
+    "library:pytest-cov",
+    "multi-file",
+    "pytest"
+  ],
+  "license": "Apache-2.0"
+}
