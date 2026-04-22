@@ -1,7 +1,7 @@
 # Darwin
 
 ```bash
-git clone https://github.com/Miles0sage/darwin-hackathon && cd darwin-hackathon && python3 darwin-mvp/xrepo_proof.py
+git clone https://github.com/Miles0sage/darwin && cd darwin && python3 xrepo_proof.py
 ```
 
 That runs the "same bug, three different repos, one cached transformer, zero LLM calls" proof in ~3 seconds. If it prints `CROSS-REPO TRANSFER: DETERMINISTIC, REAL, AUDITABLE` you have seen the primitive. Everything below is context for what you just watched.
@@ -28,15 +28,15 @@ Darwin is an outer-loop production reliability layer for agent fleets. A failing
 
 ```bash
 # 1. Run the cross-repo transfer proof (no external services, ~3s)
-python3 darwin-mvp/xrepo_proof.py
+python3 xrepo_proof.py
 
 # 2. Start the production webhook (Flask, port 7777)
-python3 darwin-mvp/webhook_ingest.py
+python3 webhook_ingest.py
 
 # 3. Fire a production-shaped failure at it
 curl -X POST http://127.0.0.1:7777/darwin/failure \
   -H 'content-type: application/json' \
-  -d @darwin-mvp/examples/sentry_payload.json
+  -d @examples/sentry_payload.json
 ```
 
 No API keys needed for the proof — it uses a reference LibCST transformer. The webhook's B-path (cache miss → diagnose) calls out to Opus or Gemini Flash only when `ANTHROPIC_API_KEY` or `GEMINI_API_KEY` is set; otherwise it falls back to a heuristic adapter.
@@ -61,7 +61,7 @@ Multiple Darwin instances writing to the same blackboard use POSIX advisory lock
 
 ## Cross-repo proof
 
-`darwin-mvp/xrepo_proof.py` ships three synthetic repos with the **same** underlying bug (schema-change `KeyError` on `["text"]`) but different variable names, different function signatures, and different control flow (for-loop vs list comprehension vs single-record). One LLM-produced-or-reference transformer heals all three. Sample tail:
+`xrepo_proof.py` ships three synthetic repos with the **same** underlying bug (schema-change `KeyError` on `["text"]`) but different variable names, different function signatures, and different control flow (for-loop vs list comprehension vs single-record). One LLM-produced-or-reference transformer heals all three. Sample tail:
 
 ```
 LLM calls:       0 after first diagnose (cached recipe applied deterministically)
@@ -84,7 +84,7 @@ For production-shaped ingestion see `webhook_ingest.py` — POST a Sentry/Datado
 
 Headline: **N-1 LLM calls avoided per novel failure class.** Methodology, raw runs, and the no-AST-gate baseline (which propagates broken patches at the same cache-hit rate) are in `docs/BENCHMARK.md`.
 
-The no-gate baseline is the honest comparison: with the AST gate disabled, Darwin still hits the same 99% cache-hit rate — because the cache key is the fingerprint, not the patch correctness. The gate is what separates "99% cache hits" from "99% propagated broken patches". This is the single number a reviewer should demand. Run `python3 darwin-mvp/benchmark.py --disable-gate` to see it for yourself; gate-off runs emit `N_poisoned` to stdout and a side-by-side diff to `reports/gate-off-vs-on.md`.
+The no-gate baseline is the honest comparison: with the AST gate disabled, Darwin still hits the same 99% cache-hit rate — because the cache key is the fingerprint, not the patch correctness. The gate is what separates "99% cache hits" from "99% propagated broken patches". This is the single number a reviewer should demand. Run `python3 benchmark.py --disable-gate` to see it for yourself; gate-off runs emit `N_poisoned` to stdout and a side-by-side diff to `reports/gate-off-vs-on.md`.
 
 ## Provider matrix
 
@@ -175,16 +175,27 @@ Darwin was built for the Anthropic Opus 4.7 hackathon (late-apply track, 2026-04
 
 | Path | Role |
 |---|---|
-| `darwin-mvp/signature.py` | Fingerprint normalizer (`fingerprint`, `error_class`) |
-| `darwin-mvp/patch.py` | `PatchRecipe`, `compile_transformer`, `try_apply`, `reference_recipe_for` |
-| `darwin-mvp/darwin_harness.py` | `validate_fix` (AST gate), `diagnose_and_fix` (LLM B-path) |
-| `darwin-mvp/blackboard.py` | fcntl-locked JSON fix store (`write_fix`, `lookup`, `log_rejected`) |
-| `darwin-mvp/webhook_ingest.py` | Flask endpoint + live counters (`/darwin/failure`, `/darwin/status`, `/darwin/fixes`) |
-| `darwin-mvp/xrepo_proof.py` | The 3-repo cross-repo transfer demo |
-| `darwin-mvp/benchmark.py` | Fleet-size scaling benchmark + `--disable-gate` baseline |
+| `signature.py` | Fingerprint normalizer (`fingerprint`, `error_class`) |
+| `patch.py` | `PatchRecipe`, `compile_transformer`, `try_apply`, `reference_recipe_for` |
+| `darwin_harness.py` | `validate_fix` (AST gate), `diagnose_and_fix` (LLM B-path) |
+| `blackboard.py` | fcntl-locked JSON fix store (`write_fix`, `lookup`, `log_rejected`) |
+| `webhook_ingest.py` | Flask endpoint + live counters (`/darwin/failure`, `/darwin/status`, `/darwin/fixes`) |
+| `xrepo_proof.py` | The 3-repo cross-repo transfer demo |
+| `benchmark.py` | Fleet-size scaling benchmark + `--disable-gate` baseline |
 | `docs/BENCHMARK.md` | Methodology, raw runs, no-gate baseline, cache-hit curve |
-| `darwin-mvp/examples/` | Sentry / Datadog / generic stack-trace payloads for smoke tests |
+| `examples/` | Sentry / Datadog / generic stack-trace payloads for smoke tests |
 
 ## License and contribution
 
-MIT. PRs welcome — the four seeded failure classes are deliberately a starter set. Adding a fifth means: (1) write a reference `CSTTransformer` in `patch.py::reference_recipe_for`, (2) add a pristine + expected-fix pair under `darwin-mvp/pristines/`, (3) extend `benchmark.py` to include the new class, (4) re-run the no-gate baseline to verify the AST gate rejects plausible wrong-patches for your class. No framework lock-in — if you can write a LibCST `CSTTransformer`, you can contribute a recipe.
+MIT. PRs welcome — the four seeded failure classes are deliberately a starter set. Adding a fifth means: (1) write a reference `CSTTransformer` in `patch.py::reference_recipe_for`, (2) add a pristine + expected-fix pair under `pristines/`, (3) extend `benchmark.py` to include the new class, (4) re-run the no-gate baseline to verify the AST gate rejects plausible wrong-patches for your class. No framework lock-in — if you can write a LibCST `CSTTransformer`, you can contribute a recipe.
+
+---
+
+## Honesty caveats (April 22, 2026)
+
+- **Beta, 1 contributor, 0 paying users.** Darwin has not been deployed to a production tenant yet.
+- **Benchmark numbers cite `benchmarks/v*/results.json`** — clone, inspect, re-run. Source URLs on every bug.
+- **Public test suite: 15 tests** in `test_crossfeed.py` + `test_triage.py`. The Hermes integration (`darwin_fleet_dashboard_tool.py`, `darwin_postmortem_tool.py`, `darwin_heal_tool.py` + their tests) lives in a separate upstream PR to Nous Research and is not bundled here.
+- **Cross-repo crossfeed** has been demonstrated in-process across three synthetic repos (`xrepo_proof.py`). Two-machine over-HTTP demo is pending.
+- **No head-to-head benchmark** yet against LangChain Open SWE, Self-Healing-SRE-Agent, Helix, or Microsoft AgentRx. Planned.
+- **"Durable patch execution with bounded blast radius"** — this is deliberately NOT "self-heal." The term is tainted.

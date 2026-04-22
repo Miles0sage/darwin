@@ -16,7 +16,7 @@ Real Python agent failures harvested from public GitHub issues + StackOverflow. 
 pip install libcst google-genai anthropic
 export GEMINI_API_KEY=...
 export ANTHROPIC_API_KEY=...   # optional, used for Opus fallback
-python -m darwin.benchmark --corpus v3
+python benchmarks/run.py --corpus v3
 ```
 
 Results will be written to `benchmarks/v3/results-$(date).json`.

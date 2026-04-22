@@ -13,3 +13,7 @@ darwin-budget.json
 darwin-crossfeed-inbox/
 darwin-crossfeed-whitelist.json
 *.cast
+.omc/
+.pristine/
+*.pyc
+*.swp
