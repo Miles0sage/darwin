@@ -4,6 +4,8 @@
 
 > Not durable execution (Agentspan, DuraLang, Temporal). Not reasoning verification (Rubric). Not retry-with-backoff. Darwin emits a **surgical AST patch** on cache hit — zero LLM calls, deterministic, auditable.
 
+> **Now live:** [Darwin Commons](https://github.com/Miles0sage/darwin-commons) — the first public corpus of agent failure → LibCST transformer pairs. Contribute by POSTing to `/darwin/heal/public` with `publish_to_commons=true` and get a contributor badge for your README.
+
 [![demo](https://asciinema.org/a/vsXu6gddko4rZPgM.svg)](https://asciinema.org/a/vsXu6gddko4rZPgM)
 
 ```bash
