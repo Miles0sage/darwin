@@ -1,6 +1,8 @@
 # Darwin
 
-**Durable patch execution for Python agents. Bounded blast radius. Vendor-neutral. MIT.**
+**AST-level structural patching for failing Python agents.** Deterministic LibCST transformers keyed on traceback fingerprints. Bounded blast radius. Vendor-neutral. MIT.
+
+> Not durable execution (Agentspan, DuraLang, Temporal). Not reasoning verification (Rubric). Not retry-with-backoff. Darwin emits a **surgical AST patch** on cache hit — zero LLM calls, deterministic, auditable.
 
 [![demo](https://asciinema.org/a/vsXu6gddko4rZPgM.svg)](https://asciinema.org/a/vsXu6gddko4rZPgM)
 
@@ -216,4 +218,4 @@ MIT. PRs welcome — the four seeded failure classes are deliberately a starter 
 - **Public test suite: 15 tests** in `test_crossfeed.py` + `test_triage.py`. The Hermes integration (`darwin_fleet_dashboard_tool.py`, `darwin_postmortem_tool.py`, `darwin_heal_tool.py` + their tests) lives in a separate upstream PR to Nous Research and is not bundled here.
 - **Cross-repo crossfeed** has been demonstrated in-process across three synthetic repos (`xrepo_proof.py`). Two-machine over-HTTP demo is pending.
 - **No head-to-head benchmark** yet against LangChain Open SWE, Self-Healing-SRE-Agent, Helix, or Microsoft AgentRx. Planned.
-- **"Durable patch execution with bounded blast radius"** — this is deliberately NOT "self-heal." The term is tainted.
+- **"AST-level structural patching with bounded blast radius"** — this is deliberately NOT "self-heal" (term is tainted) and NOT "durable execution" (owned by Agentspan/DuraLang/Temporal — different primitive).
