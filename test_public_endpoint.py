@@ -62,8 +62,15 @@ def test_publish_with_correct_attestation_writes_staging(client, tmp_path, monke
     )
     assert resp.status_code in (200, 500)
     staging = tmp_path / "pending.jsonl"
-    if resp.status_code == 200:
-        assert staging.exists()
+    body = resp.get_json() or {}
+    # Staging writes only when we produced a real patch. Anonymous (no BYO-key)
+    # cache-miss returns 200 with status=cache_miss_heuristic_only and no
+    # new_source — that's correct; Commons should not store empty entries.
+    if body.get("new_source"):
+        assert staging.exists(), "staging should exist when new_source produced"
+    else:
+        assert (not staging.exists()) or staging.stat().st_size == 0, \
+            "staging should be empty when no new_source produced"
 
 
 def test_badge_endpoint_returns_shields_compatible_json(client):

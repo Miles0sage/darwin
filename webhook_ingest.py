@@ -246,12 +246,14 @@ def heal_public():
     if os.environ.get("DARWIN_PUBLIC_DISABLED") == "1":
         return _err("public endpoint disabled", 503)
 
-    # Dynamic rate limit — read env at request time so tests can monkeypatch
-    rate_limit_str = os.environ.get("DARWIN_PUBLIC_RATE_LIMIT", "10/hour")
-    # We enforce rate limiting manually via the limiter's exempt flag approach;
-    # the limiter is applied via decorator below for production but we rely on
-    # the default_limits=[] and apply limit dynamically here by using limiter.limit inline.
-    # For simplicity in tests: the limit check is skipped when TESTING=True.
+    # Dynamic rate limit — read env at request time so tests can monkeypatch.
+    # Manual enforcement (module-scope limiter had default_limits=[] to let env win).
+    if not app.config.get("TESTING"):
+        rate_limit_str = os.environ.get("DARWIN_PUBLIC_RATE_LIMIT", "10/hour")
+        try:
+            limiter.check(limit_value=rate_limit_str, key_func=get_remote_address)
+        except Exception:
+            return _err("rate limit exceeded", 429)
 
     raw = request.get_data()
     if len(raw) > MAX_PAYLOAD_BYTES:
@@ -298,7 +300,9 @@ def heal_public():
             resp.update({"status": "diagnosed_and_cached", "new_source": fix_code})
             blackboard.write_fix(stderr, root_cause="public heal", fix_code=fix_code)
 
-    if publish and attestation == REQUIRED_ATTESTATION:
+    # Only stage when we have a real patched source. Anonymous heuristic misses
+    # have no new_source and are not worth storing in the Commons.
+    if publish and attestation == REQUIRED_ATTESTATION and resp.get("new_source"):
         staged_id = _stage_for_commons({
             "fingerprint": fp,
             "error_class": payload.get("error_class") or "unknown",
