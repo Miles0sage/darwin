@@ -1,0 +1,12 @@
+[Unit]
+Description=Darwin Commons sync
+After=network-online.target
+
+[Service]
+Type=oneshot
+Environment="DARWIN_STAGING_DIR=/root/claude-code-agentic/darwin-mvp/staging"
+Environment="DARWIN_COMMONS_REPO=/root/darwin-commons"
+Environment="GNUPGHOME=/root/.gnupg-darwin-commons"
+Environment="DARWIN_COMMONS_LICENSE=CC-BY-SA-4.0"
+ExecStart=/usr/bin/python3 /root/claude-code-agentic/darwin-mvp/commons_sync.py
+User=root
