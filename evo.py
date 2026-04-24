@@ -31,7 +31,7 @@ VARIANTS_DIR = ARCHIVE_DIR / "variants"
 MANIFEST = ARCHIVE_DIR / "manifest.jsonl"
 HELD_OUT_CORPORA = ["v3"]  # fast (10 strict real bugs) — gate subset
 FULL_CORPORA = ["v3", "v1"]  # v3 + v1 for scoring; v2 is 171 bugs, skip by default
-GATE_CAP = int(os.environ.get("DARWIN_GATE_CAP", "5"))  # bugs per corpus at gate
+GATE_CAP = int(os.environ.get("DARWIN_GATE_CAP", "10"))  # bugs per corpus at gate
 ACCEPT_EVAL_CAP = int(os.environ.get("DARWIN_ACCEPT_CAP", "20"))  # bugs per corpus post-accept
 
 
@@ -196,6 +196,20 @@ def evaluate(variant: Variant, corpora: list[str] | None = None, max_bugs_per_co
     except Exception:
         pass
 
+    # Inject variant hooks into harness via env vars (read by darwin_harness)
+    prev_prefix = os.environ.get("DARWIN_PROMPT_PREFIX")
+    prev_heur = os.environ.get("DARWIN_HEURISTICS_JSON")
+    p_prefix = (variant.config.get("prompt_overrides") or {}).get("prefix", "")
+    if p_prefix:
+        os.environ["DARWIN_PROMPT_PREFIX"] = p_prefix
+    else:
+        os.environ.pop("DARWIN_PROMPT_PREFIX", None)
+    rules = variant.config.get("heuristic_rules") or []
+    if rules:
+        os.environ["DARWIN_HEURISTICS_JSON"] = json.dumps(rules)
+    else:
+        os.environ.pop("DARWIN_HEURISTICS_JSON", None)
+
     for name in corps:
         bug_dir = ROOT / "benchmarks" / name
         bugs = sorted(bug_dir.glob("bug_*.json"))
@@ -232,37 +246,71 @@ def evaluate(variant: Variant, corpora: list[str] | None = None, max_bugs_per_co
         total_attempted += c_attempted
         total_skipped += c_skipped
 
+    # Restore env
+    if prev_prefix is None:
+        os.environ.pop("DARWIN_PROMPT_PREFIX", None)
+    else:
+        os.environ["DARWIN_PROMPT_PREFIX"] = prev_prefix
+    if prev_heur is None:
+        os.environ.pop("DARWIN_HEURISTICS_JSON", None)
+    else:
+        os.environ["DARWIN_HEURISTICS_JSON"] = prev_heur
+
     score = (total_healed / total_attempted) if total_attempted else 0.0
     breakdown["duration_s"] = round(time.time() - t_all, 2)
     breakdown["total_healed"] = total_healed
     breakdown["total_attempted"] = total_attempted
     breakdown["total_skipped"] = total_skipped
     breakdown["mean_pass_rate"] = round(score, 3)
+    breakdown["hooks_active"] = {"prompt_prefix": bool(p_prefix), "heuristic_rules": len(rules)}
     return score, breakdown
 
 
 # ---------- Mutator ----------
-MUTATION_PROMPT = """You are mutating an AI agent's reliability config to improve its ability to self-heal runtime failures.
+MUTATION_PROMPT = """You are mutating an AI agent's self-healing config to improve its ability to heal Python runtime failures.
 
 Current config (JSON):
 {config}
 
-Evaluation breakdown (which scenarios failed):
+Evaluation breakdown (which bugs failed + their tracebacks):
 {breakdown}
 
-Propose ONE focused mutation to the config to address the worst failing scenario. Valid mutations:
-  - add a heuristic rule (regex → patch template) to heuristic_rules
-  - add or tweak a prompt override in prompt_overrides
-  - adjust retry_policy
-  - change max_llm_calls_per_scenario
+CRITICAL CONTEXT — HOW THE HARNESS WORKS:
+The harness asks the LLM to output a COMPLETE fixed agent.py file inside ```python ...``` fences,
+prefixed by "DIAGNOSIS: <2-3 lines>\\nFIXED_CODE:\\n```python\\n<full file>\\n```".
+A regex extracts the ```python block and AST-parses it. Any mutation that causes the LLM to emit
+partial patches, diffs, or non-python-block output WILL BREAK the extractor and score 0.
 
-Return strict JSON only:
+Propose ONE focused mutation. Valid types:
+
+  "heuristic_rule" — Regex-on-stderr → Python code template (full file body). Skips LLM entirely.
+    change: {{"pattern": "<regex with named groups>", "template": "<python source as a single string with {{source_code}} and {{stderr}} substitution>"}}
+    MUST yield a complete runnable Python file. Safe example:
+      {{"pattern": "AttributeError: .+model has no attribute 'dict'", "template": "{{source_code}}"}}  (noop; placeholder)
+    Prefer heuristic_rule when the fix is a pure string-replace on {{source_code}}.
+
+  "prompt_override" — Prepend text to the existing DIAGNOSE_PROMPT. MUST NOT contradict the existing
+    instructions (which demand a complete file in a ```python fence). Safe prefixes are hints that
+    sharpen diagnosis, not rewrites of the output contract.
+    change: {{"prefix": "<short hint text>"}}
+    Example: {{"prefix": "Before diagnosing, consider these common patterns: pydantic v1→v2 rename (.dict→.model_dump), sys.max_size→sys.maxsize, missing super().__init__() in nn.Module subclasses."}}
+    BAD examples (will regress score):
+      - "emit minimal patch touching only offending symbol"  (breaks full-file contract)
+      - "output only the diff"                                (breaks python-fence extractor)
+      - "skip DIAGNOSIS line"                                 (breaks parser)
+
+  "retry_policy" — Tune LLM retry behavior.
+    change: {{"max": <int>, "backoff": <float>}}
+
+  "llm_calls" — Change max LLM calls per scenario.
+    change: {{"max": <int>}}
+
+Return strict JSON only, no markdown, no prose:
 {{
   "mutation_type": "heuristic_rule|prompt_override|retry_policy|llm_calls",
-  "change": {{...patch payload...}},
-  "rationale": "one-sentence why"
+  "change": {{...as described above...}},
+  "rationale": "one-sentence why this addresses the failing bug"
 }}
-No markdown, no prose, JSON only.
 """
 
 
@@ -387,16 +435,20 @@ def mutate(parent: Variant) -> Variant | None:
 
 # ---------- Gate ----------
 def gate(child: Variant, baseline: Variant, min_delta: float = 0.0) -> tuple[bool, str]:
-    """Merge gate — child passes if score_held_out >= baseline.score + min_delta.
+    """Merge gate — compare child vs FRESHLY-RESCORED parent on same held-out subset.
 
-    Runs held-out subset only (fast). AST gate is already enforced inside benchmark.py.
+    Rationale: LLM providers are nondeterministic + flaky. Comparing child run-today vs
+    parent.score-from-days-ago conflates mutation effect with LLM availability. Re-run
+    parent in the same window so both variants face the same LLM state.
     """
-    score, breakdown = evaluate(child, corpora=HELD_OUT_CORPORA, max_bugs_per_corpus=GATE_CAP)
-    child.score_breakdown["gate"] = breakdown
-    if baseline.score is None:
-        return (score > 0.0, f"baseline unscored; child held-out={score:.2f}")
-    ok = score >= (baseline.score + min_delta)
-    return (ok, f"child_held_out={score:.2f} vs baseline={baseline.score:.2f} delta≥{min_delta}")
+    child_score, child_br = evaluate(child, corpora=HELD_OUT_CORPORA, max_bugs_per_corpus=GATE_CAP)
+    parent_score, parent_br = evaluate(baseline, corpora=HELD_OUT_CORPORA, max_bugs_per_corpus=GATE_CAP)
+    child.score_breakdown["gate"] = {"child": child_br, "parent_rerun": parent_br}
+    ok = child_score >= (parent_score + min_delta)
+    return (
+        ok,
+        f"child_held_out={child_score:.2f} vs parent_rerun={parent_score:.2f} (was stored={baseline.score}) delta≥{min_delta}",
+    )
 
 
 # ---------- Sampler ----------
@@ -433,15 +485,30 @@ def step(archive: Archive) -> dict[str, Any]:
     ok, reason = gate(child, parent)
     if not ok:
         return {"status": "rejected", "parent": parent.id, "child": child.id, "reason": reason}
-    score, breakdown = evaluate(child, corpora=child.config.get("corpora", FULL_CORPORA), max_bugs_per_corpus=ACCEPT_EVAL_CAP)
-    child.score = score
-    child.score_breakdown.update(breakdown)
+    # Accept-eval: run BOTH child and parent on same wider sample to control LLM variance.
+    child_s, child_b = evaluate(child, corpora=child.config.get("corpora", FULL_CORPORA), max_bugs_per_corpus=ACCEPT_EVAL_CAP)
+    parent_s, parent_b = evaluate(parent, corpora=parent.config.get("corpora", FULL_CORPORA), max_bugs_per_corpus=ACCEPT_EVAL_CAP)
+    child.score = child_s
+    child.score_breakdown.update(child_b)
+    child.score_breakdown["accept_parent_rerun"] = parent_b
+    # Refresh parent score too — archive should reflect latest truth about LLM conditions.
+    parent.score = parent_s
+    archive.update(parent)
+    if child_s < parent_s - 0.05:
+        return {
+            "status": "rejected_post_gate",
+            "parent": parent.id,
+            "child": child.id,
+            "parent_score_rerun": parent_s,
+            "child_score": child_s,
+            "reason": f"accept-eval child {child_s:.2f} < parent_rerun {parent_s:.2f} - 0.05 — dropped",
+        }
     archive.add(child)
     return {
         "status": "accepted",
         "parent": parent.id,
         "child": child.id,
-        "parent_score": parent.score,
-        "child_score": score,
+        "parent_rerun_score": parent_s,
+        "child_score": child_s,
         "gate": reason,
     }

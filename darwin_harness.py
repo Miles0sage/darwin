@@ -236,6 +236,45 @@ def validate_fix(old_code: str, new_code: str, stderr: str) -> tuple[bool, list[
 
 
 # ─── LLM Diagnosis ────────────────────────────────────────────────
+# ─── Variant hooks (evo.py injects via env vars) ──────────────────
+def _variant_prompt_prefix() -> str:
+    return os.environ.get("DARWIN_PROMPT_PREFIX", "").strip()
+
+
+def _variant_heuristic_fix(source_code: str, stderr: str) -> str | None:
+    """If DARWIN_HEURISTICS_JSON is set, try each rule {pattern, template} on stderr.
+    First match returns a Python-template-filled source. Skips LLM entirely."""
+    import re as _re
+    raw = os.environ.get("DARWIN_HEURISTICS_JSON", "").strip()
+    if not raw:
+        return None
+    try:
+        rules = json.loads(raw)
+    except Exception:
+        return None
+    if not isinstance(rules, list):
+        return None
+    for rule in rules:
+        try:
+            pat = rule.get("pattern")
+            tmpl = rule.get("template")
+            if not (pat and tmpl):
+                continue
+            m = _re.search(pat, stderr)
+            if not m:
+                continue
+            fields = {"source_code": source_code, "stderr": stderr, **m.groupdict()}
+            return tmpl.format(**fields)
+        except Exception:
+            continue
+    return None
+
+
+def _apply_prompt_prefix(prompt: str) -> str:
+    pref = _variant_prompt_prefix()
+    return (pref + "\n\n" + prompt) if pref else prompt
+
+
 DIAGNOSE_PROMPT = """You are Darwin, an autonomous agent debugging engine.
 
 An agent crashed in production. Diagnose the root cause and provide the EXACT fix.
@@ -324,9 +363,9 @@ def diagnose_via_anthropic(source_code: str, stderr: str) -> str | None:
         model="claude-opus-4-7",
         max_tokens=64000,
         thinking={"type": "adaptive"},
-        messages=[{"role": "user", "content": DIAGNOSE_PROMPT.format(
+        messages=[{"role": "user", "content": _apply_prompt_prefix(DIAGNOSE_PROMPT.format(
             source_code=source_code, stderr=stderr
-        )}],
+        ))}],
     )
     return _extract_fix(resp.content[0].text)
 
@@ -343,7 +382,7 @@ def diagnose_via_gemini(source_code: str, stderr: str) -> str | None:
     reasoning(f"Diagnosing via {model} (vendor-neutral LLM path)...")
     resp = client.models.generate_content(
         model=model,
-        contents=DIAGNOSE_PROMPT.format(source_code=source_code, stderr=stderr),
+        contents=_apply_prompt_prefix(DIAGNOSE_PROMPT.format(source_code=source_code, stderr=stderr)),
     )
     text = resp.candidates[0].content.parts[0].text if resp.candidates else getattr(resp, "text", "")
     return _extract_fix(text)
@@ -358,7 +397,7 @@ def diagnose_via_claude_cli(source_code: str, stderr: str) -> str | None:
     """
     model = os.environ.get("DARWIN_CLAUDE_CLI_MODEL", "opus")
     reasoning(f"Diagnosing via `claude -p --model {model}` (Max subscription path)...")
-    prompt = DIAGNOSE_PROMPT.format(source_code=source_code, stderr=stderr)
+    prompt = _apply_prompt_prefix(DIAGNOSE_PROMPT.format(source_code=source_code, stderr=stderr))
     result = subprocess.run(
         ["claude", "-p", "--model", model],
         input=prompt,
@@ -386,6 +425,12 @@ def diagnose_and_fix(source_code: str, stderr: str) -> str | None:
     triage_result = classify(source_code, stderr)
     if triage_result.label != "fixable":
         return None
+
+    # Variant heuristic hook: if a DGM variant injected heuristic_rules, try them first.
+    _v_heur = _variant_heuristic_fix(source_code, stderr)
+    if _v_heur:
+        reasoning("  variant heuristic matched — skipping LLM call")
+        return _v_heur
 
     # Kill-switch: DARWIN_DISABLE=1 disables all diagnosis and patching.
     if os.environ.get("DARWIN_DISABLE", "").lower() in ("1", "true", "yes"):
