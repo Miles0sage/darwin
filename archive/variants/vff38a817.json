@@ -1,0 +1,116 @@
+{
+  "children": [
+    "v161a7cc2"
+  ],
+  "config": {
+    "ast_gate": true,
+    "corpora": [
+      "v3"
+    ],
+    "heuristic_rules": [],
+    "llm_provider": "gemini-flash",
+    "no_cache": true,
+    "prompt_overrides": {},
+    "retry_policy": {
+      "backoff": 1.5,
+      "max": 3
+    },
+    "timeout_per_bug": 60
+  },
+  "created_at": "2026-04-24T19:53:47.288076+00:00",
+  "generation": 0,
+  "id": "vff38a817",
+  "notes": "baseline seed",
+  "parent_id": null,
+  "score": 0.9,
+  "score_breakdown": {
+    "corpora": {
+      "v3": {
+        "attempted": 10,
+        "bugs": [
+          {
+            "elapsed_s": 5.71,
+            "healed": true,
+            "id": "bug_v3_001",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 14.58,
+            "healed": true,
+            "id": "bug_v3_002",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 23.39,
+            "healed": true,
+            "id": "bug_v3_003",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 4.2,
+            "healed": true,
+            "id": "bug_v3_004",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 56.95,
+            "healed": true,
+            "id": "bug_v3_005",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 9.6,
+            "healed": true,
+            "id": "bug_v3_006",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 6.3,
+            "healed": true,
+            "id": "bug_v3_007",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 1.3,
+            "healed": false,
+            "id": "bug_v3_008",
+            "provider": "llm",
+            "reasons": [
+              "no fix produced"
+            ]
+          },
+          {
+            "elapsed_s": 3.71,
+            "healed": true,
+            "id": "bug_v3_009",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 3.95,
+            "healed": true,
+            "id": "bug_v3_010",
+            "provider": "llm",
+            "reasons": []
+          }
+        ],
+        "healed": 9,
+        "pass_rate": 0.9,
+        "skipped": 0
+      }
+    },
+    "duration_s": 131.08,
+    "mean_pass_rate": 0.9,
+    "started_at": "2026-04-24T19:58:19.738160+00:00",
+    "total_attempted": 10,
+    "total_healed": 9,
+    "total_skipped": 0
+  }
+}

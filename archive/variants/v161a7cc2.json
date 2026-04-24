@@ -1,0 +1,169 @@
+{
+  "children": [
+    "v1078c921"
+  ],
+  "config": {
+    "ast_gate": true,
+    "corpora": [
+      "v3"
+    ],
+    "heuristic_rules": [],
+    "llm_provider": "gemini-flash",
+    "no_cache": true,
+    "prompt_overrides": {},
+    "retry_policy": {
+      "backoff": 1.5,
+      "max": 5
+    },
+    "timeout_per_bug": 60
+  },
+  "created_at": "2026-04-24T20:02:50.287675+00:00",
+  "generation": 1,
+  "id": "v161a7cc2",
+  "notes": "mutation_type=retry_policy rationale=Increase the maximum number of retry attempts to give the agent more opportunities to produce a fix when it initially fails, addressing the ",
+  "parent_id": "vff38a817",
+  "score": 0.9,
+  "score_breakdown": {
+    "corpora": {
+      "v3": {
+        "attempted": 10,
+        "bugs": [
+          {
+            "elapsed_s": 6.22,
+            "healed": true,
+            "id": "bug_v3_001",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 7.53,
+            "healed": true,
+            "id": "bug_v3_002",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 15.19,
+            "healed": true,
+            "id": "bug_v3_003",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 2.86,
+            "healed": false,
+            "id": "bug_v3_004",
+            "provider": "llm",
+            "reasons": [
+              "no fix produced"
+            ]
+          },
+          {
+            "elapsed_s": 22.02,
+            "healed": true,
+            "id": "bug_v3_005",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 6.42,
+            "healed": true,
+            "id": "bug_v3_006",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 4.96,
+            "healed": true,
+            "id": "bug_v3_007",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 9.17,
+            "healed": true,
+            "id": "bug_v3_008",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 3.87,
+            "healed": true,
+            "id": "bug_v3_009",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 4.03,
+            "healed": true,
+            "id": "bug_v3_010",
+            "provider": "llm",
+            "reasons": []
+          }
+        ],
+        "healed": 9,
+        "pass_rate": 0.9,
+        "skipped": 0
+      }
+    },
+    "duration_s": 82.27,
+    "gate": {
+      "corpora": {
+        "v3": {
+          "attempted": 5,
+          "bugs": [
+            {
+              "elapsed_s": 7.12,
+              "healed": true,
+              "id": "bug_v3_001",
+              "provider": "llm",
+              "reasons": []
+            },
+            {
+              "elapsed_s": 5.21,
+              "healed": true,
+              "id": "bug_v3_002",
+              "provider": "llm",
+              "reasons": []
+            },
+            {
+              "elapsed_s": 12.87,
+              "healed": true,
+              "id": "bug_v3_003",
+              "provider": "llm",
+              "reasons": []
+            },
+            {
+              "elapsed_s": 3.97,
+              "healed": true,
+              "id": "bug_v3_004",
+              "provider": "llm",
+              "reasons": []
+            },
+            {
+              "elapsed_s": 27.78,
+              "healed": true,
+              "id": "bug_v3_005",
+              "provider": "llm",
+              "reasons": []
+            }
+          ],
+          "healed": 5,
+          "pass_rate": 1.0,
+          "skipped": 0
+        }
+      },
+      "duration_s": 57.23,
+      "mean_pass_rate": 1.0,
+      "started_at": "2026-04-24T20:02:50.287709+00:00",
+      "total_attempted": 5,
+      "total_healed": 5,
+      "total_skipped": 0
+    },
+    "mean_pass_rate": 0.9,
+    "started_at": "2026-04-24T20:03:47.517805+00:00",
+    "total_attempted": 10,
+    "total_healed": 9,
+    "total_skipped": 0
+  }
+}

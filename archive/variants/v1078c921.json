@@ -1,0 +1,241 @@
+{
+  "children": [
+    "ve545bee1"
+  ],
+  "config": {
+    "ast_gate": true,
+    "corpora": [
+      "v3"
+    ],
+    "heuristic_rules": [],
+    "llm_provider": "gemini-flash",
+    "no_cache": true,
+    "prompt_overrides": {},
+    "retry_policy": {
+      "backoff": 1.5,
+      "max": 5
+    },
+    "timeout_per_bug": 60
+  },
+  "created_at": "2026-04-24T20:09:52.759407+00:00",
+  "generation": 2,
+  "id": "v1078c921",
+  "notes": "mutation_type=llm_calls rationale=Bug_v3_004 failed with 'no fix produced' after only 2.86s, indicating the agent likely gave up too quickly; increasing allowed LLM calls per",
+  "parent_id": "v161a7cc2",
+  "score": 0.9,
+  "score_breakdown": {
+    "corpora": {
+      "v3": {
+        "attempted": 20,
+        "bugs": [
+          {
+            "elapsed_s": 7.63,
+            "healed": true,
+            "id": "bug_v3_001",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 8.25,
+            "healed": true,
+            "id": "bug_v3_002",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 22.64,
+            "healed": true,
+            "id": "bug_v3_003",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 4.57,
+            "healed": true,
+            "id": "bug_v3_004",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 24.83,
+            "healed": true,
+            "id": "bug_v3_005",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 5.79,
+            "healed": true,
+            "id": "bug_v3_006",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 6.59,
+            "healed": true,
+            "id": "bug_v3_007",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 9.12,
+            "healed": true,
+            "id": "bug_v3_008",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 5.11,
+            "healed": true,
+            "id": "bug_v3_009",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 5.51,
+            "healed": true,
+            "id": "bug_v3_010",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 24.07,
+            "healed": true,
+            "id": "bug_v3_011",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 0.89,
+            "healed": false,
+            "id": "bug_v3_012",
+            "provider": "llm",
+            "reasons": [
+              "no fix produced"
+            ]
+          },
+          {
+            "elapsed_s": 4.72,
+            "healed": true,
+            "id": "bug_v3_013",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 15.9,
+            "healed": true,
+            "id": "bug_v3_014",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 4.63,
+            "healed": true,
+            "id": "bug_v3_015",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 21.7,
+            "healed": true,
+            "id": "bug_v3_016",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 5.89,
+            "healed": true,
+            "id": "bug_v3_017",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 37.73,
+            "healed": true,
+            "id": "bug_v3_018",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 18.0,
+            "healed": true,
+            "id": "bug_v3_019",
+            "provider": "llm",
+            "reasons": []
+          },
+          {
+            "elapsed_s": 12.68,
+            "healed": false,
+            "id": "bug_v3_020",
+            "provider": "llm",
+            "reasons": [
+              "no fix produced"
+            ]
+          }
+        ],
+        "healed": 18,
+        "pass_rate": 0.9,
+        "skipped": 0
+      }
+    },
+    "duration_s": 246.26,
+    "gate": {
+      "corpora": {
+        "v3": {
+          "attempted": 5,
+          "bugs": [
+            {
+              "elapsed_s": 8.43,
+              "healed": true,
+              "id": "bug_v3_001",
+              "provider": "llm",
+              "reasons": []
+            },
+            {
+              "elapsed_s": 8.73,
+              "healed": true,
+              "id": "bug_v3_002",
+              "provider": "llm",
+              "reasons": []
+            },
+            {
+              "elapsed_s": 24.93,
+              "healed": true,
+              "id": "bug_v3_003",
+              "provider": "llm",
+              "reasons": []
+            },
+            {
+              "elapsed_s": 5.1,
+              "healed": true,
+              "id": "bug_v3_004",
+              "provider": "llm",
+              "reasons": []
+            },
+            {
+              "elapsed_s": 40.37,
+              "healed": true,
+              "id": "bug_v3_005",
+              "provider": "llm",
+              "reasons": []
+            }
+          ],
+          "healed": 5,
+          "pass_rate": 1.0,
+          "skipped": 0
+        }
+      },
+      "duration_s": 87.83,
+      "mean_pass_rate": 1.0,
+      "started_at": "2026-04-24T20:09:52.759449+00:00",
+      "total_attempted": 5,
+      "total_healed": 5,
+      "total_skipped": 0
+    },
+    "mean_pass_rate": 0.9,
+    "started_at": "2026-04-24T20:11:20.593088+00:00",
+    "total_attempted": 20,
+    "total_healed": 18,
+    "total_skipped": 0
+  }
+}

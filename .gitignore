@@ -17,3 +17,7 @@ darwin-crossfeed-whitelist.json
 .pristine/
 *.pyc
 *.swp
+fixes-evo/
+darwin-commons/
+staging/*.jsonl
+
