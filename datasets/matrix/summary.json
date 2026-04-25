@@ -1,0 +1,1312 @@
+{
+  "total_bugs": 42,
+  "total_rows": 210,
+  "heal_rate_per_provider": {
+    "claude_cli": {
+      "attempted": 42,
+      "healed": 4,
+      "rate": 0.09523809523809523,
+      "errors": 0,
+      "avg_latency_ms": 63178
+    },
+    "gemini": {
+      "attempted": 42,
+      "healed": 38,
+      "rate": 0.9047619047619048,
+      "errors": 0,
+      "avg_latency_ms": 26291
+    },
+    "alibaba": {
+      "attempted": 42,
+      "healed": 38,
+      "rate": 0.9047619047619048,
+      "errors": 0,
+      "avg_latency_ms": 7235
+    },
+    "heuristic": {
+      "attempted": 42,
+      "healed": 0,
+      "rate": 0.0,
+      "errors": 0,
+      "avg_latency_ms": 0
+    },
+    "glm-4.6": {
+      "attempted": 42,
+      "healed": 30,
+      "rate": 0.7142857142857143,
+      "errors": 1,
+      "avg_latency_ms": 156307
+    }
+  },
+  "agreement_distribution": {
+    "0_providers_healed": 1,
+    "1_providers_healed": 2,
+    "2_providers_healed": 11,
+    "3_providers_healed": 26,
+    "4_providers_healed": 2
+  },
+  "n_unique_heals": 2,
+  "n_disagreements": 39,
+  "clusters": {
+    "raise RuntimeError(msg) RuntimeError: Cannot patch execution_info before it has been set Runtime object from logs: Runtime(context=..., store=, execut": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "TypeError: Type is not msgpack serializable: Send **Full Stack Trace:** Traceback (most recent call last): File \"<path>\", line X, in <module> result =": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "AttributeError: 'str' object has no attribute 'items' ``` ### Description When calling graph.invoke() or graph.stream() with a config argument that is": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "ImportError: cannot import name 'thread_ttl' from 'langgraph_api' python:3.11 langgraph_api:0.7.22 ``` ### Error Message and Stack Trace (if applicabl": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "raise ValueError(\"Failing in do_foo_work\") return {\"initial_research\": f\"Foo Research\"} def do_bar_work(state: ResearchState): if state[\"fail_in\"] == ": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "Traceback (most recent call last): File \"<path>\", line N, in classification_execution final_answer = structured_llm.invoke(messages) ^^^^^^^^^^^^^^^^^": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        }
+      }
+    },
+    "Traceback (most recent call last): File \"<path>\", line N, in <module> from langgraph_api.server import app File \"<path>\", line N, in <module> from": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "ImportError: cannot import name 'IS_POSTGRES_OR_GRPC_BACKEND' from 'langgraph_api.feature_flags' (<path>) ``` ### Description -": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "Traceback (most recent call last): File \"<path>\", line N, in upsert_memory await store.aput( ...<3 lines>... ) File \"/usr/src/Python/rag-age": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        }
+      }
+    },
+    "raise this error raise e return store ``` ### Error Message and Stack Trace (if applicable) ```shell > Finished chain. Traceback (most recent call las": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "KeyError: 'tool_call_id' During task with name 'agent' and id '<uuid>' ``` ### System Info System Information ------------------ > OS: Darwin > OS Ver": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "Traceback (most recent call last): File \"<path>\", line N, in run_asgi resul": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "raise GraphInterrupt( ( Interrupt.from_ns( value=value, ns=conf[CONFIG_KEY_CHECKPOINT_NS], idx=idx, # Add this ), ) ) ``` ### System Info": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "Traceback (most recent call last): File \"<path>\", line N, in <module> asyncio.run(supervisor(query)) ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^ Fil": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "AttributeError: 'Connection' object has no attribute 'is_alive' ``` ### Description `aiosqlite` released a new version 0.22.0 which comes with breakin": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "raise self._make_status_error_from_response(err.response) from None openai.BadRequestError: Error code: 400 - { 'object': 'error', 'message': 'Expecte": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "raise error_to_raise File \"<path>\", line N, in run tool_args, tool_kwargs = self._to_args_and_kwa": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "raise ValueError(\"Test error from Node A\") # This should trigger the jump return {\"messages\": [\"Message from Node A\"]} @error_handler() async def node": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "ValueError: Your graph includes a custom checkpointer... # So we must do: graph = builder.compile() # No checkpointer # API server injects checkpointe": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "raise e # Try with Postgres checkpointing (this should fail) try: with PostgresSaver.from_conn_string( \"postgresql://test_user:test_password@postgres:": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        }
+      }
+    },
+    "raise Exception(\"\u6ca1\u6709\u5145\u5206\u7684\u6267\u884c\u6761\u4ef6\") graph = StateGraph(GraphState) # 2. \u6dfb\u52a0\u6240\u6709\u8282\u70b9 graph.add_node(\"node_a\", node_a) graph.add_node(\"node_b\", node_b) graph.add_no": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "Traceback (most recent call last): File \"/usr/src/Python/rag-agent/.venv/bin/hypercorn\", line N, in <module> sys.exit(main()) ~~~~^^ File \"/usr/src/Py": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "Traceback (most recent call last): File \"<path>\", line N, in gen_astream_response msg_mode, output = await asyncio.wait_for(stream_generator.__anext__": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        }
+      }
+    },
+    "raise ValueError( \"Authentication handler already set as {self._authenticate_handler}.\" ) ``` ### Error Message and Stack Trace (if applicable) ```she": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "raise RuntimeError(\"Runtime context is not available\") joke_map = { \"lions\": \"Why don't lions like fast food? Because they can't catch it!\", \"elephant": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "Traceback (most recent call last): File \"<path>\", line N, in <module> from langchain.agents import create_agent File": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        }
+      }
+    },
+    "Traceback (most recent call last): File \"<path>\", line N, in _handle_exception task.result": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        }
+      }
+    },
+    "httpx.HTTPStatusError: 400 Bad Request for chunk in remote_graph.stream( {\"messages\": [{\"role\": \"user\", \"content\": \"hello\"}]}, context=context, config": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "ModuleNotFoundError: No module named 'langchain_google_genai' [langgraph_runtime_postgres.lifespan] action=fix_user_graph api_revision=92975bb api_var": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "ImportError: cannot import name 'CONFIG_KEY_STORE' from 'langgraph.constants' (<path>) ``` ### Description It's pos": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "Traceback (most recent call last): File \"<path>\", line N, in collect_graphs_from_env File \"<path>\", line N, in run_in_executor File \"/usr/loc": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "raise exc 211 except asyncio.CancelledError: 212 pass File c:\\01MyFolder\\python-31210\\py-repo\\dev\\langG\\Lib\\site-packages\\langgraph\\checkpoint\\memory\\": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        }
+      }
+    },
+    "KeyError: 'scheduler_assistant' During task with name '__start__' and id '<uuid>' During task with name 'scheduler_assistant' and id '<uuid>": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        }
+      }
+    },
+    "TypeError: '<' not supported between instances of 'NoneType' and 'str' Expected Behavior Option 1: Validation on write python def aput(self, namespace": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "pydantic_core._pydantic_core.ValidationError: 2 validation errors for PrivateState E structured_response E Field required [type=missing, input_value={": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        }
+      }
+    },
+    "UnreachableNodeError: Node `tools` is not reachable. If you are returning Command objects from your node, make sure you are passing names of potential": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        }
+      }
+    },
+    "AttributeError: 'Connection' object has no attribute 'is_alive' await self.conn async with self.conn.executescript(...): ``` ### Description I am tryi": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "Traceback (most recent call last): File \"<path>\", line N, in lifespan async with self.lifespan_context(app) as maybe_state: File \"/usr/lo": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        }
+      }
+    },
+    "Traceback (most recent call last): | File \"<path>\", line N, in stdio_client | yield read": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        }
+      }
+    },
+    "TypeError: 'NoneType' object is not a mapping ``` ### Description in case you have already a database with checkpoints with older langgraph versions i": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "KeyError: 'step' ``` ### Description I'm trying to use PosgresSaver in chatbot application based on langraph and got error. Everything fine if use InM": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "Traceback (most recent call last): File \"<path>\", line N, in <module> main() File \"<path>\", line N, in main print(graph.invoke({\"messages\": [\"Call fet": {
+      "n_bugs": 1,
+      "per_provider": {
+        "claude_cli": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "gemini": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "alibaba": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        },
+        "heuristic": {
+          "attempted": 1,
+          "healed": 0,
+          "rate": 0.0
+        },
+        "glm-4.6": {
+          "attempted": 1,
+          "healed": 1,
+          "rate": 1.0
+        }
+      }
+    }
+  }
+}

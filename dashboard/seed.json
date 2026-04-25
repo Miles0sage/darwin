@@ -1,0 +1,138 @@
+{
+  "_note": "Synthetic placeholder data so the dashboard renders before real heal_results.jsonl/_corpus.jsonl/clusters.json land. Replace by writing those files into the dashboard/ directory (or symlink them). When real files are present, this seed is ignored.",
+  "clusters": [
+    {
+      "cluster_id": "C001",
+      "error_signature": "AttributeError: 'NoneType' object has no attribute 'invoke' (langchain Runnable)",
+      "count": 142,
+      "sample_ids": ["10001", "10002", "10003", "10004", "10005"]
+    },
+    {
+      "cluster_id": "C002",
+      "error_signature": "ValidationError: 1 validation error for ChatPromptTemplate input_variables",
+      "count": 98,
+      "sample_ids": ["20001", "20002", "20003"]
+    },
+    {
+      "cluster_id": "C003",
+      "error_signature": "openai.BadRequestError: tool_use block has no matching tool_result",
+      "count": 76,
+      "sample_ids": ["30001", "30002", "30003", "30004"]
+    },
+    {
+      "cluster_id": "C004",
+      "error_signature": "TypeError: graph.add_node() got unexpected keyword argument 'name' (langgraph)",
+      "count": 61,
+      "sample_ids": ["40001", "40002"]
+    },
+    {
+      "cluster_id": "C005",
+      "error_signature": "RecursionError: maximum recursion depth exceeded in CrewAI agent loop",
+      "count": 54,
+      "sample_ids": ["50001", "50002", "50003"]
+    },
+    {
+      "cluster_id": "C006",
+      "error_signature": "KeyError: 'output' missing from autogen GroupChatManager response",
+      "count": 47,
+      "sample_ids": ["60001", "60002"]
+    },
+    {
+      "cluster_id": "C007",
+      "error_signature": "JSONDecodeError: Expecting value when parsing tool_call arguments (llama_index)",
+      "count": 39,
+      "sample_ids": ["70001"]
+    }
+  ],
+  "heal_results": [
+    {
+      "row_id": "10001",
+      "framework": "langchain",
+      "error_class": "attribute_error_none_invoke",
+      "healed": true,
+      "patch": "--- a/agent.py\n+++ b/agent.py\n@@\n-    chain = build_chain()\n-    return chain.invoke({\"q\": q})\n+    chain = build_chain()\n+    if chain is None:\n+        raise RuntimeError(\"build_chain() returned None\")\n+    return chain.invoke({\"q\": q})",
+      "latency_ms": 2840,
+      "provider": "gemini-2.5-flash"
+    },
+    {
+      "row_id": "20001",
+      "framework": "langchain",
+      "error_class": "prompt_input_var_mismatch",
+      "healed": true,
+      "patch": "--- a/prompts.py\n+++ b/prompts.py\n@@\n-PROMPT = ChatPromptTemplate.from_messages([(\"user\", \"{question}\")])\n+PROMPT = ChatPromptTemplate.from_messages([(\"user\", \"{question}\")])\n+# input_variables now resolved from template\n-PROMPT.input_variables = [\"q\"]\n+PROMPT.input_variables = [\"question\"]",
+      "latency_ms": 1920,
+      "provider": "gemini-2.5-flash"
+    },
+    {
+      "row_id": "30001",
+      "framework": "autogen",
+      "error_class": "tool_result_unmatched",
+      "healed": true,
+      "patch": "--- a/tools.py\n+++ b/tools.py\n@@\n-    return {\"role\": \"tool\", \"content\": result}\n+    return {\"role\": \"tool\", \"tool_call_id\": call_id, \"content\": result}",
+      "latency_ms": 3210,
+      "provider": "claude-opus-4-7"
+    },
+    {
+      "row_id": "40001",
+      "framework": "langgraph",
+      "error_class": "graph_add_node_kwargs",
+      "healed": true,
+      "patch": "--- a/workflow.py\n+++ b/workflow.py\n@@\n-graph.add_node(name=\"planner\", action=plan_step)\n+graph.add_node(\"planner\", plan_step)",
+      "latency_ms": 1410,
+      "provider": "gemini-2.5-flash"
+    },
+    {
+      "row_id": "50001",
+      "framework": "crewai",
+      "error_class": "recursion_loop",
+      "healed": true,
+      "patch": "--- a/crew.py\n+++ b/crew.py\n@@\n-crew = Crew(agents=[a, b], process=Process.hierarchical)\n+crew = Crew(agents=[a, b], process=Process.hierarchical, max_iter=5)",
+      "latency_ms": 4120,
+      "provider": "claude-opus-4-7"
+    },
+    {
+      "row_id": "60001",
+      "framework": "autogen",
+      "error_class": "groupchat_missing_output",
+      "healed": false,
+      "reason": "patch did not pass AST gate",
+      "latency_ms": 5210,
+      "provider": "gemini-2.5-flash"
+    },
+    {
+      "row_id": "70001",
+      "framework": "llama_index",
+      "error_class": "tool_call_json_decode",
+      "healed": false,
+      "reason": "no patch generated within budget",
+      "latency_ms": 6020,
+      "provider": "gemini-2.5-flash"
+    },
+    {
+      "row_id": "80001",
+      "framework": "dogfood",
+      "error_class": "harness_timeout",
+      "healed": false,
+      "reason": "harness exceeded 60s budget",
+      "latency_ms": 60000,
+      "provider": "claude-opus-4-7"
+    }
+  ],
+  "corpus": [
+    {"row_id": "c1", "framework": "langchain"},
+    {"row_id": "c2", "framework": "langchain"},
+    {"row_id": "c3", "framework": "langchain"},
+    {"row_id": "c4", "framework": "langchain"},
+    {"row_id": "c5", "framework": "langgraph"},
+    {"row_id": "c6", "framework": "langgraph"},
+    {"row_id": "c7", "framework": "langgraph"},
+    {"row_id": "c8", "framework": "autogen"},
+    {"row_id": "c9", "framework": "autogen"},
+    {"row_id": "c10", "framework": "crewai"},
+    {"row_id": "c11", "framework": "crewai"},
+    {"row_id": "c12", "framework": "crewai"},
+    {"row_id": "c13", "framework": "llama_index"},
+    {"row_id": "c14", "framework": "llama_index"},
+    {"row_id": "c15", "framework": "dogfood"}
+  ]
+}

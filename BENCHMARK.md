@@ -1,179 +1,287 @@
-# Darwin: Cross-Repository Patch Memoization via Traceback Fingerprinting and CST Recipes
+# Darwin Multi-LLM Variance Benchmark v0
 
-**Benchmark Report — 2026-04-22**
+**Branch:** `genome-v0` &nbsp;|&nbsp; **Status:** preliminary &nbsp;|&nbsp; **Slice:** LangGraph (42 bugs)
 
-## Abstract
+## Summary
 
-Darwin memoizes agent-runtime failures as `(stack_fingerprint → LibCST transformer)` pairs such that a fix mined from repository A applies deterministically to repository B with different identifier names, file paths, and call-site layout. Published results on the included harness show a 99% cache-hit rate at fleet size N=100 across four handcrafted failure classes, and 100% hit rate on warm-cache reruns. The primitive is a composition of (i) identifier-masked traceback fingerprinting, (ii) LibCST transformer recipes applied under an AST safety gate, and (iii) an `fcntl.flock`-serialized JSON blackboard that implements a first-miss-wins fleet-race. At cache-hit time the system performs zero LLM calls.
+The Darwin Multi-LLM Variance Benchmark is a vendor-neutral healing benchmark
+that asks five providers — `claude_cli` (Claude Opus 4.7 via Anthropic Max),
+`gemini` (Gemini 2.5 Flash), `alibaba` (`qwen3-coder-plus` on dashscope-intl),
+`glm-4.6` (Z.ai coding plan), and a no-LLM `heuristic` control — to propose a
+fix for each row in a corpus of real-world Python agent-framework bugs scraped
+from public GitHub issues. We record per-provider heal rate, agreement, unique
+heals, and per-error-class breakdowns. v0 evaluates the LangGraph slice (42
+bugs); v1 will extend to LangChain, LlamaIndex, AutoGen, and CrewAI.
 
-## 1. Methodology
+## Why this benchmark exists
 
-### 1.1 Failure taxonomy
+As of April 2026 there is no public, vendor-neutral benchmark that asks: *"if
+five different LLMs see the same agent-framework crash, do they agree on the
+fix?"* SWE-Bench focuses on application repos with hand-curated test gates;
+HumanEval and MBPP are synthetic; LiveCodeBench tests competitive programming.
+None of these surface **the variance signal** — i.e. which provider catches
+which class of failure, where they disagree, and where one provider uniquely
+heals a bug that the others miss. That variance signal is the substrate Darwin
+uses to compose multi-provider repair pipelines and to grow a vendor-agnostic
+failure → fix dataset.
 
-Four canonical agent-runtime failure classes, each with a minimal reproducer under `darwin-mvp/scenarios/`:
+The corpus is the second contribution: 152 real failures from five major
+agent-framework repos, with stack trace + reproducer + linked fix-PR where
+available. We are not aware of an equivalent public dataset.
 
-| Class | Symptom | Root cause | Transformer family |
-|-------|---------|------------|--------------------|
-| `schema-change` | `KeyError: 'text'` | Upstream API nested `text` under `data` | `leave_Subscript` → `get(..., {}).get(...)` |
-| `missing-file` | `FileNotFoundError: .../v3/data.json` | Endpoint versioned from `v1` to `v3` | `leave_Assign` over `/`-chained path BinOps |
-| `rate-limit` | `RuntimeError: API rate limited (429)` | Placeholder `raise` in client stub | `leave_Raise` with warning injection |
-| `timeout` | `TimeoutError` on network I/O | Default timeout too short for upstream | seeded transformer, scenario-specific |
+## Corpus
 
-### 1.2 Fleet model
+| Repo | Rows | File |
+|---|---:|---|
+| langchain-ai/langgraph | 42 | `datasets/github-failures/langchain-ai-langgraph.jsonl` |
+| langchain-ai/langchain | 53 | `datasets/github-failures/langchain-ai-langchain.jsonl` |
+| run-llama/llama_index | 46 | `datasets/github-failures/run-llama-llama_index.jsonl` |
+| microsoft/autogen | 7 | `datasets/github-failures/microsoft-autogen.jsonl` |
+| crewAIInc/crewAI | 4 | `datasets/github-failures/crewAIInc-crewAI.jsonl` |
+| **Total** | **152** | `datasets/github-failures/_corpus.jsonl` |
 
-Agents are spawned as separate processes via `concurrent.futures.ProcessPoolExecutor`. A `multiprocessing.Barrier` is armed before any worker executes its failing path, guaranteeing that N workers enter the heal path within a few milliseconds of each other — the worst case for blackboard contention. This is the configuration in which LLM-call budget matters, because a naive implementation would fire N duplicate LLM requests.
+Each row was scraped from a public GitHub issue (`gh issue list … --json`) and
+reduced to fields needed for healing: stack trace, error excerpt, repro code
+(if posted in body), and the fix PR URL (when present in the issue thread).
+Issue bodies are public; we redistribute under MIT and cite each row's
+`issue_url` for attribution.
 
-### 1.3 Blackboard and fingerprint
+**v0 evaluates the LangGraph slice only.** LangGraph was chosen first because
+(a) its issues consistently include reproducers, (b) the framework surface is
+small enough that all five providers have plausible coverage, and (c) it
+doesn't depend on enterprise SaaS auth the way some Autogen/CrewAI failures
+do.
 
-The blackboard is a filesystem directory of `fix-*.json` entries. All writes funnel through `exclusive_lock()` (`fcntl.LOCK_EX` on `.write-lock`). Reads are lock-free: a sorted `glob` over existing entries. The fleet-race primitive `compute_and_write_fix(stderr, compute, ...)` (in `blackboard.py`) takes the lock, re-checks the lookup, and only invokes `compute()` if no prior worker has written — first miss wins, N−1 workers consume the cached artifact on release.
+## Schemas
 
-The fingerprint is a 16-character hex slice of `sha256` over the *cross-codebase core* of a traceback:
+### `matrix.jsonl` — one row per (bug_id, provider)
 
-1. `normalize(stderr)` strips worker tmpdirs, quoted absolute/relative paths (keeping basenames only), line numbers, hex memory addresses, ISO timestamps, UUIDs, PIDs, long integers, and `<frozen ...>` import tags.
-2. `_fingerprint_core` retains only the terminal `ErrorClass: msg` line and the last code line from the traceback.
-3. The last code line passes through `_mask_identifiers`: bare identifiers are rewritten to `_`, while Python keywords and string literals are preserved. This collapses `value = row["text"]` and `body = doc["text"]` to the same masked form.
+Produced by `datasets/matrix/run_matrix.py` and `datasets/matrix/glm_pass.py`.
 
-The resulting 16-char key content-addresses the fix. Two repositories with different variable names, different file paths, and different function names but the same terminal error produce the same fingerprint.
-
-### 1.4 Cached artifact
-
-Rather than cache a text substitution, Darwin caches the *source* of a `libcst.CSTTransformer` subclass (convention: class name `Patch`). On cache hit, `patch.apply_recipe()` instantiates the transformer, visits the new codebase's CST, and emits new source. If no CST node matches, the recipe raises `PatchMissError` and the caller falls through to the B-path (LLM diagnose). Transformer source is `exec`'d in a namespace with a restricted `__builtins__` dict limited to construction and introspection primitives (`__build_class__`, `isinstance`, `getattr`, standard containers). This is namespace isolation, not a security sandbox (see §5, §8).
-
-### 1.5 LLM provider
-
-All multi-scenario runs below use Gemini 2.5 Flash for the B-path (first-miss diagnose). Darwin's provider interface is vendor-neutral; an Anthropic path is wired but not exercised in the numbers reported here. A heuristic regex fallback is used when no API key is present (see `benchmark-report.json`).
-
-## 2. Scaling Results
-
-Single-scenario fleet-race, cold blackboard, ProcessPool with barrier-synchronized start. Wall-clock is end-to-end (spawn through last worker return). LLM calls are exactly the count of diagnose invocations crossing the provider boundary.
-
-| Fleet size N | LLM calls | Cache hits | Healed | Heal rate | Wall-clock |
-|-------------:|----------:|-----------:|-------:|----------:|-----------:|
-| 1            | 1         | 0          | 1      | 100%      | 1.1 s      |
-| 10           | 1         | 9          | 10     | 100%      | 1.1 s      |
-| 50           | 1         | 49         | 50     | 100%      | 2.6 s      |
-| 100          | 1         | 99         | 100    | 100%      | 6.3 s      |
-| 200          | 1         | 199        | 200    | 100%      | 13.1 s     |
-| 200 (warm)   | 0         | 200        | 200    | 100%      | 11.3 s     |
-
-The LLM-call count is independent of N: exactly one diagnose per distinct fingerprint, regardless of concurrency. The "warm" row uses `--keep-blackboard` to inherit a previous run's fixes directory; zero LLM calls fire because every fingerprint already has a cached transformer.
-
-## 3. Multi-Scenario Taxonomy
-
-Four (or three) failure classes running concurrently, each with its own fleet of N workers, real Gemini 2.5 Flash diagnosing first-miss per class.
-
-| Scenarios | Fleet × classes | LLM calls | Cache hits | Healed | Heal rate | Wall-clock |
-|-----------|-----------------|----------:|-----------:|-------:|----------:|-----------:|
-| schema, missing, rate           | 10 × 3   | 3 | 27  | 30  | 100% | 49 s   |
-| schema, missing, rate, timeout  | 10 × 4   | 4 | 36  | 40  | 100% | 46 s   |
-| schema, missing, rate (cold)    | 100 × 3  | 3 | 297 | 300 | 100% | 16.3 s |
-
-LLM call count equals the number of distinct fingerprints (i.e., distinct failure classes), not the number of workers. At 300 agents, 297 heals are served without crossing the provider boundary.
-
-## 4. Cross-Repository Transfer
-
-This is the novel primitive the paper claims. Two artefacts establish it.
-
-### 4.1 `xrepo_proof.py` — synthetic three-repo proof
-
-Three repositories (`alpha`, `beta`, `gamma`) are generated with the same underlying bug (schema change: upstream response nested `text` under `data`) but *different* variable names, function names, and module layouts:
-
-```
-alpha/   value = row["text"]
-beta/    body  = doc["text"]
-gamma/   content = record["text"]
+```json
+{
+  "bug_id":        "langchain-ai/langgraph#7420",
+  "provider":      "claude_cli",
+  "healed":        false,
+  "patch_diff":    "",
+  "patch_len":     0,
+  "latency_ms":    56991,
+  "error_class":   "RuntimeError",
+  "error_in_heal": null
+}
 ```
 
-Each raises a traceback with distinct filenames, distinct line numbers, distinct framework frames. After identifier masking and path normalization, all three produce fingerprint `1def79fb36f4ad1f`. The first repo diagnoses (1 LLM call, emits a `libcst.CSTTransformer` rewriting `X["text"]` to `(X.get("data", {}).get("text") or X.get("text", ""))`). The second and third repos apply the cached transformer deterministically: 0 LLM calls, AST gate passes, source heals.
+| field | type | notes |
+|---|---|---|
+| `bug_id` | str | `<repo>#<issue_number>`, matches corpus `id` |
+| `provider` | str | one of `claude_cli`, `gemini`, `alibaba`, `glm-4.6`, `heuristic` |
+| `healed` | bool | see "Heal definition" below — coarse, do not over-trust |
+| `patch_diff` | str | provider's proposed fix (truncated to 8000 chars) |
+| `patch_len` | int | length of `patch_diff` in chars |
+| `latency_ms` | int | wall-clock time for the call |
+| `error_class` | str | crude `KeyError`/`TypeError`/… tag from stderr |
+| `error_in_heal` | str \| null | exception/HTTP error string if the call itself failed |
 
-### 4.2 Webhook heal — production-shaped transfer
+### `summary.json` — aggregate emitted by `aggregate.py`
 
-The production telemetry path (`webhook_ingest.py`, Flask listener on `:7777`) was exercised on 2026-04-22 22:45 with two hand-crafted Sentry-shaped payloads:
+Computed shape (read from `datasets/matrix/aggregate.py`):
 
-- **Payload 1:** `myorg/sentiment-tracker`, file `pipeline/rows.py`, function `process_row`, variable `value`.
-- **Payload 2:** `myorg/analyzer`, file `src/analyze/extract.py`, function `extract_body`, variable `body`.
+```jsonc
+{
+  "total_bugs":  42,
+  "total_rows": 210,
+  "heal_rate_per_provider": {
+    "<provider>": {
+      "attempted":       <int>,
+      "healed":          <int>,
+      "rate":            <float 0..1>,
+      "errors":          <int>,           // call-level errors (HTTP, exception)
+      "avg_latency_ms":  <int>
+    }
+  },
+  "agreement_distribution": {
+    "0_providers_healed": <int>,           // bug count
+    "1_providers_healed": <int>,
+    "2_providers_healed": <int>,
+    "3_providers_healed": <int>,
+    "4_providers_healed": <int>,
+    "5_providers_healed": <int>
+  },
+  "n_unique_heals":   <int>,               // bugs where exactly 1 provider succeeded
+  "n_disagreements":  <int>,               // >=2 healed but patch signatures differ
+  "clusters": {
+    "<normalized error excerpt key>": {
+      "n_bugs": <int>,
+      "per_provider": {
+        "<provider>": {"attempted": <int>, "healed": <int>, "rate": <float>}
+      }
+    }
+  }
+}
+```
 
-Both payloads raise `KeyError: 'text'` on a subscript. Payload 1 hits a cold blackboard; Darwin diagnoses, emits a transformer, caches under fingerprint `0b8ed4dc613c4688`. Payload 2 arrives seconds later from a different repository context: same fingerprint, `cache_hit: true`, the cached CST transformer rewrites the subscript in payload 2's source, the AST gate passes, status `healed`, zero additional LLM calls. Response payloads are persisted under `darwin-mvp/fixes/` and the rejected-fix ledger is empty.
+Side outputs: `unique_heals.jsonl` (one per bug where exactly one provider
+healed; lists winner + all results), `disagreements.jsonl` (one per bug where
+>=2 providers healed but the patch signatures differ — a length-bucket +
+first/last line tuple).
 
-### 4.3 What identifier masking enables
+> NOTE: `aggregate.py` does not currently emit a true pairwise agreement
+> matrix (e.g. claude_cli vs gemini cell). It emits an `agreement_distribution`
+> over *count* of agreeing providers per bug. A pairwise matrix is a TODO.
 
-Prior work in APR treats the source text as first-class — regex-based fix-patterns, edit-sequence learners (Getafix, Tufano et al.), and template miners (GenProg). These approaches are brittle to identifier rename because the learned pattern is lexical. Darwin's fingerprint normalization drops identifiers *before* hashing, and its cached artifact is a CST visitor *matching by structure* — `isinstance(node.slice[0].slice.value, cst.SimpleString) and node.slice[0].slice.value.value in ('"text"', "'text'")` — which is identifier-free by construction. The combination is what makes the A→B transfer deterministic rather than probabilistic.
+## Providers
 
-## 5. Safety Gate Results
+| key | model | endpoint | notes |
+|---|---|---|---|
+| `claude_cli` | Claude Opus 4.7 | local `claude` CLI (Anthropic Max subscription) | invoked through `darwin_harness.diagnose_via_claude_cli`; ~2s pacing between calls |
+| `gemini` | Gemini 2.5 Flash | `generativelanguage.googleapis.com` | uses `GEMINI_API_KEY`; rate limits affect availability |
+| `alibaba` | `qwen3-coder-plus` | `https://coding-intl.dashscope.aliyuncs.com/v1` (OpenAI-compat) | uses `ALIBABA_CODING_API_KEY` (== `DASHSCOPE_API_KEY`) |
+| `glm-4.6` | `glm-4.6` | `https://api.z.ai/api/coding/paas/v4` | Z.ai coding-plan endpoint, not the bigmodel.cn pay-per-token endpoint |
+| `heuristic` | none | local | no-LLM control — currently always returns "no fix" for the LangGraph slice (every row in `matrix.jsonl` shows `patch_len=0`) |
 
-Every candidate patch (cache-hit apply or fresh LLM diagnose) passes through `validate_fix(old, new, stderr)` before write. Gate properties:
+All providers receive the same `DIAGNOSE_PROMPT` from `darwin_harness.py`.
+There is **no per-provider prompt tuning** in v0. The output is parsed with
+the harness's `_extract_fix` regex (find first ```` ```python ```` fence).
 
-- Must parse as syntactically valid Python (`ast.parse`).
-- `try`/`except` count is preserved or increased; never decreased.
-- No bare `except:` is introduced.
-- `assert` statements are preserved.
-- Imports must remain a superset of the original (no silent removal).
+## Heal definition
 
-Results across all runs tabulated in §2 and §3: **0 rejections**. The `fixes/rejected/` directory is empty. This is consistent with the cached transformers being hand-reviewed reference recipes (see `patch.py REFERENCE_*`); we expect non-zero rejection rates once LLM-emitted transformers exceed the reference library.
+We call a row `healed=true` when **all** of the following hold:
 
-**Honest scope claim.** The gate verifies syntactic plausibility and preserves a small set of structural invariants. It does not claim semantic equivalence, does not verify that the fix addresses the root cause, and does not prevent a malicious transformer from rewriting unrelated code. See §8.
+1. Provider returned a non-empty string.
+2. The harness's extractor regex finds a fenced ```` ```python ```` block.
+3. `ast.parse(<extracted block>)` succeeds (the `glm_pass.py` definition).
+4. The extracted block is longer than 20 characters.
 
-## 6. Reproducibility
+This is **deliberately coarse**. A row marked `healed=true` only means the
+provider produced syntactically-valid Python that resembles a patch. It does
+**not** mean the patch fixes the bug. See limitations.
 
-Every figure above is regenerable from the repo. Commands:
+> NOTE: The `claude_cli` and `gemini`/`alibaba` paths in `run_matrix.py` use a
+> slightly different healing predicate (`is_healed`: non-empty + differs from
+> input + len > 5) than the `glm_pass.py` AST-parse predicate. We document
+> this drift here and treat it as a known issue (TODO: unify the predicate
+> in a single helper before v1).
+
+## Honest limitations
+
+1. **Single framework, 42 bugs.** v0 results generalize only to LangGraph-shaped
+   failures. The other 110 corpus rows (LangChain, LlamaIndex, AutoGen, CrewAI)
+   are not yet evaluated. Do not extrapolate cross-framework heal rates from
+   v0 numbers.
+2. **Heal != correct fix.** "Heal" is "produced syntactically-valid Python".
+   We have **not** re-run the original reproducer against the patched code,
+   nor have we compared the patch to the linked fix-PR. A provider that
+   confidently emits a plausible-looking but wrong patch is currently
+   indistinguishable from one that emits a correct patch. Verifier-against-
+   reproducer is on the v1 roadmap.
+3. **Naive prompt only.** All providers receive the same `DIAGNOSE_PROMPT`
+   with no provider-specific tuning, no chain-of-thought scaffolding, and no
+   retrieval. A 2026-state-of-the-art prompt for any one of these providers
+   would likely change the heal rate by tens of points. Treat the numbers as
+   a *floor*, not a SOTA claim.
+4. **Provider availability shifts heal rates over time.** Gemini in particular
+   rate-limits aggressively; a re-run on a different day, with a different
+   `RPM` budget, can yield a materially different heal count. The runner
+   marks a provider `DOWN` after 3 consecutive failures, which can also
+   bias against providers having a bad hour. Re-run multiple times and
+   report the distribution, not a single point.
+5. **Predicate drift between `run_matrix.py` and `glm_pass.py`.** The four
+   original providers use a "non-empty and differs from source" predicate;
+   the GLM pass uses an `ast.parse` predicate. Heal counts across providers
+   are therefore not strictly comparable until the predicate is unified
+   (see TODO above).
+6. **Issue-body reproducers are not always self-contained.** Some corpus rows
+   list the framework version mismatch as the root cause and the user-visible
+   `agent.py` is unchanged. A "correct" provider answer in those cases is
+   "this isn't an `agent.py` bug" — but our extractor still demands a Python
+   block, so a correct narrative answer can score `healed=false`. This is
+   a known false-negative source.
+
+## Reproducibility
+
+### Required environment
+
+| var | get from | used by |
+|---|---|---|
+| `GEMINI_API_KEY` | https://aistudio.google.com/apikey | `gemini` provider |
+| `ALIBABA_CODING_API_KEY` | https://dashscope-intl.console.aliyun.com (or set `DASHSCOPE_API_KEY`) | `alibaba` provider |
+| `ZHIPU_API_KEY` | https://z.ai (coding plan) — alias `GLM_API_KEY` | `glm-4.6` provider |
+| `claude` CLI on PATH | https://docs.anthropic.com/claude/docs/claude-code | `claude_cli` provider (Anthropic Max sub) |
+
+### Dependencies
+
+Minimal install, used by the harness + matrix runner:
+
+```
+flask-limiter>=3.5.0
+gitpython>=3.1.40
+cryptography>=41
+```
+
+(`flask-limiter` and `gitpython` are pinned in `requirements.txt`;
+`cryptography` is pulled in transitively by `genome.py` for ed25519.)
+
+### Run
 
 ```bash
-# §2 scaling rows — cold blackboard, one class
-python3 darwin-mvp/benchmark.py --scenario schema-change --fleet 100
-python3 darwin-mvp/benchmark.py --scenario schema-change --fleet 200
-python3 darwin-mvp/benchmark.py --scenario schema-change --fleet 200 --keep-blackboard
-
-# §3 multi-scenario
-python3 darwin-mvp/multi_scenario_benchmark.py \
-    --scenarios schema-change,missing-file,rate-limit --fleet 100
-
-# §4.1 cross-repo proof
-python3 darwin-mvp/xrepo_proof.py
-
-# §4.2 webhook heal
-python3 darwin-mvp/webhook_ingest.py &   # background
-curl -X POST localhost:7777/darwin/failure -d @darwin-mvp/examples/webhook_payload_1.json
-curl -X POST localhost:7777/darwin/failure -d @darwin-mvp/examples/webhook_payload_2.json
+cd /root/claude-code-agentic/darwin-mvp
+git checkout genome-v0
+./scripts/reproduce.sh
 ```
 
-Each run writes `fix-*.json` under `DARWIN_FIXES_DIR` (default `darwin-mvp/fixes/`) and emits a JSON summary readable by `jq`.
+`reproduce.sh` performs: (1) env-var check, (2) `pip install -r requirements.txt`,
+(3) the four-provider matrix run on the LangGraph corpus, (4) the GLM pass,
+(5) `aggregate.py` summary. Expected wall-clock: 30-60 minutes for the
+LangGraph slice depending on provider latency / Gemini rate limits.
 
-## 7. Related Work
+### Expected outputs
 
-Automated program repair (APR) is a mature subfield with well-defined benchmarks (Defects4J, ManyBugs, BugsInPy) and well-known techniques. Darwin occupies a specific intersection that, to our reading, has not been shipped as a composed primitive.
+```
+datasets/matrix/matrix.jsonl       # 42 bugs * 5 providers = 210 rows
+datasets/matrix/summary.json       # aggregate metrics
+datasets/matrix/unique_heals.jsonl # bugs healed by exactly 1 provider
+datasets/matrix/disagreements.jsonl# bugs >=2 healed with divergent patches
+```
 
-- **Monperrus (2020)** — *Automated Program Repair: Advances and Challenges*, ACM CSUR. Taxonomy of generate-and-validate, semantics-driven, and learning-based repair. Darwin is generate-and-validate with a memoization layer.
-- **Tufano et al. (2017)** — *Learning to Fix Build Errors*, ICSE. Explicitly positions *cross-repository transferability* of learned fixes as an open problem. Darwin addresses this specific gap by hashing on an identifier-masked structural core.
-- **Bader et al. (2019)** — *Getafix: Learning to Fix Bugs Automatically*, OOPSLA. Mines edit patterns from commit history and applies them to new code. Patterns are edit-sequence rules over AST tokens. Darwin caches the *post-diagnosis* transformer as a CST visitor, keyed by traceback fingerprint rather than by AST-pattern match on the buggy source.
-- **Long and Rinard (2016)** — *Automatic Patch Generation by Learning Correct Code*, POPL. Learns from human patches to rank candidates. Darwin does not rank — a first-hit cache lookup is deterministic, and the fallback path defers to the LLM rather than to a ranked candidate set.
-- **Xia and Zhang (2022)** — *Less Training, More Repairing Please (AlphaRepair)*, FSE. Cloze-style masked-token repair via a pre-trained model. Darwin is orthogonal: it does not train, and it runs the LLM exactly once per unique fingerprint.
-- **Le Goues et al. (2012)** — *GenProg*, TSE. Genetic search over statement-level edits; validated by test suite. Darwin's search cost on cache hit is `O(CST walk)`, not `O(generations × population × test-runtime)`.
-- **Microsoft AgentRx (2026-03-11)** — Failure-attribution framework for agent systems. Post-hoc analysis of why an agent failed. Darwin differs: it memoizes the *remediation*, not the attribution.
-- **AgentRR (2026)** — Record/replay for deterministic agent traces. Adjacent concern; Darwin replays *fixes across codebases*, not traces within one codebase.
-- **Anthropic Agent Teams (file-locked blackboard, 2026)** — Shared-filesystem coordination primitive for multi-agent systems. Darwin's `fcntl.flock`'d JSON blackboard is the same genre; the novelty here is what is stored (CST transformer recipes keyed by cross-codebase fingerprint), not the locking primitive.
+The headline summary is printed to stdout by `aggregate.py`.
 
-**Positioning.** Structural patch memoization (CST recipes) + fingerprint-keyed content addressing (identifier-masked traceback cores) + fleet coordination primitive (flock'd blackboard with first-miss-wins). Each component has prior art. The composition — in particular, the claim that the cached artifact transfers across repositories with renamed identifiers because both the *key* and the *artifact* are identifier-free by construction — is what this benchmark substantiates.
+## Early indicators (5-bug pilot)
 
-## 8. Limitations
+> WARNING: The full 42-bug LangGraph run is in progress / has just completed
+> as of this writeup. Numbers below are from the first 5 bugs as a pilot
+> sanity check, not the final benchmark.
 
-A reviewer reading this section is expected to find it inadequate in exactly the ways it concedes. That is the point.
+In the 5-bug pilot, we observed (a) `gemini` and `alibaba` healing roughly
+similar fractions of LangGraph rows under the naive prompt, (b) `heuristic`
+healing zero rows on this slice (expected — LangGraph errors are above the
+heuristic surface), and (c) at least one bug where exactly one LLM provider
+produced a patch and the others did not — i.e. the variance signal we
+designed the benchmark to surface does exist on this corpus.
 
-- **Corpus scale is tiny.** Four handcrafted failure classes. Not 100, not 1000, not a distribution over real-world tracebacks. The `signature.py` normalization pipeline is tuned to what we have seen, not proved against held-out data.
-- **Language scope is Python only.** The CST layer is `libcst`; porting to JavaScript/TypeScript/Go requires rewriting recipes against tree-sitter bindings (planned, §9) and revalidating the safety gate.
-- **No held-out evaluation.** We have not run against BugsInPy, ManyBugs, or Defects4J. Reported heal rates are over scenarios authored by the same people who wrote the transformers. The number to watch, not yet reported, is heal rate on a held-out corpus.
-- **Identifier masking is regex, not AST.** `_mask_identifiers` tokenizes with `\b[A-Za-z_][A-Za-z_0-9]*\b` and preserves a hand-maintained keyword set. A string like `for x in foo` masked as `for _ in _` is correct; a docstring containing what looks like identifiers is also masked, which is a false-positive risk that can in principle cause fingerprint collisions on unrelated tracebacks. An AST-based masker would eliminate this, at the cost of parsing every traceback line in isolation.
-- **Namespace isolation is not a security sandbox.** `compile_transformer` restricts `__builtins__` but does not prevent escape via `type.__subclasses__()`, `__import__` lookups on captured frames, or attribute walks from any exposed class (`cst.Module`, etc.). Darwin trusts that (a) transformer sources originate from its own diagnose path under the safety gate, and (b) operators do not import a third-party blackboard without review. A hardened deployment requires either subinterpreter isolation, WASM, or a separate process with seccomp.
-- **Distribution shift at dataset scale is unmodeled.** At N ≫ 10⁴ fingerprints the blackboard becomes a sorted-glob scan, which is O(N) per lookup. A B-tree or SQLite index is a straightforward fix but unimplemented. More subtly, fingerprint-key collisions across unrelated failures (different bug, same masked core) become non-negligible at scale; we have not measured the rate.
-- **Semantic-equivalence is not proven.** The safety gate is a structural stopgap. A fix that preserves `try`/`except` counts and import supersets can still silently alter semantics (e.g., the rate-limit transformer removes a `raise`; we mitigate by injecting a `warnings.warn` so the change is observable in logs, but this is a convention, not a theorem).
-- **Benchmark harness self-synchronizes workers.** Real production fleets do not enter a failure path under a `multiprocessing.Barrier`. Worst-case contention in production is bounded by network jitter and queue depth, not by our barrier; the published wall-clock numbers represent the pathological case, not the typical one.
+We will publish the full 42-bug numbers and the cross-provider heatmap with
+the v0 release tag once the run completes and is independently re-run on
+a fresh clone.
 
-## 9. Future Work
+## License
 
-- **BugsInPy held-out evaluation.** Report heal rate, false-positive rate, and time-to-heal on a public corpus the authors did not write.
-- **Multi-language via tree-sitter bindings.** JS/TS first (largest agent footprint), Go second.
-- **AST-accurate identifier masking.** Replace the regex in `signature._mask_identifiers` with a per-line tokenizer that understands string/docstring context.
-- **Cryptographic attestation of cached recipes.** Sign transformer sources with a per-operator key so a cross-org blackboard federation is plausible without a full review of every recipe.
-- **Formal semantic-equivalence gate.** For a subset of transformers (those that match a handful of known-safe rewrite shapes), a symbolic-execution or bounded-model-checking pass that discharges equivalence over a bounded input space.
-- **Scaling the blackboard.** SQLite index, then a KV store (RocksDB / SQLite WAL) once fingerprints exceed 10⁶.
+MIT. See `LICENSE`. The corpus rows are derived from public GitHub issue
+bodies under each upstream repo's license; we redistribute the scraped
+fields under MIT with attribution back to each row's `issue_url`. If you
+are an upstream maintainer and want a row removed, open an issue.
 
-Reproducibility: commit SHA `17e2d30`, Python 3.11, libcst 1.5.x, 2026-04-22.
+## Citation
+
+```bibtex
+@misc{darwin2026variance,
+  title        = {Darwin Multi-LLM Variance Benchmark v0:
+                  A Vendor-Neutral Healing Benchmark for Python Agent-Framework Bugs},
+  author       = {Sage, Miles},
+  year         = {2026},
+  howpublished = {\url{https://github.com/<TODO-public-repo-path>/darwin-mvp}},
+  note         = {Branch genome-v0; LangGraph slice (42 bugs).
+                  Five providers: Claude Opus 4.7, Gemini 2.5 Flash,
+                  qwen3-coder-plus, GLM-4.6, heuristic control.}
+}
+```
+
+> TODO: replace `<TODO-public-repo-path>` once the public repo URL is final.

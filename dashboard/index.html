@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Darwin Failure Index</title>
+<style>
+  :root {
+    --bg: #000;
+    --bg-soft: #0a0f0a;
+    --panel: #0d130d;
+    --panel-2: #11181a;
+    --border: #1f2a1f;
+    --text: #d8e8d8;
+    --muted: #6a7a6a;
+    --accent: #00ff88;
+    --accent-dim: #007a44;
+    --warn: #ffb347;
+    --bad: #ff5c5c;
+    --ok: #00ff88;
+    --gray: #444;
+    --mono: ui-monospace, "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { font-family: var(--mono); }
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 16px 64px;
+  }
+  header.brand {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+  }
+  header.brand .title {
+    font-size: 18px;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  header.brand .meta {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .src-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: 1px solid var(--border);
+    margin-left: 6px;
+  }
+  .src-pill.live    { color: var(--accent); border-color: var(--accent-dim); background: rgba(0,255,136,0.06); }
+  .src-pill.partial { color: var(--warn);   border-color: #5a4020;          background: rgba(255,179,71,0.06); }
+  .src-pill.seed    { color: var(--bad);    border-color: #5a2020;          background: rgba(255,92,92,0.06); }
+
+  /* Hero */
+  .hero {
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--panel) 0%, var(--bg-soft) 100%);
+    border-radius: 6px;
+    padding: 32px 24px;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+  .hero .pre { color: var(--muted); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .hero .num {
+    font-size: clamp(48px, 9vw, 96px);
+    color: var(--accent);
+    line-height: 1.05;
+    margin: 8px 0;
+    font-weight: 700;
+    text-shadow: 0 0 24px rgba(0,255,136,0.18);
+  }
+  .hero .sub {
+    color: var(--text);
+    font-size: clamp(14px, 2.2vw, 18px);
+  }
+  .hero .sub .denom { color: var(--muted); }
+  .hero .hint { color: var(--muted); font-size: 11px; margin-top: 12px; }
+
+  section { margin-top: 32px; }
+  section h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 6px;
+    margin: 0 0 12px 0;
+  }
+  section h2 .badge {
+    color: var(--accent);
+    background: rgba(0,255,136,0.08);
+    border: 1px solid var(--accent-dim);
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 10px;
+    margin-left: 8px;
+    letter-spacing: 0.04em;
+  }
+
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .grid > * { flex: 1 1 320px; min-width: 0; }
+
+  /* Framework bars */
+  .bars { display: flex; flex-direction: column; gap: 6px; }
+  .bar-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 60px;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+  }
+  .bar-row .label { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-row .track {
+    height: 18px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-row .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+    transition: width 0.4s ease;
+  }
+  .bar-row .count {
+    color: var(--muted);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Generic table */
+  .table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--panel);
+    overflow-x: auto;
+  }
+  table.matrix, table.clusters {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 720px;
+  }
+  table.matrix th, table.matrix td,
+  table.clusters th, table.clusters td {
+    text-align: left;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  table.matrix th, table.clusters th {
+    cursor: pointer;
+    user-select: none;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10px;
+    background: var(--bg-soft);
+    position: sticky;
+    top: 0;
+    white-space: nowrap;
+  }
+  table.matrix th .arr, table.clusters th .arr { color: var(--accent); margin-left: 4px; opacity: 0.6; }
+  table.matrix tbody tr:hover, table.clusters tbody tr:hover { background: rgba(0,255,136,0.04); }
+  table.matrix td.bug, table.clusters td.id { color: var(--text); white-space: nowrap; }
+  table.matrix td.fw { color: var(--muted); font-size: 11px; }
+  table.matrix td.cell { text-align: center; font-weight: 700; cursor: help; min-width: 36px; }
+  table.matrix td.cell.ok { color: var(--ok); }
+  table.matrix td.cell.bad { color: var(--bad); }
+  table.matrix td.cell.gone { color: var(--gray); }
+  table.matrix td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.matrix tr.summary-row {
+    background: rgba(0,255,136,0.04);
+    border-top: 2px solid var(--accent-dim);
+  }
+  table.matrix tr.summary-row td { color: var(--accent); font-weight: 600; }
+  table.matrix tr.summary-row td.cell { color: var(--accent); }
+  table.matrix tr.summary-row td.lat { color: var(--muted); font-size: 10px; font-weight: 400; }
+
+  /* Feeds */
+  .feed { display: flex; flex-direction: column; gap: 8px; }
+  .heal-card {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--panel);
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  .heal-card.ok { border-left: 3px solid var(--ok); }
+  .heal-card.bad { border-left: 3px solid var(--bad); }
+  .heal-card .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .heal-card .left { display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+  .heal-card .row-id { color: var(--accent); }
+  .heal-card .fw { color: var(--muted); }
+  .heal-card .err { color: var(--warn); }
+  .heal-card .lat { color: var(--muted); font-size: 11px; }
+  .heal-card .provider {
+    color: var(--text);
+    font-size: 11px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0 6px;
+    background: var(--bg-soft);
+  }
+  .heal-card details { margin-top: 8px; }
+  .heal-card summary {
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .heal-card summary:hover { color: var(--accent); }
+  .heal-card pre.diff {
+    margin: 8px 0 0 0;
+    padding: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow-x: auto;
+    font-size: 11px;
+    line-height: 1.4;
+    white-space: pre;
+    color: var(--text);
+  }
+  .heal-card pre.diff .add { color: var(--ok); }
+  .heal-card pre.diff .rem { color: var(--bad); }
+  .heal-card pre.diff .ctx { color: var(--muted); }
+
+  .placeholder {
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    padding: 16px;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 12px;
+    background: var(--bg-soft);
+  }
+  .placeholder .pulse {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+    animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 0.2; }
+    50% { opacity: 1; }
+  }
+
+  footer {
+    margin-top: 48px;
+    color: var(--muted);
+    font-size: 11px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  @media (max-width: 700px) {
+    .bar-row { grid-template-columns: 100px 1fr 48px; }
+    table.matrix, table.clusters { min-width: 560px; }
+    .heal-card .row { flex-direction: column; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="brand">
+    <div class="title">DARWIN_FAILURE_INDEX // v0</div>
+    <div class="meta" id="meta">loading data&hellip;</div>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="pre">Bugs healed by &ge;1 provider</div>
+    <div class="num"><span id="hero-pct">--</span>%</div>
+    <div class="sub">
+      <span id="hero-healed">--</span>
+      <span class="denom"> of </span>
+      <span id="hero-total">--</span>
+      <span class="denom"> bugs</span>
+    </div>
+    <div class="hint" id="hero-hint">Across <span id="hero-providers">--</span> providers &bull; best provider <span id="hero-best">--</span></div>
+  </div>
+
+  <!-- Provider matrix -->
+  <section>
+    <h2>Provider matrix <span class="badge">bug &times; provider, click columns to sort</span></h2>
+    <div id="matrix-area"></div>
+  </section>
+
+  <!-- Framework breakdown -->
+  <section>
+    <h2>Framework breakdown <span class="badge">failures per framework</span></h2>
+    <div id="fw-bars"></div>
+  </section>
+
+  <!-- Feeds -->
+  <section>
+    <div class="grid">
+      <div>
+        <h2>Recent heals <span class="badge">last 5 healed rows</span></h2>
+        <div id="heals-feed" class="feed"></div>
+      </div>
+      <div>
+        <h2>Falsifiability surface <span class="badge">5 most recent unhealed</span></h2>
+        <div id="unhealed-feed" class="feed"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Darwin // <span id="version">scaffold</span> &bull; static dashboard, vanilla JS &bull; serve with <code>python3 -m http.server 8080 -d dashboard</code>
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+// ---------- Utilities ----------
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => Number.isFinite(n) ? n.toLocaleString() : "--";
+const trunc = (s, n) => {
+  if (typeof s !== "string") return "";
+  return s.length > n ? s.slice(0, n - 1) + "…" : s;
+};
+const escapeHtml = (s) => String(s == null ? "" : s)
+  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
+const FRAMEWORKS = ["langchain", "langgraph", "autogen", "crewai", "llama_index", "dogfood"];
+
+async function tryFetch(path) {
+  try {
+    const res = await fetch(path, { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.text();
+  } catch (e) {
+    return null;
+  }
+}
+
+function parseJsonl(text) {
+  if (!text) return [];
+  const out = [];
+  for (const line of text.split(/\r?\n/)) {
+    const t = line.trim();
+    if (!t) continue;
+    try { out.push(JSON.parse(t)); } catch (e) { /* skip bad row */ }
+  }
+  return out;
+}
+
+function parseJsonSafe(text) {
+  if (!text) return null;
+  try { return JSON.parse(text); } catch (e) { return null; }
+}
+
+// Derive framework from bug_id ("langchain-ai/langgraph#7420" -> "langgraph") or fallback to error_class.
+function deriveFramework(row) {
+  if (row.framework) return row.framework;
+  const id = row.bug_id || row.id || "";
+  // owner/repo#N pattern
+  const m = String(id).match(/^[\w.-]+\/([\w.-]+)#/);
+  if (m) {
+    const repo = m[1].toLowerCase();
+    if (repo.includes("langgraph")) return "langgraph";
+    if (repo.includes("langchain")) return "langchain";
+    if (repo.includes("autogen")) return "autogen";
+    if (repo.includes("crewai")) return "crewai";
+    if (repo.includes("llama")) return "llama_index";
+    return repo;
+  }
+  if (String(id).startsWith("dogfood")) return "dogfood";
+  // Last resort: error_class
+  return (row.error_class || "other").toLowerCase();
+}
+
+function placeholder(msg) {
+  return `<div class="placeholder"><span class="pulse"></span>${escapeHtml(msg)}</div>`;
+}
+
+// ---------- Hero ----------
+function renderHero(matrixRows, summary) {
+  if ((!matrixRows || !matrixRows.length) && !summary) {
+    $("hero-pct").textContent = "--";
+    $("hero-healed").textContent = "--";
+    $("hero-total").textContent = "--";
+    $("hero-hint").innerHTML = "data pending &mdash; awaiting <code>matrix.jsonl</code>";
+    return;
+  }
+  // Group matrix rows by bug_id; bug "healed" if any provider healed.
+  const bugHealed = new Map();
+  const providers = new Set();
+  for (const r of (matrixRows || [])) {
+    const id = r.bug_id;
+    if (!id) continue;
+    providers.add(r.provider);
+    bugHealed.set(id, (bugHealed.get(id) || false) || !!r.healed);
+  }
+  const total = bugHealed.size;
+  let healed = 0;
+  for (const v of bugHealed.values()) if (v) healed += 1;
+  const pct = total ? Math.round((healed / total) * 100) : 0;
+  $("hero-pct").textContent = pct;
+  $("hero-healed").textContent = fmt(healed);
+  $("hero-total").textContent = fmt(total);
+  $("hero-providers").textContent = fmt(providers.size);
+
+  // Best provider: highest heal rate (fall back to summary if available).
+  let best = null;
+  if (summary && summary.heal_rate_per_provider) {
+    for (const [p, st] of Object.entries(summary.heal_rate_per_provider)) {
+      const rate = st.rate ?? (st.healed && st.attempted ? st.healed / st.attempted : 0);
+      if (!best || rate > best.rate) best = { provider: p, rate, healed: st.healed, attempted: st.attempted };
+    }
+  } else if (matrixRows && matrixRows.length) {
+    const tally = new Map();
+    for (const r of matrixRows) {
+      const t = tally.get(r.provider) || { h: 0, n: 0 };
+      t.n += 1;
+      if (r.healed) t.h += 1;
+      tally.set(r.provider, t);
+    }
+    for (const [p, t] of tally) {
+      const rate = t.n ? t.h / t.n : 0;
+      if (!best || rate > best.rate) best = { provider: p, rate, healed: t.h, attempted: t.n };
+    }
+  }
+  if (best) {
+    $("hero-best").innerHTML =
+      `<span style="color:var(--accent)">${escapeHtml(best.provider)}</span> ` +
+      `heals ${(best.rate * 100).toFixed(0)}% (${fmt(best.healed)}/${fmt(best.attempted)})`;
+  } else {
+    $("hero-best").textContent = "--";
+  }
+}
+
+// ---------- Provider matrix ----------
+let matrixState = { rows: [], providers: [], sortKey: "bug_id", sortDir: 1 };
+
+function buildMatrix(rows) {
+  // Group: bug_id -> {provider -> row}
+  const byBug = new Map();
+  const providerSet = new Set();
+  for (const r of rows) {
+    if (!r.bug_id) continue;
+    providerSet.add(r.provider);
+    if (!byBug.has(r.bug_id)) byBug.set(r.bug_id, {});
+    byBug.get(r.bug_id)[r.provider] = r;
+  }
+  const providers = Array.from(providerSet).sort();
+  const out = [];
+  for (const [bug_id, perProv] of byBug) {
+    let healCount = 0;
+    let framework = "";
+    for (const p of providers) {
+      const r = perProv[p];
+      if (r) {
+        if (r.healed) healCount += 1;
+        if (!framework) framework = deriveFramework(r);
+      }
+    }
+    out.push({ bug_id, framework, perProv, heal_count: healCount });
+  }
+  return { rows: out, providers };
+}
+
+function renderMatrix(matrixRows) {
+  const area = $("matrix-area");
+  if (!matrixRows || !matrixRows.length) {
+    area.innerHTML = placeholder("data pending — awaiting matrix.jsonl");
+    return;
+  }
+  const { rows, providers } = buildMatrix(matrixRows);
+  matrixState.rows = rows;
+  matrixState.providers = providers;
+  drawMatrix();
+}
+
+function drawMatrix() {
+  const area = $("matrix-area");
+  const { rows, providers, sortKey, sortDir } = matrixState;
+
+  // Per-provider summary (heal-count + avg latency)
+  const provSummary = {};
+  for (const p of providers) provSummary[p] = { h: 0, n: 0, lat: 0, latN: 0 };
+  for (const r of rows) {
+    for (const p of providers) {
+      const cell = r.perProv[p];
+      if (!cell) continue;
+      provSummary[p].n += 1;
+      if (cell.healed) provSummary[p].h += 1;
+      if (Number.isFinite(cell.latency_ms)) {
+        provSummary[p].lat += cell.latency_ms;
+        provSummary[p].latN += 1;
+      }
+    }
+  }
+
+  const sorted = rows.slice().sort((a, b) => {
+    let av, bv;
+    if (sortKey === "bug_id") { av = a.bug_id; bv = b.bug_id; }
+    else if (sortKey === "framework") { av = a.framework; bv = b.framework; }
+    else if (sortKey === "heal_count") { av = a.heal_count; bv = b.heal_count; }
+    else { av = a.bug_id; bv = b.bug_id; }
+    if (typeof av === "number" && typeof bv === "number") return (av - bv) * sortDir;
+    return String(av).localeCompare(String(bv)) * sortDir;
+  });
+
+  const arrow = (k) => sortKey === k ? `<span class="arr">${sortDir > 0 ? "▲" : "▼"}</span>` : "";
+
+  const html = [`<div class="table-wrap"><table class="matrix"><thead><tr>`,
+    `<th data-key="bug_id">bug ${arrow("bug_id")}</th>`,
+    `<th data-key="framework">fw ${arrow("framework")}</th>`,
+    `<th data-key="heal_count" style="text-align:right">heals ${arrow("heal_count")}</th>`,
+  ];
+  for (const p of providers) {
+    html.push(`<th>${escapeHtml(p)}</th>`);
+  }
+  html.push(`</tr></thead><tbody>`);
+
+  // Summary row
+  html.push(`<tr class="summary-row">`);
+  html.push(`<td class="bug">SUMMARY</td>`);
+  html.push(`<td class="fw">${rows.length} bugs</td>`);
+  html.push(`<td class="num">${providers.length} prov</td>`);
+  for (const p of providers) {
+    const s = provSummary[p];
+    const avgLat = s.latN ? Math.round(s.lat / s.latN) : 0;
+    const rate = s.n ? Math.round((s.h / s.n) * 100) : 0;
+    html.push(
+      `<td class="cell" title="${escapeHtml(p)} avg latency ${avgLat}ms">` +
+      `${s.h}/${s.n}<br><span class="lat">${rate}% • ${avgLat}ms</span></td>`
+    );
+  }
+  html.push(`</tr>`);
+
+  // Body rows
+  for (const r of sorted) {
+    html.push(`<tr>`);
+    html.push(`<td class="bug">${escapeHtml(r.bug_id)}</td>`);
+    html.push(`<td class="fw">${escapeHtml(r.framework)}</td>`);
+    html.push(`<td class="num">${r.heal_count}/${providers.length}</td>`);
+    for (const p of providers) {
+      const cell = r.perProv[p];
+      if (!cell) {
+        html.push(`<td class="cell gone" title="no run">·</td>`);
+      } else {
+        const cls = cell.healed ? "ok" : "bad";
+        const sym = cell.healed ? "✓" : "✗";
+        const lat = Number.isFinite(cell.latency_ms) ? cell.latency_ms + "ms" : "?";
+        const ec = cell.error_class || "";
+        const tip = `${p} • ${lat}${ec ? " • " + ec : ""}${cell.error_in_heal ? " • err: " + String(cell.error_in_heal).slice(0,80) : ""}`;
+        html.push(`<td class="cell ${cls}" title="${escapeHtml(tip)}">${sym}</td>`);
+      }
+    }
+    html.push(`</tr>`);
+  }
+  html.push(`</tbody></table></div>`);
+
+  area.innerHTML = html.join("");
+
+  area.querySelectorAll("th[data-key]").forEach((th) => {
+    th.addEventListener("click", () => {
+      const k = th.getAttribute("data-key");
+      if (matrixState.sortKey === k) matrixState.sortDir *= -1;
+      else { matrixState.sortKey = k; matrixState.sortDir = (k === "heal_count") ? -1 : 1; }
+      drawMatrix();
+    });
+  });
+}
+
+// ---------- Framework bars ----------
+function renderFrameworkBars(rows) {
+  const container = $("fw-bars");
+  if (!rows || !rows.length) {
+    container.innerHTML = placeholder("data pending — awaiting framework counts");
+    return;
+  }
+  const counts = {};
+  // Count unique bug_ids per framework
+  const seen = new Map(); // bug_id -> framework (avoid double-counting matrix rows)
+  for (const r of rows) {
+    const key = r.bug_id || r.id;
+    if (!key) continue;
+    if (seen.has(key)) continue;
+    const fw = deriveFramework(r);
+    seen.set(key, fw);
+    counts[fw] = (counts[fw] || 0) + 1;
+  }
+  // Order: known frameworks first, then others by count.
+  const known = FRAMEWORKS.filter((f) => counts[f]);
+  const extras = Object.keys(counts).filter((f) => !FRAMEWORKS.includes(f)).sort((a, b) => counts[b] - counts[a]);
+  const ordered = [...known, ...extras];
+  const max = Math.max(1, ...Object.values(counts));
+  const html = ['<div class="bars">'];
+  for (const fw of ordered) {
+    const n = counts[fw];
+    const pct = (n / max) * 100;
+    html.push(`
+      <div class="bar-row">
+        <div class="label" title="${escapeHtml(fw)}">${escapeHtml(fw)}</div>
+        <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+        <div class="count">${fmt(n)}</div>
+      </div>
+    `);
+  }
+  html.push("</div>");
+  container.innerHTML = html.join("");
+}
+
+// ---------- Diff colorization ----------
+function colorizeDiff(s) {
+  if (!s) return "";
+  const lines = String(s).split(/\r?\n/);
+  const out = [];
+  for (const line of lines) {
+    const e = escapeHtml(line);
+    if (line.startsWith("+++") || line.startsWith("---") || line.startsWith("@@")) {
+      out.push(`<span class="ctx">${e}</span>`);
+    } else if (line.startsWith("+")) {
+      out.push(`<span class="add">${e}</span>`);
+    } else if (line.startsWith("-")) {
+      out.push(`<span class="rem">${e}</span>`);
+    } else {
+      out.push(`<span class="ctx">${e}</span>`);
+    }
+  }
+  return out.join("\n");
+}
+
+// ---------- Feeds ----------
+function renderHealsFeed(rows) {
+  const target = $("heals-feed");
+  if (!rows || !rows.length) {
+    target.innerHTML = placeholder("data pending — awaiting matrix.jsonl");
+    return;
+  }
+  // Last 5 healed (matrix.jsonl is append-only, take from end).
+  const healed = rows.filter((r) => r.healed).slice(-5).reverse();
+  if (!healed.length) {
+    target.innerHTML = placeholder("0 healed rows so far — system live, awaiting first green");
+    return;
+  }
+  const html = healed.map((r) => {
+    const id = r.bug_id || r.row_id || "?";
+    const fw = deriveFramework(r);
+    const patch = r.patch_diff || r.patch || "";
+    const excerpt = patch ? patch.slice(0, 200) : "";
+    return `
+    <div class="heal-card ok">
+      <div class="row">
+        <div class="left">
+          <span class="row-id">${escapeHtml(id)}</span>
+          <span class="fw">${escapeHtml(fw)}</span>
+        </div>
+        <div class="left">
+          <span class="provider">${escapeHtml(r.provider || "")}</span>
+          <span class="lat">${r.latency_ms != null ? fmt(r.latency_ms) + "ms" : ""}</span>
+        </div>
+      </div>
+      ${excerpt ? `<details><summary>patch (first 200 chars)</summary><pre class="diff">${colorizeDiff(excerpt)}</pre></details>` : ""}
+    </div>`;
+  }).join("");
+  target.innerHTML = html;
+}
+
+function renderUnhealedFeed(rows) {
+  const target = $("unhealed-feed");
+  if (!rows || !rows.length) {
+    target.innerHTML = placeholder("data pending — awaiting matrix.jsonl");
+    return;
+  }
+  const failed = rows.filter((r) => !r.healed).slice(-5).reverse();
+  if (!failed.length) {
+    target.innerHTML = placeholder("0 unhealed in the most recent batch — falsifiability surface is empty");
+    return;
+  }
+  const html = failed.map((r) => {
+    const id = r.bug_id || r.row_id || "?";
+    const fw = deriveFramework(r);
+    const ec = r.error_class || r.reason || "unhealed";
+    return `
+    <div class="heal-card bad">
+      <div class="row">
+        <div class="left">
+          <span class="row-id">${escapeHtml(id)}</span>
+          <span class="fw">${escapeHtml(fw)}</span>
+          <span class="err">${escapeHtml(trunc(ec, 60))}</span>
+        </div>
+        <div class="left">
+          <span class="provider">${escapeHtml(r.provider || "")}</span>
+          <span class="lat">${r.latency_ms != null ? fmt(r.latency_ms) + "ms" : ""}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+  target.innerHTML = html;
+}
+
+// ---------- Bootstrap ----------
+async function load() {
+  $("meta").textContent = "loading data…";
+
+  const [summaryTxt, matrixTxt, corpusTxt, seedTxt] = await Promise.all([
+    tryFetch("data/matrix/summary.json"),
+    tryFetch("data/matrix/matrix.jsonl"),
+    tryFetch("data/github-failures/_corpus.jsonl"),
+    tryFetch("seed.json"),
+  ]);
+
+  const summary = parseJsonSafe(summaryTxt);
+  const matrixRows = parseJsonl(matrixTxt);
+  const corpusRows = parseJsonl(corpusTxt);
+
+  // Cascade decision
+  let dataSource = "seed";
+  let usingMatrix = false;
+  let usingCorpus = false;
+  if (matrixRows.length) {
+    usingMatrix = true;
+    dataSource = (summary || corpusRows.length) ? "live" : "partial";
+    if (corpusRows.length) usingCorpus = true;
+  } else if (corpusRows.length) {
+    usingCorpus = true;
+    dataSource = "partial";
+  }
+
+  // Final fallback to seed.json (mapped to expected shape)
+  let seedMatrix = null, seedCorpus = null;
+  if (!usingMatrix && !usingCorpus) {
+    const seed = parseJsonSafe(seedTxt);
+    if (seed) {
+      // Map seed.heal_results → fake matrix rows so renderers reuse one path.
+      seedMatrix = (seed.heal_results || []).map((r) => ({
+        bug_id: r.row_id,
+        provider: r.provider || "seed",
+        healed: !!r.healed,
+        patch_diff: r.patch || "",
+        latency_ms: r.latency_ms,
+        error_class: r.error_class,
+        framework: r.framework,
+      }));
+      seedCorpus = (seed.corpus || []).map((c) => ({
+        bug_id: c.row_id,
+        framework: c.framework,
+      }));
+      dataSource = "seed";
+    }
+  }
+
+  // Header pill + version
+  const stamp = new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC";
+  const pillClass = dataSource === "live" ? "live" : (dataSource === "partial" ? "partial" : "seed");
+  const pillLabel = dataSource === "live" ? "live data" : (dataSource === "partial" ? "partial data" : "seed data");
+  $("meta").innerHTML = `<span class="src-pill ${pillClass}">${pillLabel}</span> &bull; ${stamp}`;
+  $("version").textContent = `scaffold (${dataSource})`;
+
+  const finalMatrix = usingMatrix ? matrixRows : (seedMatrix || []);
+  const fwSource = usingCorpus ? corpusRows : (usingMatrix ? matrixRows : (seedCorpus || []));
+
+  renderHero(finalMatrix, summary);
+  renderMatrix(finalMatrix);
+  renderFrameworkBars(fwSource);
+  renderHealsFeed(finalMatrix);
+  renderUnhealedFeed(finalMatrix);
+}
+
+load().catch((err) => {
+  console.error(err);
+  $("meta").innerHTML = '<span class="src-pill seed">load error</span>';
+});
+</script>
+</body>
+</html>
